@@ -33,6 +33,9 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         
+        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+        self.table.addGestureRecognizer(tapGesture)
+        
         table.delegate = self
         table.dataSource = self
         searchBar.delegate = self
@@ -44,6 +47,10 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         friendManager.delegate = self
         
         setUpTable()
+    }
+    
+    func tableViewTapped() {
+        searchBar.endEditing(true)
     }
     
     func setUpTable() {

@@ -35,8 +35,9 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         UIView.animateWithDuration(0.5, animations: {
             
             self.dockViewHeightConstraint.constant = 290
-            
-            self.messageTable.setContentOffset(CGPoint(x: 0, y: 650), animated: true)
+            var keyboardOffset = self.messageTable.contentSize.height - 360
+            println("keyboardOffset: \(keyboardOffset)")
+            self.messageTable.setContentOffset(CGPoint(x: 0, y: keyboardOffset), animated: true)
             self.view.layoutIfNeeded()
             
             }, completion: nil)
@@ -63,7 +64,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         println("toUsers: \(toUsers)")
         self.messageTable.rowHeight = UITableViewAutomaticDimension
-        self.messageTable.estimatedRowHeight = 300
+        self.messageTable.estimatedRowHeight = 72
         self.messenger.delegate = self
         self.messenger.getMessageHistoryFrom(toUsers)
         self.messageTable.delegate = self
@@ -83,9 +84,20 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
-        cell.messageText.text = messages[indexPath.row].objectForKey("messageText") as? String
-        return cell
+        let messageUser = messages[indexPath.row].objectForKey("fromUser") as! PFUser
+        println("reloaded: \(indexPath.row)")
+        if messageUser.objectId == PFUser.currentUser()!.objectId {
+            let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
+            cell.messageText.text = messages[indexPath.row].objectForKey("messageText") as? String
+            return cell
+        }
+        else {
+            let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
+            cell.messageText.text = messages[indexPath.row].objectForKey("messageText") as? String
+            return cell
+        }
+        
+        
     }
     
     func sentMessage() {
@@ -105,6 +117,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
             self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+            println("to bottom")
         }
         
         
