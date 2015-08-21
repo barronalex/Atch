@@ -46,6 +46,7 @@
 		D06611661B85EE3C00CFE73C /* Messenger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06611651B85EE3C00CFE73C /* Messenger.swift */; };
 		D06611681B86898A00CFE73C /* MessengerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06611671B86898A00CFE73C /* MessengerDelegate.swift */; };
 		D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116A1B868E6400CFE73C /* MessagingViewController.swift */; };
+		D066116D1B878BEE00CFE73C /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116C1B878BEE00CFE73C /* MessageCell.swift */; };
 		D0A458251B83E53700FE2217 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A458241B83E53700FE2217 /* Bolts.framework */; };
 		D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */; };
 		D0FA22F61B83526E0055F7F1 /* LocationUpdaterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */; };
@@ -109,6 +110,7 @@
 		D06611651B85EE3C00CFE73C /* Messenger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messenger.swift; sourceTree = "<group>"; };
 		D06611671B86898A00CFE73C /* MessengerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessengerDelegate.swift; sourceTree = "<group>"; };
 		D066116A1B868E6400CFE73C /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
+		D066116C1B878BEE00CFE73C /* MessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		D0A458241B83E53700FE2217 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "parse-library-1.7.5/Bolts.framework"; sourceTree = "<group>"; };
 		D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdater.swift; sourceTree = "<group>"; };
 		D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdaterDelegate.swift; sourceTree = "<group>"; };
@@ -261,6 +263,7 @@
 			isa = PBXGroup;
 			children = (
 				D06611671B86898A00CFE73C /* MessengerDelegate.swift */,
+				D066116C1B878BEE00CFE73C /* MessageCell.swift */,
 				D06611651B85EE3C00CFE73C /* Messenger.swift */,
 				D066116A1B868E6400CFE73C /* MessagingViewController.swift */,
 			);
@@ -467,6 +470,7 @@
 				D02E5B501B7F32BC007F7FDB /* UsernameManagerDelegate.swift in Sources */,
 				D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */,
 				D02E5B4E1B7F32A9007F7FDB /* UsernameManager.swift in Sources */,
+				D066116D1B878BEE00CFE73C /* MessageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

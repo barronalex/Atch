@@ -9,7 +9,7 @@
 import UIKit
 import Parse
 
-class MessagingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, MessengerDelegate {
+class MessagingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, MessengerDelegate {
     //includes current user
     var toUsers = [String]()
     var messages = [PFObject]()
@@ -18,30 +18,31 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @IBOutlet weak var messageTable: UITableView!
     
-    @IBOutlet weak var messageTextField: UITextField!
+    
+    @IBOutlet weak var messageTextView: UITextView!
     
     @IBOutlet weak var sendButton: UIButton!
     
     @IBAction func sendButtonTapped() {
-        self.messageTextField.endEditing(true)
-        self.messageTextField.enabled = false
+        self.messageTextView.endEditing(true)
+        //self.messageTextView.enabled = false
         self.sendButton.enabled = false
-        messenger.sendMessage(messageTextField.text)
+        messenger.sendMessage(messageTextView.text)
     }
     
-    func textFieldDidBeginEditing(textField: UITextField) {
+    func textViewDidBeginEditing(textView: UITextView) {
         self.view.layoutIfNeeded()
         UIView.animateWithDuration(0.5, animations: {
             
             self.dockViewHeightConstraint.constant = 290
+            
             self.messageTable.setContentOffset(CGPoint(x: 0, y: 650), animated: true)
             self.view.layoutIfNeeded()
             
             }, completion: nil)
-        
     }
     
-    func textFieldDidEndEditing(textField: UITextField) {
+    func textViewDidEndEditing(textView: UITextView) {
         self.view.layoutIfNeeded()
         UIView.animateWithDuration(0.5, animations: {
             
@@ -52,7 +53,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableViewTapped() {
-        self.messageTextField.endEditing(true)
+        self.messageTextView.endEditing(true)
     }
     
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
@@ -61,11 +62,13 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         println("toUsers: \(toUsers)")
+        self.messageTable.rowHeight = UITableViewAutomaticDimension
+        self.messageTable.estimatedRowHeight = 300
         self.messenger.delegate = self
         self.messenger.getMessageHistoryFrom(toUsers)
         self.messageTable.delegate = self
         self.messageTable.dataSource = self
-        self.messageTextField.delegate = self
+        self.messageTextView.delegate = self
         let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
         self.messageTable.addGestureRecognizer(tapGesture)
     }
@@ -80,16 +83,16 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! UITableViewCell
-        cell.textLabel?.text = messages[indexPath.row].objectForKey("messageText") as? String
+        let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
+        cell.messageText.text = messages[indexPath.row].objectForKey("messageText") as? String
         return cell
     }
     
     func sentMessage() {
         messenger.getMessageHistoryFrom(toUsers)
         dispatch_async(dispatch_get_main_queue()) {
-            self.messageTextField.text = ""
-            self.messageTextField.enabled = true
+            self.messageTextView.text = ""
+            //self.messageTextField.enabled = true
             self.sendButton.enabled = true
         }
     }
@@ -101,8 +104,11 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.messages = messages
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
-            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Bottom, animated: false)
+            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
         }
+        
+        
+        
         
     }
 
