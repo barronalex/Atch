@@ -363,7 +363,7 @@
 				TargetAttributes = {
 					D0519E591B6E0AD500C473E3 = {
 						CreatedOnToolsVersion = 6.3.2;
-						DevelopmentTeam = 592L3JKQT8;
+						DevelopmentTeam = 223D7888PM;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -618,9 +618,9 @@
 				);
 				INFOPLIST_FILE = Atch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "ab.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.uk.barron.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "cb7d39c1-b608-4243-98dd-d5057872d6f9";
 				SWIFT_OBJC_BRIDGING_HEADER = "Atch/Atch-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -642,9 +642,9 @@
 				);
 				INFOPLIST_FILE = Atch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "ab.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.uk.barron.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "cb7d39c1-b608-4243-98dd-d5057872d6f9";
 				SWIFT_OBJC_BRIDGING_HEADER = "Atch/Atch-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};

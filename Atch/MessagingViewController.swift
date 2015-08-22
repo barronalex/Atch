@@ -14,6 +14,8 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     var toUsers = [String]()
     var messages = [PFObject]()
     var messenger = Messenger()
+    //have a map of messageids to height
+    var messageHeights = [String:CGFloat]()
     
     
     @IBOutlet weak var messageTable: UITableView!
@@ -32,7 +34,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func textViewDidBeginEditing(textView: UITextView) {
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(0.5, animations: {
+        UIView.animateWithDuration(0.3, animations: {
             
             self.dockViewHeightConstraint.constant = 290
             var keyboardOffset = self.messageTable.contentSize.height - 360
@@ -45,7 +47,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func textViewDidEndEditing(textView: UITextView) {
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(0.5, animations: {
+        UIView.animateWithDuration(0.3, animations: {
             
             self.dockViewHeightConstraint.constant = 60
             self.view.layoutIfNeeded()
@@ -59,12 +61,21 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
+    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let message = messages[indexPath.row]
+        let text = message.objectForKey("messageText") as! String
+        let length = count(text)
+        println("length: \(length)")
+        let result = CGFloat(((length / 27) + 1) * 50)
+        println("result: \(result)")
+        return result
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         println("toUsers: \(toUsers)")
         self.messageTable.rowHeight = UITableViewAutomaticDimension
-        self.messageTable.estimatedRowHeight = 72
+        //self.messageTable.estimatedRowHeight = 70
         self.messenger.delegate = self
         self.messenger.getMessageHistoryFrom(toUsers)
         self.messageTable.delegate = self
@@ -84,16 +95,23 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let messageUser = messages[indexPath.row].objectForKey("fromUser") as! PFUser
+        let message = messages[indexPath.row]
+        let messageUser = message.objectForKey("fromUser") as! PFUser
         println("reloaded: \(indexPath.row)")
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
-            cell.messageText.text = messages[indexPath.row].objectForKey("messageText") as? String
+            cell.messageText.text = message.objectForKey("messageText") as? String
+            if messageHeights[message.objectId!] == nil {
+                messageHeights[message.objectId!] = cell.messageText.frame.height
+            }
             return cell
         }
         else {
             let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
-            cell.messageText.text = messages[indexPath.row].objectForKey("messageText") as? String
+            cell.messageText.text = message.objectForKey("messageText") as? String
+            if messageHeights[message.objectId!] == nil {
+                messageHeights[message.objectId!] = cell.messageText.frame.height
+            }
             return cell
         }
         

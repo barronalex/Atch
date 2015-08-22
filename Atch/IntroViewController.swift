@@ -23,10 +23,11 @@ class IntroViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
+
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
         }
-        self.performSegueWithIdentifier("testmessenger", sender: nil)
+        //self.performSegueWithIdentifier("testmessenger", sender: nil)
     }
     
     override func didReceiveMemoryWarning() {
