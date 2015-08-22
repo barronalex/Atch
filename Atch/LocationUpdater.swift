@@ -17,6 +17,8 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     var curLocation: CLLocation?
     var friendData: PFObject?
     var delegate: LocationUpdaterDelegate?
+    var sendTimer: NSTimer?
+    var getTimer: NSTimer?
     
     func startUpdates() {
         print("start updates")
@@ -28,18 +30,21 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
                 self.friendData = data
             }
         }
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
         }
-        NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("sendLocationToServer"), userInfo: nil, repeats: true)
-        NSTimer.scheduledTimerWithTimeInterval(40, target: self, selector: Selector("getFriendLocationsFromServer"), userInfo: nil, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval(100, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
+        sendTimer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("sendLocationToServer"), userInfo: nil, repeats: true)
+        getTimer = NSTimer.scheduledTimerWithTimeInterval(40, target: self, selector: Selector("getFriendLocationsFromServer"), userInfo: nil, repeats: true)
     }
     
     func stopUpdates() {
+        println("stop updating")
+        sendTimer?.invalidate()
+        getTimer?.invalidate()
         locationManager.stopUpdatingLocation()
     }
     
@@ -72,6 +77,8 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         let query = PFQuery(className: "FriendData")
         query.whereKey("user", notEqualTo: PFUser.currentUser()!)
         query.whereKeyExists("location")
+        var date = NSDate(timeIntervalSinceNow: 0)
+       // query.whereKey("updatedAt", greaterThan: date - NSTimeInterval.
         query.findObjectsInBackgroundWithBlock {
             (friends: [AnyObject]?, error: NSError?) -> Void in
             if let friends = friends as? [PFObject] {

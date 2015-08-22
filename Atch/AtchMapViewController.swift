@@ -47,6 +47,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             self.view = mapView
             firstLocation = false
             userMarker.map = mapView
+            userMarker.userData = PFUser.currentUser()!.objectId!
         }
         userMarker.position = location
     }
@@ -112,8 +113,12 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         println("tapped marker")
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
-        self.performSegueWithIdentifier("maptochat", sender: nil)
+        if tappedUserId != PFUser.currentUser()!.objectId! {
+            self.performSegueWithIdentifier("maptochat", sender: nil)
+        }
         return true
+        
+        
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

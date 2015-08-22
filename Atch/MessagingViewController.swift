@@ -32,22 +32,28 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         messenger.sendMessage(messageTextView.text)
     }
     
+    
+    
     func textViewDidBeginEditing(textView: UITextView) {
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(0.3, animations: {
+        
+        UIView.animateWithDuration(0.25, animations: {
             
             self.dockViewHeightConstraint.constant = 290
             var keyboardOffset = self.messageTable.contentSize.height - 360
             println("keyboardOffset: \(keyboardOffset)")
-            self.messageTable.setContentOffset(CGPoint(x: 0, y: keyboardOffset), animated: true)
+            self.messageTable.setContentOffset(CGPoint(x: 0, y: keyboardOffset), animated: false)
             self.view.layoutIfNeeded()
             
             }, completion: nil)
+        
+        
+
     }
     
     func textViewDidEndEditing(textView: UITextView) {
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(0.3, animations: {
+        UIView.animateWithDuration(0.2, animations: {
             
             self.dockViewHeightConstraint.constant = 60
             self.view.layoutIfNeeded()
@@ -83,6 +89,9 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.messageTextView.delegate = self
         let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
         self.messageTable.addGestureRecognizer(tapGesture)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

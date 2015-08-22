@@ -14,7 +14,7 @@ import Bolts
 
 let profilePictureNotificationKey = "ab.Atch.profilePictureNotificationKey"
 
-class FacebookManager {
+class FacebookManager: FBSDKLoginManager {
     
     var delegate: FacebookManagerDelegate?
     
