@@ -15,8 +15,13 @@ class UsernameManager {
     var delegate: UsernameManagerDelegate?
     
     func checkIfUsernameFree(name: String) {
+        
+        if !checkIfValid(name) {
+            self.delegate?.nameInvalid()
+            return
+        }
         let query = PFUser.query()!
-        print("querying")
+        print("checking if free")
         query.whereKey("username", equalTo: name)
         query.findObjectsInBackgroundWithBlock {
             (objects: [AnyObject]?, error: NSError?) -> Void in
@@ -30,6 +35,9 @@ class UsernameManager {
                         self.delegate?.getUsername()
                     }
                 }
+                else {
+                    self.delegate?.usernameChosen()
+                }
             } else {
                 print("error")
                 
@@ -37,9 +45,17 @@ class UsernameManager {
         }
     }
     
+    func checkIfValid(name: String) -> Bool {
+        let characterSet = NSCharacterSet.alphanumericCharacterSet()
+        if name != "" && name.rangeOfCharacterFromSet(characterSet.invertedSet, options: .CaseInsensitiveSearch) == nil && count(name) < 20 {
+            return true
+        }
+        return false
+    }
+    
     func setUsername(name: String) {
         PFUser.currentUser()?.setObject(name, forKey: "username")
-        PFUser.currentUser()?.setObject("t", forKey: "usernameSet")
+        PFUser.currentUser()?.setObject(name.lowercaseString, forKey: "queryUsername")
         PFUser.currentUser()?.saveInBackground()
         self.delegate?.finished()
     }

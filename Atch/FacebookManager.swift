@@ -14,65 +14,38 @@ import Bolts
 
 let profilePictureNotificationKey = "ab.Atch.profilePictureNotificationKey"
 
-class FacebookManager: FBSDKLoginManager {
+class FacebookManager {
     
     var delegate: FacebookManagerDelegate?
+    var manager = FBSDKLoginManager()
     
     func login() {
         let permissions = ["public_profile", "user_friends"]
         if FBSDKAccessToken.currentAccessToken() == nil {
             print("no access")
         }
-        PFFacebookUtils.logInInBackgroundWithReadPermissions(permissions) {
-            (user, error) in
-            if user == nil {
-                if error == nil {
-                    print("User cancelled FB login")
-                }
-                else {
-                    print("FB login error: \(error)")
-                }
-            } else if user!.isNew {
-                print("User signed up and logged in with Facebook")
-                //if new user fetch and store facebook id
-                //if new user, we need to get a username
-                let installation = PFInstallation.currentInstallation()
-                installation.setObject(user!.objectId!, forKey: "userId")
-                installation.saveInBackground()
-                self.storeUserInfo()
-            } else {
-                //check if user has username
-                let state = user!.objectForKey("usernameSet") as! String
-                if state == "f" {
-                    self.delegate?.usernameNeeded()
-                }
-                
-                print("User logged in via Facebook")
-                self.delegate?.loginFinished()
+        
+        manager.logInWithReadPermissions(permissions) {
+            (result, error) in
+            if error != nil {
+                println("facebook login error: \(error)")
+                self.delegate?.facebookLoginFailed("error")
+
+            }
+            else if result.isCancelled {
+                println("Login was cancelled")
+                self.delegate?.facebookLoginFailed("Login was cancelled")
+            }
+            else if (result.grantedPermissions.contains("public_profile") && result.grantedPermissions.contains("user_friends")) {
+                println("user granted permissions")
+                self.delegate?.facebookLoginSucceeded()
+            }
+            else {
+                println("not enough permissions were granted")
+                self.delegate?.facebookLoginFailed("not enough permissions were granted")
             }
         }
-    }
-    
-    func getFriendList() -> [String] {
-        if FBSDKAccessToken.currentAccessToken() != nil {
-            //make a call to the graph api, and then query the users on the system by fbid
-            let graphRequest = FBSDKGraphRequest(graphPath: "me/friends", parameters: nil)
-            graphRequest.startWithCompletionHandler({ (connection, result, error) -> Void in
-                if (error != nil) {
-                    // Process error
-                    print("Error: \(error)")
-                }
-                else {
-                    let friends = result.valueForKey("data") as! NSArray
-                    print("friends: \(friends)")
-                    for friend in friends {
-                        let id = friend.valueForKey("id") as! String
-                        print("Id: \(id)")
-                    }
-                }
-            })
-        }
-        return []
+
     }
     
     
@@ -91,12 +64,13 @@ class FacebookManager: FBSDKLoginManager {
                     let id = result.valueForKey("id") as! String
                     print("ID: \(id)")
                     PFUser.currentUser()?.setObject(fullname, forKey: "fullname")
+                    PFUser.currentUser()?.setObject(fullname.lowercaseString, forKey: "queryFullname")
                     PFUser.currentUser()?.setObject(id, forKey: "fbid")
                     PFUser.currentUser()?.saveInBackground()
+                    self.delegate?.parseLoginSucceeded()
                 }
             })
         }
-        self.delegate?.usernameNeeded()
     }
     
     static func downloadProfilePictures(users: [PFObject]) {
@@ -134,9 +108,84 @@ class FacebookManager: FBSDKLoginManager {
             }
             
         }
-        
-//        //send data over to somewhere
-//
+    }
+    
+    func loginUserToParseWithoutToken() {
+        let permissions = ["public_profile", "user_friends"]
+                PFFacebookUtils.logInInBackgroundWithReadPermissions(permissions) {
+                    (user, error) in
+                    if user == nil {
+                        if error == nil {
+                            print("User cancelled FB login")
+                            self.delegate?.parseLoginFailed()
+                        }
+                        else {
+                            self.delegate?.parseLoginFailed()
+                            print("FB login error: \(error)")
+                        }
+                    } else if user!.isNew {
+                        print("User signed up and logged in with Facebook")
+                        //if new user fetch and store facebook id
+                        let installation = PFInstallation.currentInstallation()
+                        installation.setObject(PFUser.currentUser()!.objectId!, forKey: "userId")
+                        installation.saveInBackground()
+                        self.storeUserInfo()
+                    } else {
+                        //check if user has username
+                        print("User logged in via Facebook")
+                        self.delegate?.alreadySignedUp()
+                    }
+                }
+    }
+    
+    func loginUserToParseWithToken() {
+        PFFacebookUtils.logInInBackgroundWithAccessToken(FBSDKAccessToken.currentAccessToken()) {
+            (user, error) in
+            if user == nil || error != nil {
+                println("parse login failed - this should never happen")
+                self.delegate?.parseLoginFailed()
+            }
+            else {
+                println("login succeeded")
+                self.delegate?.parseLoginSucceeded()
+            }
+        }
+    }
+    
+    func checkIfFacebookAssociatedWithParse() {
+        if FBSDKAccessToken.currentAccessToken() != nil {
+            let graphRequest = FBSDKGraphRequest(graphPath: "me", parameters: nil)
+            graphRequest.startWithCompletionHandler({
+                (connection, result, error) -> Void in
+                if (error != nil) {
+                    // Process error
+                    print("Error: \(error)")
+                }
+                else {
+                    print("fetched user: \(result)")
+                    let id = result.valueForKey("id") as! String
+                    print("ID: \(id)")
+                    //query parse for id
+                    let query = PFUser.query()!
+                    query.whereKey("fbid", equalTo: id)
+                    query.getFirstObjectInBackgroundWithBlock() {
+                        (user, error) in
+                        if error != nil {
+                            println("error in fbid parse query: \(error)")
+                        }
+                        else {
+                            if let user = user {
+                                //log in user
+                                self.loginUserToParseWithToken()
+                            }
+                            else {
+                                self.delegate?.goToSignUp()
+                            }
+                        }
+                    }
+                }
+            })
+        }
     }
     
 }

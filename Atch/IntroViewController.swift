@@ -17,14 +17,11 @@ class IntroViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //FacebookManager.downloadProfilePictures([PFUser.currentUser()!])
-        
-        
     }
     
     override func viewDidAppear(animated: Bool) {
 
-        if !(PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
+        if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
         }
         //self.performSegueWithIdentifier("testmessenger", sender: nil)

@@ -8,8 +8,16 @@
 
 protocol FacebookManagerDelegate {
     
-    func loginFinished()
+    func facebookLoginSucceeded()
     
-    func usernameNeeded()
+    func facebookLoginFailed(reason: String)
+    
+    func goToSignUp()
+    
+    func parseLoginFailed()
+    
+    func parseLoginSucceeded()
+    
+    func alreadySignedUp()
     
 }

@@ -15,4 +15,6 @@ protocol UsernameManagerDelegate {
     func usernameChosen()
     
     func finished()
+    
+    func nameInvalid()
 }
