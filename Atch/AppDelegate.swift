@@ -48,11 +48,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        
+
     }
+    
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -79,7 +83,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        println("receiving notification")
         PFPush.handlePush(userInfo)
+        if userInfo["type"] as? String == "message" {
+            self.goToMessages(userInfo)
+        }
+        if userInfo["type"] as? String == "friendRequest" {
+            self.goToAddFriends()
+        }
+    }
+    
+    private func goToMessages(userInfo: [NSObject : AnyObject]) {
+        var toUsers = [String]()
+        if let curUser = PFUser.currentUser() {
+            if let toUserId = userInfo["chatterParseId"] as? String {
+                println("working")
+                toUsers = [curUser.objectId!, toUserId]
+            }
+            else { return }
+        }
+        else {
+            self.goToLogin()
+            return
+        }
+        if self.window?.rootViewController is MessagingViewController {
+            NSNotificationCenter.defaultCenter().postNotificationName(messageNotificationReceivedKey, object: self, userInfo: ["toUsers":toUsers])
+        }
+        else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let messageVC = storyboard.instantiateViewControllerWithIdentifier("MessagingViewController") as! MessagingViewController
+            
+            if let curUser = PFUser.currentUser() {
+                messageVC.toUsers = toUsers
+            }
+            self.window?.rootViewController?.showViewController(messageVC, sender: nil)
+        }
+    }
+    
+    private func goToLogin() {
+        if !(self.window?.rootViewController is LoginViewController)  {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let loginVC = storyboard.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
+            self.window?.rootViewController?.showViewController(loginVC, sender: nil)
+        }
+    }
+    
+    private func goToAddFriends() {
+        if !(self.window?.rootViewController is FriendsViewController)  {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let loginVC = storyboard.instantiateViewControllerWithIdentifier("FriendsViewController") as! FriendsViewController
+            self.window?.rootViewController?.showViewController(loginVC, sender: nil)
+        }
+
     }
 
 

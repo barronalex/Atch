@@ -11,9 +11,6 @@ import FBSDKLoginKit
 import Parse
 import Bolts
 
-
-let profilePictureNotificationKey = "ab.Atch.profilePictureNotificationKey"
-
 class FacebookManager {
     
     var delegate: FacebookManagerDelegate?
@@ -49,7 +46,7 @@ class FacebookManager {
     }
     
     
-    func storeUserInfo() {
+    private func storeUserInfo() {
         if FBSDKAccessToken.currentAccessToken() != nil {
             let graphRequest = FBSDKGraphRequest(graphPath: "me", parameters: nil)
             graphRequest.startWithCompletionHandler({ (connection, result, error) -> Void in
@@ -145,9 +142,13 @@ class FacebookManager {
                 println("parse login failed - this should never happen")
                 self.delegate?.parseLoginFailed()
             }
-            else {
+            else if user!.isNew {
                 println("login succeeded")
                 self.delegate?.parseLoginSucceeded()
+            }
+            else {
+                println("user has already signed up")
+                self.delegate?.alreadySignedUp()
             }
         }
     }
@@ -175,7 +176,7 @@ class FacebookManager {
                         }
                         else {
                             if let user = user {
-                                //log in user
+                                //if user already has a parse account
                                 self.loginUserToParseWithToken()
                             }
                             else {

@@ -58,49 +58,49 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         friendManager.getPendingRequests()
         friendManager.getFacebookFriends()
     }
-    
-    func friendRequestSent() {
-        
+
+    func acceptButton(sender: AnyObject) {
+        let button = sender as! UIButton
+        let request = pendingRequests[button.tag]
+        friendManager.acceptRequest(request)
+        button.setTitle("friends", forState: .Normal)
     }
     
-    func friendRequestAccepted() {
-        
+    func addButton(sender: AnyObject) {
+        let button = sender as! UIButton
+        let friend = sectionMap[1]![button.tag]
+        print("Requested: \(friend.objectId)")
+        friendManager.sendRequest(friend.objectId!)
+        button.setTitle("sent", forState: .Normal)
     }
     
-    func facebookFriendsFound(facebookFriends: [PFUser]) {
-        print("facebook friends acquired")
-        self.facebookFriends = facebookFriends
-        if facebookFriends.count > 0 {
-            sectionTitles[1] = "Facebook Friends"
-            sectionMap[1] = facebookFriends
-            FacebookManager.downloadProfilePictures(facebookFriends)
-            table.reloadData()
-        }
-        
-        
+    @IBAction func mapPressed() {
+        //if friends.count != 0 {
+            self.performSegueWithIdentifier("friendstomap", sender: nil)
+        //}
     }
     
-    func pendingRequestsFound(requests: [PFObject], users: [PFUser]) {
-        //present requests
-        print("requests found")
-        pendingRequests = requests
-        pendingFriends = users
-        if pendingFriends.count > 0 {
-            sectionTitles[0] = "Pending Requests"
-            sectionMap[0] = pendingFriends
-            FacebookManager.downloadProfilePictures(users)
-            table.reloadData()
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "friendstomap" {
+            //let destVC = segue.destinationViewController as! AtchMapViewController
+            //destVC.friends = friends
         }
         
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return sectionMap.count
+    func reset() {
+        print("cancelllllleedd")
+        self.view.endEditing(true)
+        setUpTable()
     }
+
+}
+
+//Table View Methods
+extension FriendsViewController {
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sectionMap[section]!.count
-        // Most of the time my data source is an array of something...  will replace with the actual name of the data source
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sectionTitles[section]
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -139,46 +139,32 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             cell.acceptButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
         }
         return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return sectionMap[section]!.count
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return sectionMap.count
+    }
+}
 
+//SearchBar methods
+extension FriendsViewController {
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        println("cancelled")
     }
     
-    func acceptButton(sender: AnyObject) {
-        let button = sender as! UIButton
-        let request = pendingRequests[button.tag]
-        friendManager.acceptRequest(request)
-        button.setTitle("friends", forState: .Normal)
-    }
-    
-    func addButton(sender: AnyObject) {
-        let button = sender as! UIButton
-        let friend = sectionMap[1]![button.tag]
-        print("Requested: \(friend.objectId)")
-        friendManager.sendRequest(friend.objectId!)
-        button.setTitle("sent", forState: .Normal)
-    }
-    
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionTitles[section]
-    }
-    
-    @IBAction func mapPressed() {
-        //if friends.count != 0 {
-            self.performSegueWithIdentifier("friendstomap", sender: nil)
-        //}
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "friendstomap" {
-            //let destVC = segue.destinationViewController as! AtchMapViewController
-            //destVC.friends = friends
-        }
-        
-    }
-    
-    func reset() {
-        print("cancelllllleedd")
-        self.view.endEditing(true)
-        setUpTable()
+    func searchFinished(searchResults: [PFUser]) {
+        print("search finished")
+        sectionTitles[0] = ""
+        sectionTitles[1] = "Search Results"
+        sectionMap[0] = []
+        sectionMap[1] = searchResults
+        FacebookManager.downloadProfilePictures(searchResults)
+        table.reloadData()
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
@@ -191,15 +177,11 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
     }
     
-    func searchFinished(searchResults: [PFUser]) {
-        print("search finished")
-        sectionTitles[0] = ""
-        sectionTitles[1] = "Search Results"
-        sectionMap[0] = []
-        sectionMap[1] = searchResults
-        FacebookManager.downloadProfilePictures(searchResults)
-        table.reloadData()
-    }
+    
+}
+
+//FriendManager methods
+extension FriendsViewController {
     
     func friendProfilePicturesReceived(notification: NSNotification) {
         println("triggered in Friends")
@@ -215,18 +197,47 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         FacebookManager.downloadProfilePictures(friends)
     }
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        println("cancelled")
-    }
-    
-    func removeDuplicatePicUsers(users: [PFObject]) -> [PFObject] {
-        var nonDupFriends = users
-        for var i = 0; i < users.count; i++ {
-            if friendPics[users[i].objectId!] == nil {
-                nonDupFriends.removeAtIndex(i)
-            }
+    func facebookFriendsFound(facebookFriends: [PFUser]) {
+        print("facebook friends acquired")
+        self.facebookFriends = facebookFriends
+        if facebookFriends.count > 0 {
+            sectionTitles[1] = "Facebook Friends"
+            sectionMap[1] = facebookFriends
+            FacebookManager.downloadProfilePictures(facebookFriends)
+            table.reloadData()
         }
-        return nonDupFriends
     }
     
+    func pendingRequestsFound(requests: [PFObject], users: [PFUser]) {
+        //present requests
+        print("requests found")
+        pendingRequests = requests
+        pendingFriends = users
+        if pendingFriends.count > 0 {
+            sectionTitles[0] = "Pending Requests"
+            sectionMap[0] = pendingFriends
+            FacebookManager.downloadProfilePictures(users)
+            table.reloadData()
+        }
+    }
+    
+    func friendRequestSent() {
+        
+    }
+    
+    func friendRequestAccepted() {
+        
+    }
+    
+    //    func removeDuplicatePicUsers(users: [PFObject]) -> [PFObject] {
+    //        var nonDupFriends = users
+    //        for var i = 0; i < users.count; i++ {
+    //            if friendPics[users[i].objectId!] == nil {
+    //                nonDupFriends.removeAtIndex(i)
+    //            }
+    //        }
+    //        return nonDupFriends
+    //    }
+
 }
+    

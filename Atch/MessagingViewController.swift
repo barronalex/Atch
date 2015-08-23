@@ -77,23 +77,6 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         return result
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        println("toUsers: \(toUsers)")
-        self.messageTable.rowHeight = UITableViewAutomaticDimension
-        //self.messageTable.estimatedRowHeight = 70
-        self.messenger.delegate = self
-        self.messenger.getMessageHistoryFrom(toUsers)
-        self.messageTable.delegate = self
-        self.messageTable.dataSource = self
-        self.messageTextView.delegate = self
-        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
-        self.messageTable.addGestureRecognizer(tapGesture)
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-    }
-    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
@@ -136,6 +119,12 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    func refreshMessages() {
+        messenger.getMessageHistoryFrom(toUsers)
+        println("refreshing")
+        messageTable.reloadData()
+    }
+    
     func gotPreviousMessages(messages: [PFObject]) {
         //display messages
         println("got messages")
@@ -146,9 +135,32 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
             self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
             println("to bottom")
         }
+    }
+    
+    func messageReceived(notification: NSNotification) {
+        println("message received")
+        self.refreshMessages()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
         
+        println("toUsers: \(toUsers)")
+        self.messageTable.rowHeight = UITableViewAutomaticDimension
+        self.messageTable.delegate = self
+        self.messageTable.dataSource = self
+        self.messageTextView.delegate = self
+        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+        self.messageTable.addGestureRecognizer(tapGesture)
+        //self.messageTable.estimatedRowHeight = 70
+        self.messenger.delegate = self
+        self.messenger.getMessageHistoryFrom(toUsers)
         
+    }
+    
+    override func viewDidAppear(animated: Bool) {
         
     }
 

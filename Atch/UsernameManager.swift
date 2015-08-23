@@ -15,7 +15,10 @@ class UsernameManager {
     var delegate: UsernameManagerDelegate?
     
     func checkIfUsernameFree(name: String) {
-        
+        if name == "" {
+            self.delegate?.usernameChosen()
+            return
+        }
         if !checkIfValid(name) {
             self.delegate?.nameInvalid()
             return
@@ -47,7 +50,7 @@ class UsernameManager {
     
     func checkIfValid(name: String) -> Bool {
         let characterSet = NSCharacterSet.alphanumericCharacterSet()
-        if name != "" && name.rangeOfCharacterFromSet(characterSet.invertedSet, options: .CaseInsensitiveSearch) == nil && count(name) < 20 {
+        if name.rangeOfCharacterFromSet(characterSet.invertedSet, options: .CaseInsensitiveSearch) == nil && count(name) < 20 {
             return true
         }
         return false

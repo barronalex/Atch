@@ -24,8 +24,6 @@ class UsernameViewController: UIViewController, UsernameManagerDelegate, Faceboo
     @IBOutlet weak var usernameLabel: UILabel!
     
 
-
-    
     @IBAction func go(sender: AnyObject) {
         doneEditing = true
         if usernameLabel.text! == "Username Taken" || usernameLabel.text! == "Username Invalid - Letters/Numbers Only" {

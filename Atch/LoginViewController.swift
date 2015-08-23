@@ -26,21 +26,27 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     
     @IBOutlet weak var signup: UIButton!
     
+    @IBOutlet weak var usernameInputConstraint: NSLayoutConstraint!
+    
     @IBAction func facebookLogin() {
         facebookManager.delegate = self
         facebookManager.login()
     }
     
-    @IBOutlet weak var usernameInputConstraint: NSLayoutConstraint!
-    
     @IBAction func signUp() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: "mapTapped")
+        self.filterView.addGestureRecognizer(tapGesture)
+        filterView.userInteractionEnabled = true
         showUsernameInput()
     }
     
-    override func viewDidAppear(animated: Bool) {
-        self.view.bringSubviewToFront(loginView)
-        self.view.bringSubviewToFront(filterView)
+    func goToSignUp() {
+        showUsernameInput()
+    }
+
+    func mapTapped() {
         filterView.userInteractionEnabled = false
+        hideUsernameInput()
     }
     
     func friendRequestSent() {
@@ -48,13 +54,14 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     }
     
     func friendRequestAccepted() {
-        
+        println("request accepted")
     }
     
     func facebookLoginSucceeded() {
         print("login succeeded")
-        login.hidden = true
-        signup.hidden = true
+        login.setTitle("Logging In...", forState: .Normal)
+        login.enabled = false
+        signup.enabled = false
         facebookManager.checkIfFacebookAssociatedWithParse()
 
     }
@@ -69,7 +76,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     }
     
     func parseLoginFailed() {
-        
+        println("parse login failed")
     }
     
     func moveKeyboardUp() {
@@ -93,18 +100,6 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
 
     }
     
-    func goToSignUp() {
-        showUsernameInput()
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        hideUsernameInput()
-        
-        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
-        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
-    }
-    
     func hideUsernameInput() {
         containerView.userInteractionEnabled = false
         containerView.hidden = true
@@ -122,6 +117,20 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
             let destVC = segue.destinationViewController as! UsernameViewController
             destVC.loginVC = self
         }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        hideUsernameInput()
+        
+        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
+        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        self.view.bringSubviewToFront(loginView)
+        self.view.bringSubviewToFront(filterView)
+        filterView.userInteractionEnabled = false
     }
     
     func alreadySignedUp() {}
