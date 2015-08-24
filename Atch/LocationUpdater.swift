@@ -49,7 +49,6 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {
-        print("here")
         curLocation = manager.location
         if !self.deferringUpdates && CLLocationManager.deferredLocationUpdatesAvailable() {
             print("started deferred updates")

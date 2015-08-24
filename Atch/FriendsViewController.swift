@@ -96,7 +96,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             let destVC = segue.destinationViewController as! AtchMapViewController
             destVC.friends = self.friends
             destVC.friendPics = self.friendPics
-            destVC.firstLocation = true
         }
         
         

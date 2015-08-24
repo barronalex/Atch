@@ -12,6 +12,7 @@
 		D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788501B8A2E80007B76D9 /* NotificationKeys.swift */; };
 		D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */; };
 		D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */; };
+		D02788591B8BC040007B76D9 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788581B8BC040007B76D9 /* Location.swift */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -74,6 +75,7 @@
 		D02788501B8A2E80007B76D9 /* NotificationKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationKeys.swift; sourceTree = "<group>"; };
 		D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendsViewController.swift; sourceTree = "<group>"; };
 		D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardHeight.swift; sourceTree = "<group>"; };
+		D02788581B8BC040007B76D9 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -225,6 +227,7 @@
 			children = (
 				D06611611B85434100CFE73C /* OperatorOverloads.swift */,
 				D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */,
+				D02788581B8BC040007B76D9 /* Location.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
 				D0519E661B6E0AD500C473E3 /* Images.xcassets */,
@@ -468,6 +471,7 @@
 				D02E5B4A1B7E8A18007F7FDB /* FriendsViewController.swift in Sources */,
 				D0FA22F61B83526E0055F7F1 /* LocationUpdaterDelegate.swift in Sources */,
 				D06611621B85434100CFE73C /* OperatorOverloads.swift in Sources */,
+				D02788591B8BC040007B76D9 /* Location.swift in Sources */,
 				D02E5B461B7E681A007F7FDB /* FacebookManager.swift in Sources */,
 				D06611661B85EE3C00CFE73C /* Messenger.swift in Sources */,
 				D0519E601B6E0AD500C473E3 /* AppDelegate.swift in Sources */,

@@ -127,11 +127,11 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="120"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SZE-Do-cSl">
-                                <rect key="frame" x="265" y="37" width="71" height="46"/>
+                                <rect key="frame" x="265" y="277" width="71" height="46"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                 <state key="normal" title="ATCH">
                                     <color key="titleColor" red="0.21938903622234682" green="0.80808080808080807" blue="0.44145066715167047" alpha="1" colorSpace="calibratedRGB"/>
@@ -142,7 +142,7 @@
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="KCg-hj-QZg">
-                                <rect key="frame" x="241" y="-2" width="118" height="31"/>
+                                <rect key="frame" x="241" y="478" width="118" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="114" id="b2X-S0-0wr"/>
                                 </constraints>
@@ -299,15 +299,29 @@
                                     <segue destination="DJ4-28-mMT" kind="show" identifier="maptofriends" id="Ruv-oh-yYO"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YrL-aU-vlf">
+                                <rect key="frame" x="36" y="30" width="56" height="30"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="Log Out">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="logout" id="xMe-qL-fjT"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="oAt-hR-ikj" secondAttribute="trailing" constant="20" id="LMH-iy-8vg"/>
                             <constraint firstItem="oAt-hR-ikj" firstAttribute="top" secondItem="twB-re-gV2" secondAttribute="bottom" constant="10" id="WTt-EH-uNN"/>
+                            <constraint firstItem="YrL-aU-vlf" firstAttribute="leading" secondItem="7Mk-BO-ixN" secondAttribute="leading" constant="36" id="gu6-bT-Q63"/>
+                            <constraint firstItem="YrL-aU-vlf" firstAttribute="top" secondItem="twB-re-gV2" secondAttribute="bottom" constant="10" id="rz1-3n-6kv"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="friendsButton" destination="oAt-hR-ikj" id="xzs-tX-TFf"/>
+                        <outlet property="logout" destination="YrL-aU-vlf" id="8yM-Q5-5Ic"/>
                         <segue destination="VkZ-1w-g7a" kind="show" identifier="maptochat" id="RCy-tb-G90"/>
                     </connections>
                 </viewController>
@@ -636,7 +650,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="ODg-sp-IpH"/>
         <segue reference="Ruv-oh-yYO"/>
+        <segue reference="xMe-qL-fjT"/>
         <segue reference="RCy-tb-G90"/>
-        <segue reference="LlO-uX-7G9"/>
     </inferredMetricsTieBreakers>
 </document>
