@@ -32,33 +32,37 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         messenger.sendMessage(messageTextView.text)
     }
     
+    func keyboardWillShow(notification: NSNotification) {
+        let info = notification.userInfo
+        let value = info![UIKeyboardFrameEndUserInfoKey] as! NSValue
+        let kbRect = value.CGRectValue()
+        let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
+        let delta = kbRect.size.height - currentKeyboardHeight
+        currentKeyboardHeight = kbRect.size.height
+        moveKeyboardUpBy(delta, animationTime: animationTime)
+    }
     
+    func keyboardWillHide(notification: NSNotification) {
+        let info = notification.userInfo
+        let value = info![UIKeyboardFrameEndUserInfoKey] as! NSValue
+        let kbRect = value.CGRectValue()
+        let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
+        let delta = -kbRect.height
+        currentKeyboardHeight = 0
+        println("keyboard hiding: \(kbRect.height)")
+        moveKeyboardUpBy(delta, animationTime: animationTime)
+    }
     
-    func textViewDidBeginEditing(textView: UITextView) {
+    func moveKeyboardUpBy(delta: CGFloat, animationTime: NSNumber) {
         self.view.layoutIfNeeded()
         
-        UIView.animateWithDuration(0.25, animations: {
-            
-            self.dockViewHeightConstraint.constant = 290
-            var keyboardOffset = self.messageTable.contentSize.height - 360
-            println("keyboardOffset: \(keyboardOffset)")
+        UIView.animateWithDuration(NSTimeInterval(animationTime), animations: {
+            self.dockViewHeightConstraint.constant += delta
+            var keyboardOffset = self.messageTable.contentSize.height - delta - self.messageTextView.frame.height
             self.messageTable.setContentOffset(CGPoint(x: 0, y: keyboardOffset), animated: false)
             self.view.layoutIfNeeded()
             
-            }, completion: nil)
-        
-        
-
-    }
-    
-    func textViewDidEndEditing(textView: UITextView) {
-        self.view.layoutIfNeeded()
-        UIView.animateWithDuration(0.2, animations: {
-            
-            self.dockViewHeightConstraint.constant = 60
-            self.view.layoutIfNeeded()
-            
-            }, completion: nil)
+        }, completion: nil)
     }
     
     func tableViewTapped() {
@@ -67,6 +71,34 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
+        println("toUsers: \(toUsers)")
+        self.messageTable.rowHeight = UITableViewAutomaticDimension
+        self.messageTable.delegate = self
+        self.messageTable.dataSource = self
+        self.messageTextView.delegate = self
+        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+        self.messageTable.addGestureRecognizer(tapGesture)
+        //self.messageTable.estimatedRowHeight = 70
+        self.messenger.delegate = self
+        self.messenger.getMessageHistoryFrom(toUsers)
+        
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        
+    }
+
+}
+
+//Table View Methods
+extension MessagingViewController {
     func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let message = messages[indexPath.row]
         let text = message.objectForKey("messageText") as! String
@@ -106,9 +138,11 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             return cell
         }
-        
-        
     }
+}
+
+//Messenger Methods
+extension MessagingViewController {
     
     func sentMessage() {
         messenger.getMessageHistoryFrom(toUsers)
@@ -145,28 +179,6 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         self.refreshMessages()
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
-        
-        println("toUsers: \(toUsers)")
-        self.messageTable.rowHeight = UITableViewAutomaticDimension
-        self.messageTable.delegate = self
-        self.messageTable.dataSource = self
-        self.messageTextView.delegate = self
-        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
-        self.messageTable.addGestureRecognizer(tapGesture)
-        //self.messageTable.estimatedRowHeight = 70
-        self.messenger.delegate = self
-        self.messenger.getMessageHistoryFrom(toUsers)
-        
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        
     }
 
 }

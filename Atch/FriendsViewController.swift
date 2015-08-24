@@ -173,7 +173,7 @@ extension FriendsViewController {
     }
     
     func friendRequestSent() {
-        
+
     }
     
     func friendRequestAccepted() {

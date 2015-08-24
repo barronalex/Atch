@@ -36,7 +36,7 @@ class IntroViewController: UIViewController {
         if segue.identifier == "testmessenger" {
             let destVC = segue.destinationViewController as! MessagingViewController
             
-            destVC.toUsers = ["7InH7PS8bf", PFUser.currentUser()!.objectId!]
+            destVC.toUsers = ["hQQXBj9DS9", PFUser.currentUser()!.objectId!]
             //maybe pass other data about user (pic etc) later
             //can always use friendmap
             //might need tappedUserId to become an array for group convos
