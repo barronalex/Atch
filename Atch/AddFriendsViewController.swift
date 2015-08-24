@@ -15,6 +15,7 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        println("LOADED")
         searchBar.delegate = self
     }
     
@@ -72,6 +73,7 @@ extension AddFriendsViewController {
             cell.acceptButton.userInteractionEnabled = false
         }
         else if indexPath.section == 0 || contains(pendingRequestsToUser, user) {
+            cell.acceptButton.userInteractionEnabled = true
             cell.acceptButton.setTitle("accept", forState: .Normal)
             cell.acceptButton.tag = row
             cell.acceptButton.addTarget(self, action: "acceptButton:", forControlEvents: .TouchUpInside)
@@ -92,11 +94,15 @@ extension AddFriendsViewController {
         let row = indexPath.row
         let user = sectionArr[row]
         if contains(pendingFriendsFromUser, user) {
-            let cancel = UITableViewRowAction(style: .Normal, title: "cancel request") { action, index in
+            let cancel = UITableViewRowAction(style: .Normal, title: "cancel") { action, index in
                 println("request cancelled")
                 let reqIndex = find(self.pendingFriendsFromUser, user)!
                 let friendRequest = self.pendingRequestsFromUser[reqIndex]
                 PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!])
+                self.table.editing = false
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+                cell.acceptButton.setTitle("request cancelled", forState: .Normal)
+                cell.acceptButton.userInteractionEnabled = false
                 
             }
             cancel.backgroundColor = UIColor.redColor()
@@ -109,6 +115,10 @@ extension AddFriendsViewController {
                 let friendRequest = self.pendingRequestsFromUser[reqIndex]
                 friendRequest.setObject("rejected", forKey: "state")
                 friendRequest.saveInBackground()
+                self.table.editing = false
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+                cell.acceptButton.setTitle("rejected", forState: .Normal)
+                cell.acceptButton.userInteractionEnabled = false
             }
             reject.backgroundColor = UIColor.redColor()
             return [reject]
@@ -118,6 +128,11 @@ extension AddFriendsViewController {
         let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
             println("delete friend")
             PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
+            self.table.editing = false
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+            cell.acceptButton.setTitle("deleted", forState: .Normal)
+            cell.acceptButton.userInteractionEnabled = false
+
         }
         delete.backgroundColor = UIColor.redColor()
         return [delete]

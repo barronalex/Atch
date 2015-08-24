@@ -15,7 +15,7 @@ import CoreLocation
 class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendManagerDelegate, GMSMapViewDelegate {
     
     
-    @IBOutlet weak var mainMapView: GMSMapView!
+    var mapView: GMSMapView?
     
     @IBOutlet weak var friendsButton: UIButton!
     
@@ -23,20 +23,27 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     var friendManager = FriendManager()
     var locationUpdater = LocationUpdater()
     var curLocation = CLLocationCoordinate2D()
-    var friendMap = [String:PFObject]()
+    var friends = [PFObject]()
     var friendPics = [String:UIImage]()
     var firstLocation = true
-    var userMarker = GMSMarker()
     var userMarkers = [String:GMSMarker]()
     var camera: GMSCameraPosition?
     var tappedUserId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        locationUpdater.delegate = self
+        
+        firstLocation = true
         self.view.bringSubviewToFront(friendsButton)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         friendManager.delegate = self
-        friendManager.getFriends()
+        if friends.count == 0 {
+           friendManager.getFriends()
+        }
+        if friendPics.count == 0 {
+            FacebookManager.downloadProfilePictures(friends)
+        }
         locationUpdater.startUpdates()
     }
     
@@ -44,17 +51,17 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         print("location updated")
         curLocation = location
         if firstLocation {
+            println("first location")
             locationUpdater.sendLocationToServer()
             locationUpdater.getFriendLocationsFromServer()
             camera = GMSCameraPosition.cameraWithTarget(location, zoom: 6)
-            mainMapView.animateToCameraPosition(camera)
-            mainMapView.delegate = self
-            mainMapView.myLocationEnabled = true
+            mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: camera)
+            mapView!.delegate = self
+            self.view.addSubview(mapView!)
+            self.view.bringSubviewToFront(friendsButton)
+            mapView!.myLocationEnabled = true
             firstLocation = false
-//            userMarker.map = mainMapView
-//            userMarker.userData = PFUser.currentUser()!.objectId!
         }
-        //userMarker.position = location
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {
@@ -69,7 +76,6 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
                 let user = data.objectForKey("user") as! PFObject
                 if let marker = userMarkers[user.objectId!] {
                     marker.position = CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude)
-                    setMarkerImage(marker, userId: user.objectId!)
                     marker.userData = user.objectId!
                     
                 }
@@ -93,7 +99,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     private func createNewMarker(user: PFObject, location: PFGeoPoint?) {
         let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude))
-        marker.map = mainMapView
+        marker.map = mapView
         userMarkers[user.objectId!] = marker
         setMarkerImage(marker, userId: user.objectId!)
         marker.userData = user.objectId!
@@ -102,16 +108,16 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     func friendListFound(friends: [PFUser]) {
         //map user ids to user objects
         FacebookManager.downloadProfilePictures(friends)
-        for friend in friends {
-            friendMap[friend.objectId!] = friend
-        }
-        locationUpdater.delegate = self
+        self.friends = friends
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
         var dataMap = notification.userInfo as! [String:[String:UIImage]]
         println("pictures received")
         friendPics += dataMap["images"]!
+        for (userId, marker) in userMarkers {
+            setMarkerImage(marker, userId: userId)
+        }
     }
     
     func mapView(mapView: GMSMapView!, didTapMarker marker: GMSMarker!) -> Bool {
@@ -131,9 +137,11 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             let destVC = segue.destinationViewController as! MessagingViewController
             
             destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
-            //maybe pass other data about user (pic etc) later
-            //can always use friendmap
-            //might need tappedUserId to become an array for group convos
+        }
+        if segue.identifier == "maptofriends" {
+            let destVC = segue.destinationViewController as! FriendsViewController
+            destVC.friends = self.friends
+            destVC.friendPics = self.friendPics
         }
     }
     

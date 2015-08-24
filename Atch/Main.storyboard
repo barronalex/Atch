@@ -178,7 +178,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="61" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="cBE-zb-ga1">
-                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <searchBar key="tableHeaderView" contentMode="redraw" placeholder="Search by Username or Full Name" id="MXf-Ib-n1T">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
@@ -243,13 +243,28 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kkU-vF-IAO">
+                                <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <items>
+                                    <navigationItem title="Add Friends" id="Vbg-qo-V2W">
+                                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="XLF-fO-bwe">
+                                            <connections>
+                                                <segue destination="DJ4-28-mMT" kind="presentation" identifier="addfriendstofriends" modalPresentationStyle="overFullScreen" animates="NO" id="pba-87-oFG"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="kkU-vF-IAO" firstAttribute="top" secondItem="B0M-T5-by6" secondAttribute="bottom" id="2Zz-j7-ieC"/>
                             <constraint firstItem="cBE-zb-ga1" firstAttribute="leading" secondItem="R3U-CF-CKD" secondAttribute="leading" id="4rK-q8-q5C"/>
                             <constraint firstItem="cA1-Hk-5gM" firstAttribute="top" secondItem="cBE-zb-ga1" secondAttribute="bottom" id="5AB-Vr-fad"/>
+                            <constraint firstItem="kkU-vF-IAO" firstAttribute="leading" secondItem="R3U-CF-CKD" secondAttribute="leading" id="Osa-rN-EcW"/>
+                            <constraint firstItem="cBE-zb-ga1" firstAttribute="top" secondItem="kkU-vF-IAO" secondAttribute="bottom" id="R4k-U8-ZUs"/>
+                            <constraint firstAttribute="trailing" secondItem="kkU-vF-IAO" secondAttribute="trailing" id="kL0-iY-HFb"/>
                             <constraint firstAttribute="trailing" secondItem="cBE-zb-ga1" secondAttribute="trailing" id="vSD-hH-GoP"/>
-                            <constraint firstItem="cBE-zb-ga1" firstAttribute="top" secondItem="B0M-T5-by6" secondAttribute="bottom" id="wAa-sw-Ilz"/>
                         </constraints>
                     </view>
                     <connections>
@@ -259,7 +274,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KxI-2A-bBy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1022" y="1987"/>
+            <point key="canvasLocation" x="1021" y="1987"/>
         </scene>
         <!--Atch Map View Controller-->
         <scene sceneID="hSN-Ky-CQR">
@@ -284,24 +299,15 @@
                                     <segue destination="DJ4-28-mMT" kind="show" identifier="maptofriends" id="Ruv-oh-yYO"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5hW-7W-R6d" customClass="GMSMapView">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="5hW-7W-R6d" firstAttribute="leading" secondItem="7Mk-BO-ixN" secondAttribute="leading" id="Ety-mC-cnC"/>
                             <constraint firstAttribute="trailingMargin" secondItem="oAt-hR-ikj" secondAttribute="trailing" constant="20" id="LMH-iy-8vg"/>
-                            <constraint firstItem="Q3o-Ng-z5v" firstAttribute="top" secondItem="5hW-7W-R6d" secondAttribute="bottom" id="SfJ-0X-NBv"/>
-                            <constraint firstItem="5hW-7W-R6d" firstAttribute="top" secondItem="7Mk-BO-ixN" secondAttribute="top" id="VQP-Qy-Yfi"/>
                             <constraint firstItem="oAt-hR-ikj" firstAttribute="top" secondItem="twB-re-gV2" secondAttribute="bottom" constant="10" id="WTt-EH-uNN"/>
-                            <constraint firstAttribute="trailing" secondItem="5hW-7W-R6d" secondAttribute="trailing" id="bXi-Pn-9Yl"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="friendsButton" destination="oAt-hR-ikj" id="xzs-tX-TFf"/>
-                        <outlet property="mainMapView" destination="5hW-7W-R6d" id="Y8z-Wp-ZXh"/>
                         <segue destination="VkZ-1w-g7a" kind="show" identifier="maptochat" id="RCy-tb-G90"/>
                     </connections>
                 </viewController>
@@ -595,7 +601,7 @@
                                     <navigationItem title="Friends" id="rBc-NI-3pj">
                                         <barButtonItem key="leftBarButtonItem" title="Map" id="VWh-bw-qbp">
                                             <connections>
-                                                <segue destination="f4z-q2-UGs" kind="show" id="ODg-sp-IpH"/>
+                                                <segue destination="f4z-q2-UGs" kind="show" identifier="friendstomap" id="ODg-sp-IpH"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="SYE-lh-zJs">
@@ -628,8 +634,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="LlO-uX-7G9"/>
         <segue reference="ODg-sp-IpH"/>
+        <segue reference="Ruv-oh-yYO"/>
         <segue reference="RCy-tb-G90"/>
+        <segue reference="LlO-uX-7G9"/>
     </inferredMetricsTieBreakers>
 </document>

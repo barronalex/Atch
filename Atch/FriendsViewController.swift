@@ -35,8 +35,8 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         
-//        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
-//        self.table.addGestureRecognizer(tapGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+        self.table.addGestureRecognizer(tapGesture)
         
         table.delegate = self
         table.dataSource = self
@@ -45,7 +45,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         sectionMap[1] = []
         
         friendManager.delegate = self
-        
         setUpTable()
     }
     
@@ -60,7 +59,9 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         else {
             sectionMap[0] = friends
             table.reloadData()
-            FacebookManager.downloadProfilePictures(friends)
+            if friendPics.count == 0 {
+                FacebookManager.downloadProfilePictures(friends)
+            }
         }
     }
 
@@ -77,17 +78,27 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         print("Requested: \(friend.objectId)")
         friendManager.sendRequest(friend.objectId!)
         button.setTitle("sent", forState: .Normal)
+        button.userInteractionEnabled = false
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "toaddfriends" {
             let destVC = segue.destinationViewController as! AddFriendsViewController
-            destVC.friends = friends
+            destVC.friends = self.friends
+            destVC.friendPics = self.friendPics
         }
-        if segue.identifier == "maptofriends" {
+        if segue.identifier == "addfriendstofriends" {
             let destVC = segue.destinationViewController as! FriendsViewController
-            destVC.friends = friends
+            destVC.friends = self.friends
+            destVC.friendPics = self.friendPics
         }
+        if segue.identifier == "friendstomap" {
+            let destVC = segue.destinationViewController as! AtchMapViewController
+            destVC.friends = self.friends
+            destVC.friendPics = self.friendPics
+            destVC.firstLocation = true
+        }
+        
         
     }
     
@@ -148,6 +159,9 @@ extension FriendsViewController {
         let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
             println("delete friend")
             PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
+            self.table.editing = false
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+            cell.acceptButton.setTitle("deleted", forState: .Normal)
         }
         delete.backgroundColor = UIColor.redColor()
         
