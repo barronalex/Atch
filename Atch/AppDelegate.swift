@@ -84,16 +84,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         println("receiving notification")
-        PFPush.handlePush(userInfo)
         if userInfo["type"] as? String == "message" {
-            self.goToMessages(userInfo)
+            dealWithMessageNotification(application, userInfo: userInfo)
         }
         if userInfo["type"] as? String == "friendRequest" {
-            self.goToAddFriends()
+            if application.applicationState != UIApplicationState.Active {
+                self.goToAddFriends()
+            }
         }
     }
     
-    private func goToMessages(userInfo: [NSObject : AnyObject]) {
+    private func dealWithMessageNotification(application: UIApplication, userInfo: [NSObject : AnyObject]) {
         var toUsers = [String]()
         if let curUser = PFUser.currentUser() {
             if let toUserId = userInfo["chatterParseId"] as? String {
@@ -106,7 +107,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.goToLogin()
             return
         }
-        if self.window?.rootViewController is MessagingViewController {
+        if application.applicationState == UIApplicationState.Active {
+            //for now do nothing
+            PFPush.handlePush(userInfo)
+            NSNotificationCenter.defaultCenter().postNotificationName(messageNotificationReceivedKey, object: self, userInfo: nil)
+        }
+        else {
+            println("inactive")
+            self.goToMessages(toUsers)
+        }
+
+    }
+    
+    func getVisibleViewController() -> UIViewController {
+        let rootVC = self.window?.rootViewController
+        if rootVC!.presentedViewController == nil {
+            return rootVC!
+        }
+        return rootVC!.presentedViewController!
+    }
+    
+    private func goToMessages(toUsers: [String]) {
+        
+        println("past clauses")
+        if getVisibleViewController() is MessagingViewController {
+            println("posting notification")
             NSNotificationCenter.defaultCenter().postNotificationName(messageNotificationReceivedKey, object: self, userInfo: ["toUsers":toUsers])
         }
         else {
@@ -121,7 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func goToLogin() {
-        if !(self.window?.rootViewController is LoginViewController)  {
+        if !(getVisibleViewController() is LoginViewController)  {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let loginVC = storyboard.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
             self.window?.rootViewController?.showViewController(loginVC, sender: nil)
@@ -129,13 +154,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func goToAddFriends() {
-        if !(self.window?.rootViewController is FriendsViewController)  {
+        if !(getVisibleViewController() is AddFriendsViewController)  {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let loginVC = storyboard.instantiateViewControllerWithIdentifier("FriendsViewController") as! FriendsViewController
+            let loginVC = storyboard.instantiateViewControllerWithIdentifier("AddFriendsViewController") as! AddFriendsViewController
             self.window?.rootViewController?.showViewController(loginVC, sender: nil)
         }
 
     }
+    
 
 
 }

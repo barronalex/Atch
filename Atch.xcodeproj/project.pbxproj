@@ -10,6 +10,7 @@
 		7205E760A2ED1A1EC96D506A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FDB37463484F4C44125EB0 /* libPods.a */; };
 		D027884F1B892073007B76D9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D027884E1B892073007B76D9 /* Main.storyboard */; };
 		D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788501B8A2E80007B76D9 /* NotificationKeys.swift */; };
+		D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -70,6 +71,7 @@
 		CB206771C4791D7C1C097AF3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		D027884E1B892073007B76D9 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		D02788501B8A2E80007B76D9 /* NotificationKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationKeys.swift; sourceTree = "<group>"; };
+		D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendsViewController.swift; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -170,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				D02E5B491B7E8A18007F7FDB /* FriendsViewController.swift */,
+				D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */,
 				D02E5B5B1B81D563007F7FDB /* PendingFriendEntry.swift */,
 				D02E5B411B7DE6A2007F7FDB /* FriendManager.swift */,
 				D02E5B431B7E4FD7007F7FDB /* FriendManagerDelegate.swift */,
@@ -468,6 +471,7 @@
 				D066116F1B879F5E00CFE73C /* IncomingMessageCell.swift in Sources */,
 				D02E5B421B7DE6A2007F7FDB /* FriendManager.swift in Sources */,
 				D0519E801B6E6CB900C473E3 /* IntroViewController.swift in Sources */,
+				D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */,
 				D02E5B3C1B74D1F3007F7FDB /* LoginViewController.swift in Sources */,
 				D06611681B86898A00CFE73C /* MessengerDelegate.swift in Sources */,
 				D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */,

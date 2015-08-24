@@ -15,7 +15,7 @@ class FriendManager {
     
     var delegate: FriendManagerDelegate?
     
-    
+    //AT SOME POINT STORE ALL FRIEND(ISH) RELATED DATA IN ONE INSTANCE OF THIS CLASS AND PASS IT AROUND/GLOBAL
     
     func sendRequest(targetUserID: String) {
         //gets user from id
@@ -219,6 +219,7 @@ class FriendManager {
         let uQuery = PFUser.query()!
         uQuery.whereKey("fullname", containsString: search)
         let query = PFQuery.orQueryWithSubqueries([fbQuery, uQuery])
+        query.whereKey("objectId", notEqualTo: PFUser.currentUser()!.objectId!)
         query.findObjectsInBackgroundWithBlock {
             (searchResults: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {

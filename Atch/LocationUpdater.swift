@@ -36,7 +36,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
         }
-        NSTimer.scheduledTimerWithTimeInterval(100, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
+        NSTimer.scheduledTimerWithTimeInterval(1200, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
         sendTimer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("sendLocationToServer"), userInfo: nil, repeats: true)
         getTimer = NSTimer.scheduledTimerWithTimeInterval(40, target: self, selector: Selector("getFriendLocationsFromServer"), userInfo: nil, repeats: true)
     }

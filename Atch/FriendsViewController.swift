@@ -10,9 +10,9 @@ import Parse
 import Bolts
 
 
-class FriendsViewController: UIViewController, FriendManagerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UITextFieldDelegate {
+class FriendsViewController: UIViewController, FriendManagerDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
-    @IBOutlet weak var searchBar: UISearchBar!
+    
     @IBOutlet weak var table: UITableView!
     
     var friendManager = FriendManager()
@@ -38,8 +38,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         
         table.delegate = self
         table.dataSource = self
-        searchBar.delegate = self
-        
         
         sectionMap[0] = []
         sectionMap[1] = []
@@ -50,13 +48,11 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     }
     
     func tableViewTapped() {
-        searchBar.endEditing(true)
+        
     }
     
     func setUpTable() {
         friendManager.getFriends()
-        friendManager.getPendingRequests()
-        friendManager.getFacebookFriends()
     }
 
     func acceptButton(sender: AnyObject) {
@@ -72,12 +68,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         print("Requested: \(friend.objectId)")
         friendManager.sendRequest(friend.objectId!)
         button.setTitle("sent", forState: .Normal)
-    }
-    
-    @IBAction func mapPressed() {
-        //if friends.count != 0 {
-            self.performSegueWithIdentifier("friendstomap", sender: nil)
-        //}
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -117,7 +107,7 @@ extension FriendsViewController {
             print("table doin: \(username)")
             cell.username.text = username
         }
-        
+        cell.acceptButton.hidden = true
         if let fullname = user.objectForKey("fullname") as? String {
             cell.name.text = fullname
         }
@@ -126,17 +116,6 @@ extension FriendsViewController {
         }
         else {
             cell.profileImage.image = nil
-        }
-        if indexPath.section == 0 {
-            cell.acceptButton.setTitle("accept", forState: .Normal)
-            cell.acceptButton.tag = row
-            cell.acceptButton.addTarget(self, action: "acceptButton:", forControlEvents: .TouchUpInside)
-            
-        }
-        else {
-            cell.acceptButton.setTitle("add", forState: .Normal)
-            cell.acceptButton.tag = row
-            cell.acceptButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
         }
         return cell
     }
@@ -148,36 +127,6 @@ extension FriendsViewController {
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return sectionMap.count
     }
-}
-
-//SearchBar methods
-extension FriendsViewController {
-    
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        println("cancelled")
-    }
-    
-    func searchFinished(searchResults: [PFUser]) {
-        print("search finished")
-        sectionTitles[0] = ""
-        sectionTitles[1] = "Search Results"
-        sectionMap[0] = []
-        sectionMap[1] = searchResults
-        FacebookManager.downloadProfilePictures(searchResults)
-        table.reloadData()
-    }
-    
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        print("search: \(searchText)")
-        if searchText == "" {
-            self.reset()
-        }
-        else {
-            friendManager.search(searchBar.text!)
-        }
-    }
-    
-    
 }
 
 //FriendManager methods
@@ -194,6 +143,8 @@ extension FriendsViewController {
     func friendListFound(friends: [PFUser]) {
         print("friends found")
         self.friends = friends
+        sectionMap[0] = friends
+        table.reloadData()
         FacebookManager.downloadProfilePictures(friends)
     }
     

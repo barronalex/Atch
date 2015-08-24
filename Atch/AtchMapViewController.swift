@@ -14,6 +14,12 @@ import CoreLocation
 
 class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendManagerDelegate, GMSMapViewDelegate {
     
+    
+    @IBOutlet weak var mainMapView: GMSMapView!
+    
+    @IBOutlet weak var friendsButton: UIButton!
+    
+    
     var friendManager = FriendManager()
     var locationUpdater = LocationUpdater()
     var curLocation = CLLocationCoordinate2D()
@@ -23,11 +29,11 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     var userMarker = GMSMarker()
     var userMarkers = [String:GMSMarker]()
     var camera: GMSCameraPosition?
-    var mapView: GMSMapView?
     var tappedUserId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.bringSubviewToFront(friendsButton)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         friendManager.delegate = self
         friendManager.getFriends()
@@ -41,15 +47,14 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             locationUpdater.sendLocationToServer()
             locationUpdater.getFriendLocationsFromServer()
             camera = GMSCameraPosition.cameraWithTarget(location, zoom: 6)
-            mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
-            mapView!.delegate = self
-            //mapView!.myLocationEnabled = true
-            self.view = mapView
+            mainMapView.animateToCameraPosition(camera)
+            mainMapView.delegate = self
+            mainMapView.myLocationEnabled = true
             firstLocation = false
-            userMarker.map = mapView
-            userMarker.userData = PFUser.currentUser()!.objectId!
+//            userMarker.map = mainMapView
+//            userMarker.userData = PFUser.currentUser()!.objectId!
         }
-        userMarker.position = location
+        //userMarker.position = location
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {
@@ -88,7 +93,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     private func createNewMarker(user: PFObject, location: PFGeoPoint?) {
         let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude))
-        marker.map = mapView
+        marker.map = mainMapView
         userMarkers[user.objectId!] = marker
         setMarkerImage(marker, userId: user.objectId!)
         marker.userData = user.objectId!

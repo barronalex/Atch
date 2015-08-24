@@ -122,7 +122,6 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     func refreshMessages() {
         messenger.getMessageHistoryFrom(toUsers)
         println("refreshing")
-        messageTable.reloadData()
     }
     
     func gotPreviousMessages(messages: [PFObject]) {
@@ -139,6 +138,12 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func messageReceived(notification: NSNotification) {
         println("message received")
+        let userInfo = notification.userInfo
+        if userInfo != nil {
+            if let toUsers = userInfo!["toUsers"] as? [String] {
+                self.toUsers = toUsers
+            }
+        }
         self.refreshMessages()
     }
     

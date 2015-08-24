@@ -123,8 +123,8 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         super.viewDidLoad()
         hideUsernameInput()
         
-        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
-        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
+//        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
+//        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
     }
     
     override func viewDidAppear(animated: Bool) {
