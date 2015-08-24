@@ -15,8 +15,6 @@ class FriendManager {
     
     var delegate: FriendManagerDelegate?
     
-    //AT SOME POINT STORE ALL FRIEND(ISH) RELATED DATA IN ONE INSTANCE OF THIS CLASS AND PASS IT AROUND/GLOBAL
-    
     func sendRequest(targetUserID: String) {
         //gets user from id
         let targetUser = PFUser.objectWithoutDataWithObjectId(targetUserID)
@@ -87,13 +85,24 @@ class FriendManager {
     //friends
     //facebook friends on the app
     
-    func getPendingRequests() {
+    func getPendingRequests(fromUser: Bool) {
         
         var result = [String]()
         let query = PFQuery(className: "FriendRequest")
-        query.whereKey("toUser", equalTo: PFUser.currentUser()!)
+        if fromUser {
+            query.whereKey("fromUser", equalTo: PFUser.currentUser()!)
+        }
+        else {
+            query.whereKey("toUser", equalTo: PFUser.currentUser()!)
+        }
         query.whereKey("state", equalTo: "requested")
-        query.orderByAscending("fromUser")
+        if fromUser {
+            query.orderByAscending("toUser")
+        }
+        else {
+            query.orderByAscending("fromUser")
+
+        }
         query.findObjectsInBackgroundWithBlock {
             (objects: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {
@@ -105,7 +114,7 @@ class FriendManager {
                     //get users from requests
                     let count = requests.count
                     print("Count: \(count)")
-                    self.getUsersFromRequests(requests)
+                    self.getUsersFromRequests(requests, fromUser: fromUser)
                 }
             }
             else {
@@ -115,14 +124,20 @@ class FriendManager {
         
     }
     
-    func getUsersFromRequests(requests: [PFObject]) {
+    func getUsersFromRequests(requests: [PFObject], fromUser: Bool) {
         print("getting users")
         let count = requests.count
         print("Count: \(count)")
         var userIds = [String]()
         for request in requests {
-            let pendingFriend = request["fromUser"] as! PFObject
-            userIds.append(pendingFriend.objectId!)
+            if fromUser {
+                let pendingFriend = request["toUser"] as! PFObject
+                userIds.append(pendingFriend.objectId!)
+            }
+            else {
+                let pendingFriend = request["fromUser"] as! PFObject
+                userIds.append(pendingFriend.objectId!)
+            }
         }
         let query = PFUser.query()!
         query.whereKey("objectId", containedIn: userIds)
@@ -132,8 +147,13 @@ class FriendManager {
             if error == nil {
                 if let pendingFriends = pendingFriends as? [PFUser] {
                     //sort requests and users so that they are in same order
-
-                    self.delegate?.pendingRequestsFound(requests, users: pendingFriends)
+                    if fromUser {
+                        self.delegate?.pendingFromRequestsFound(requests, users: pendingFriends)
+                    }
+                    else {
+                        self.delegate?.pendingToRequestsFound(requests, users: pendingFriends)
+                    }
+                    
                 }
             } else {
                 print("error in GETTING PENDING USERS request")
@@ -210,6 +230,10 @@ class FriendManager {
                 print("Couldn't find role")
             }
         }
+    }
+    
+    func getSentRequestList() {
+        
     }
     
     func search(search: String) {

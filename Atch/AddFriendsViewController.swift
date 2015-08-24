@@ -19,7 +19,9 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     }
     
     override func friendListFound(friends: [PFUser]) {
+        println("friend list found")
         self.friends = friends
+        table.reloadData()
     }
     
     override func tableViewTapped() {
@@ -27,10 +29,19 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     }
     
     override func setUpTable() {
-        friendManager.getPendingRequests()
+        friendManager.getPendingRequests(true)
+        friendManager.getPendingRequests(false)
         friendManager.getFacebookFriends()
-        friendManager.getFriends()
+        if self.friends.count == 0 {
+            friendManager.getFriends()
+        }
+        
     }
+    
+}
+
+//table view methods
+extension AddFriendsViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         print("row: \(indexPath.row)")
@@ -54,8 +65,13 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
         //show tick if already friends
         if contains(friends, user) {
             cell.acceptButton.setTitle("√", forState: .Normal)
+            cell.acceptButton.userInteractionEnabled = false
         }
-        else if indexPath.section == 0 || contains(pendingRequests, user) {
+        else if contains(pendingFriendsFromUser, user) {
+            cell.acceptButton.setTitle("request sent", forState: .Normal)
+            cell.acceptButton.userInteractionEnabled = false
+        }
+        else if indexPath.section == 0 || contains(pendingRequestsToUser, user) {
             cell.acceptButton.setTitle("accept", forState: .Normal)
             cell.acceptButton.tag = row
             cell.acceptButton.addTarget(self, action: "acceptButton:", forControlEvents: .TouchUpInside)
@@ -63,11 +79,58 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
         }
         else {
             cell.acceptButton.setTitle("add", forState: .Normal)
+            println("ADDING")
+            cell.acceptButton.userInteractionEnabled = true
             cell.acceptButton.tag = row
             cell.acceptButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
         }
         return cell
+    }
+    
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        var sectionArr = sectionMap[indexPath.section]!
+        let row = indexPath.row
+        let user = sectionArr[row]
+        if contains(pendingFriendsFromUser, user) {
+            let cancel = UITableViewRowAction(style: .Normal, title: "cancel request") { action, index in
+                println("request cancelled")
+                let reqIndex = find(self.pendingFriendsFromUser, user)!
+                let friendRequest = self.pendingRequestsFromUser[reqIndex]
+                PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!])
+                
+            }
+            cancel.backgroundColor = UIColor.redColor()
+            return [cancel]
+        }
+        if contains(pendingFriendsToUser, user) {
+            let reject = UITableViewRowAction(style: .Normal, title: "reject") { action, index in
+                println("request rejected")
+                let reqIndex = find(self.pendingFriendsFromUser, user)!
+                let friendRequest = self.pendingRequestsFromUser[reqIndex]
+                friendRequest.setObject("rejected", forKey: "state")
+                friendRequest.saveInBackground()
+            }
+            reject.backgroundColor = UIColor.redColor()
+            return [reject]
 
+        }
+        
+        let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
+            println("delete friend")
+            PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
+        }
+        delete.backgroundColor = UIColor.redColor()
+        return [delete]
+    }
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        var sectionArr = sectionMap[indexPath.section]!
+        let row = indexPath.row
+        let user = sectionArr[row]
+        if contains(pendingFriendsFromUser, user) || contains(pendingFriendsToUser, user) || contains(friends, user) {
+            return true
+        }
+        return false
     }
 }
 

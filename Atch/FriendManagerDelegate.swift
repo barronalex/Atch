@@ -16,7 +16,9 @@ protocol FriendManagerDelegate {
     
     func friendListFound(friends: [PFUser])
     
-    func pendingRequestsFound(requests: [PFObject], users: [PFUser])
+    func pendingFromRequestsFound(requests: [PFObject], users: [PFUser])
+    
+    func pendingToRequestsFound(requests: [PFObject], users: [PFUser])
     
     func facebookFriendsFound(facebookFriends: [PFUser])
     

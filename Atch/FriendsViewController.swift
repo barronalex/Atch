@@ -18,8 +18,10 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     var friendManager = FriendManager()
     
     var friends = [PFObject]()
-    var pendingRequests = [PFObject]()
-    var pendingFriends = [PFObject]()
+    var pendingFriendsToUser = [PFObject]()
+    var pendingRequestsToUser = [PFObject]()
+    var pendingRequestsFromUser = [PFObject]()
+    var pendingFriendsFromUser = [PFObject]()
     var facebookFriends = [PFObject]()
     
     var friendPics = [String:UIImage]()
@@ -33,8 +35,8 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
-        self.table.addGestureRecognizer(tapGesture)
+//        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+//        self.table.addGestureRecognizer(tapGesture)
         
         table.delegate = self
         table.dataSource = self
@@ -52,12 +54,19 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     }
     
     func setUpTable() {
-        friendManager.getFriends()
+        if self.friends.count == 0 {
+            friendManager.getFriends()
+        }
+        else {
+            sectionMap[0] = friends
+            table.reloadData()
+            FacebookManager.downloadProfilePictures(friends)
+        }
     }
 
     func acceptButton(sender: AnyObject) {
         let button = sender as! UIButton
-        let request = pendingRequests[button.tag]
+        let request = pendingRequestsToUser[button.tag]
         friendManager.acceptRequest(request)
         button.setTitle("friends", forState: .Normal)
     }
@@ -71,9 +80,13 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "friendstomap" {
-            //let destVC = segue.destinationViewController as! AtchMapViewController
-            //destVC.friends = friends
+        if segue.identifier == "toaddfriends" {
+            let destVC = segue.destinationViewController as! AddFriendsViewController
+            destVC.friends = friends
+        }
+        if segue.identifier == "maptofriends" {
+            let destVC = segue.destinationViewController as! FriendsViewController
+            destVC.friends = friends
         }
         
     }
@@ -127,6 +140,27 @@ extension FriendsViewController {
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return sectionMap.count
     }
+    
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        var sectionArr = sectionMap[indexPath.section]!
+        let row = indexPath.row
+        let user = sectionArr[row]
+        let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
+            println("delete friend")
+            PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
+        }
+        delete.backgroundColor = UIColor.redColor()
+        
+        return [delete]
+    }
+    
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+    }
 }
 
 //FriendManager methods
@@ -159,17 +193,24 @@ extension FriendsViewController {
         }
     }
     
-    func pendingRequestsFound(requests: [PFObject], users: [PFUser]) {
+    func pendingToRequestsFound(requests: [PFObject], users: [PFUser]) {
         //present requests
         print("requests found")
-        pendingRequests = requests
-        pendingFriends = users
-        if pendingFriends.count > 0 {
+        pendingRequestsToUser = requests
+        pendingFriendsToUser = users
+        if pendingFriendsToUser.count > 0 {
             sectionTitles[0] = "Pending Requests"
-            sectionMap[0] = pendingFriends
+            sectionMap[0] = pendingFriendsToUser
             FacebookManager.downloadProfilePictures(users)
             table.reloadData()
         }
+    }
+    
+    func pendingFromRequestsFound(requests: [PFObject], users: [PFUser]) {
+        //present requests
+        print("from requests found")
+        pendingFriendsFromUser = users
+        pendingRequestsFromUser = requests
     }
     
     func friendRequestSent() {
@@ -179,16 +220,6 @@ extension FriendsViewController {
     func friendRequestAccepted() {
         
     }
-    
-    //    func removeDuplicatePicUsers(users: [PFObject]) -> [PFObject] {
-    //        var nonDupFriends = users
-    //        for var i = 0; i < users.count; i++ {
-    //            if friendPics[users[i].objectId!] == nil {
-    //                nonDupFriends.removeAtIndex(i)
-    //            }
-    //        }
-    //        return nonDupFriends
-    //    }
 
 }
     

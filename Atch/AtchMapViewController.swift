@@ -141,7 +141,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     //to fufill delegates
     func friendRequestSent() { }
     func friendRequestAccepted() { }
-    func pendingRequestsFound(requests: [PFObject], users: [PFUser]) { }
+    func pendingFromRequestsFound(requests: [PFObject], users: [PFUser]) { }
+    func pendingToRequestsFound(requests: [PFObject], users: [PFUser]) { }
     func facebookFriendsFound(facebookFriends: [PFUser]) { }
     func searchFinished(searchResults: [PFUser]) { }
 
