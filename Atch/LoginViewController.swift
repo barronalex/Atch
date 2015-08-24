@@ -14,7 +14,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     
     var facebookManager = FacebookManager()
     
-    @IBOutlet weak var backgroundMapView: UIView!
+    @IBOutlet weak var backgroundMapView: GMSMapView!
     
     @IBOutlet weak var containerView: UIView!
     
@@ -122,6 +122,8 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         hideUsernameInput()
+        var mapInsets = UIEdgeInsetsMake(0.0, 0.0, self.view.frame.height - 170, 0.0)
+        self.backgroundMapView.padding = mapInsets
         
 //        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
 //        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)

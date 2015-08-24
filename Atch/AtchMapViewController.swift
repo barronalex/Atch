@@ -14,6 +14,9 @@ import CoreLocation
 
 class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendManagerDelegate, GMSMapViewDelegate {
     
+    @IBOutlet weak var bannerView: UIView!
+    
+    @IBOutlet weak var bannerConstraint: NSLayoutConstraint!
     
     var mapView: GMSMapView?
     
@@ -53,6 +56,14 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             _locationUpdater?.startUpdates()
             _locationUpdater?.delegate = self
         }
+        let tapGesture = UITapGestureRecognizer(target: self, action: "bannerTapped")
+        self.bannerView.addGestureRecognizer(tapGesture)
+    }
+    
+    func bannerTapped() {
+        if tappedUserId != PFUser.currentUser()!.objectId! {
+            self.performSegueWithIdentifier("maptochat", sender: nil)
+        }
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -82,9 +93,14 @@ extension AtchMapViewController {
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
         //mapView!.animateToCameraPosition(GMSCameraPosition.cameraWithTarget(marker.position, zoom: 6))
-        if tappedUserId != PFUser.currentUser()!.objectId! {
-            self.performSegueWithIdentifier("maptochat", sender: nil)
-        }
+//
+        //put up banner
+        self.view.bringSubviewToFront(bannerView)
+        self.view.layoutIfNeeded()
+        UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
+            self.bannerConstraint.constant = 0
+            self.view.layoutIfNeeded()
+        })
         return true
     }
     

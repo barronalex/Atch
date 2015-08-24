@@ -31,7 +31,7 @@
                                 </connections>
                             </containerView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TZi-J7-Vxj" customClass="GMSMapView">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="540"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="480"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kcN-zc-gFr" userLabel="Sign Up View">
                                 <rect key="frame" x="0.0" y="540" width="600" height="60"/>
@@ -99,7 +99,7 @@
                             <constraint firstItem="nfA-YA-5zq" firstAttribute="leading" secondItem="xEA-nK-A8L" secondAttribute="leadingMargin" constant="-16" id="rTS-Tq-KVJ"/>
                             <constraint firstItem="a3D-PS-cCG" firstAttribute="top" secondItem="kcN-zc-gFr" secondAttribute="bottom" id="sMl-Qg-0Op"/>
                             <constraint firstAttribute="trailingMargin" secondItem="poZ-3L-Dd4" secondAttribute="trailing" constant="-16" id="uRJ-sh-at0"/>
-                            <constraint firstItem="a3D-PS-cCG" firstAttribute="top" secondItem="TZi-J7-Vxj" secondAttribute="bottom" constant="60" id="vYA-px-GtN"/>
+                            <constraint firstItem="a3D-PS-cCG" firstAttribute="top" secondItem="TZi-J7-Vxj" secondAttribute="bottom" constant="120" id="vYA-px-GtN"/>
                             <constraint firstItem="poZ-3L-Dd4" firstAttribute="leading" secondItem="xEA-nK-A8L" secondAttribute="leadingMargin" constant="-16" id="x5g-vA-hpw"/>
                         </constraints>
                     </view>
@@ -310,16 +310,28 @@
                                     <segue destination="BYZ-38-t0r" kind="show" identifier="logout" id="xMe-qL-fjT"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nlB-fw-7Uq">
+                                <rect key="frame" x="0.0" y="600" width="600" height="120"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="120" id="H2J-h4-P49"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="nlB-fw-7Uq" secondAttribute="trailing" id="74e-6o-HR3"/>
                             <constraint firstAttribute="trailingMargin" secondItem="oAt-hR-ikj" secondAttribute="trailing" constant="20" id="LMH-iy-8vg"/>
                             <constraint firstItem="oAt-hR-ikj" firstAttribute="top" secondItem="twB-re-gV2" secondAttribute="bottom" constant="10" id="WTt-EH-uNN"/>
+                            <constraint firstItem="nlB-fw-7Uq" firstAttribute="leading" secondItem="7Mk-BO-ixN" secondAttribute="leading" id="Xgi-TM-4fe"/>
                             <constraint firstItem="YrL-aU-vlf" firstAttribute="leading" secondItem="7Mk-BO-ixN" secondAttribute="leading" constant="36" id="gu6-bT-Q63"/>
                             <constraint firstItem="YrL-aU-vlf" firstAttribute="top" secondItem="twB-re-gV2" secondAttribute="bottom" constant="10" id="rz1-3n-6kv"/>
+                            <constraint firstItem="Q3o-Ng-z5v" firstAttribute="top" secondItem="nlB-fw-7Uq" secondAttribute="bottom" constant="-120" id="sNE-on-4Aa"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="bannerConstraint" destination="sNE-on-4Aa" id="UYm-cj-Kfg"/>
+                        <outlet property="bannerView" destination="nlB-fw-7Uq" id="e0X-Va-JYW"/>
                         <outlet property="friendsButton" destination="oAt-hR-ikj" id="xzs-tX-TFf"/>
                         <outlet property="logout" destination="YrL-aU-vlf" id="8yM-Q5-5Ic"/>
                         <segue destination="VkZ-1w-g7a" kind="show" identifier="maptochat" id="RCy-tb-G90"/>
@@ -650,7 +662,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="ODg-sp-IpH"/>
         <segue reference="Ruv-oh-yYO"/>
-        <segue reference="xMe-qL-fjT"/>
         <segue reference="RCy-tb-G90"/>
+        <segue reference="1e5-Ch-0QY"/>
     </inferredMetricsTieBreakers>
 </document>
