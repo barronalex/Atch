@@ -56,13 +56,14 @@ class Messenger {
             if let messageList = messageHistory!.objectForKey("messageList") as? [String] {
                 var messageQuery = PFQuery(className: "Message")
                 messageQuery.whereKey("objectId", containedIn: messageList)
-                messageQuery.orderByAscending("createdAt")
+                messageQuery.orderByDescending("createdAt")
                 messageQuery.findObjectsInBackgroundWithBlock {
                     (messages: [AnyObject]?, error: NSError?) -> Void in
                     
                     if error == nil {
                         if let messages = messages as? [PFObject] {
-                            self.delegate?.gotPreviousMessages(messages)
+                            var revMessages = reverse(messages)
+                            self.delegate?.gotPreviousMessages(revMessages)
                         }
                     } else {
                         print("error in messages request")

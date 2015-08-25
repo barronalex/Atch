@@ -14,7 +14,17 @@ import CoreLocation
 
 class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendManagerDelegate, GMSMapViewDelegate {
     
+    @IBOutlet var bannerGesture: UIPanGestureRecognizer!
+    
+    @IBOutlet weak var bannerLabel: UILabel!
+    
     @IBOutlet weak var bannerView: UIView!
+    
+    @IBOutlet weak var topContainerConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var containerHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var containerView: UIView!
     
     @IBOutlet weak var bannerConstraint: NSLayoutConstraint!
     
@@ -24,48 +34,82 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var logout: UIButton!
     
+    var containerVC: MapContainerViewController?
     var friendManager = FriendManager()
-    var curLocation = CLLocationCoordinate2D()
     var friends = [PFObject]()
+    var friendMap = [String:PFObject]()
     var friendPics = [String:UIImage]()
     var firstLocation = true
     var userMarkers = [String:GMSMarker]()
     var camera: GMSCameraPosition?
     var tappedUserId: String?
+    var bannerUp = false
+    var bannerAtTop = false
+    
+    let zeroMapInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+    let bannerMapInsets = UIEdgeInsetsMake(0.0, 0.0, 120, 0.0)
+    let upwardsMapCorrection: CGFloat = 100
+    let downwardsMapCorrection: CGFloat = 100
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        _locationUpdater?.delegate = self
-        mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-        self.view.addSubview(mapView!)
-        self.view.bringSubviewToFront(friendsButton)
-        self.view.bringSubviewToFront(logout)
-        mapView?.delegate = self
-        firstLocation = true
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
-        friendManager.delegate = self
-        if friends.count == 0 {
-           friendManager.getFriends()
-        }
-        if friendPics.count == 0 {
-            FacebookManager.downloadProfilePictures(friends)
-        }
-        if _locationUpdater == nil {
-            _locationUpdater = LocationUpdater()
-            _locationUpdater?.startUpdates()
-            _locationUpdater?.delegate = self
-        }
+        self.containerHeightConstraint.constant = self.view.frame.height - bannerView.frame.height
+        self.view.layoutIfNeeded()
+        self.topContainerConstraint.constant = self.view.frame.height - 20
+        self.view.layoutIfNeeded()
+        setUpLocationManager()
+        setUpMap()
+        setUpFriendManager()
         let tapGesture = UITapGestureRecognizer(target: self, action: "bannerTapped")
         self.bannerView.addGestureRecognizer(tapGesture)
     }
     
-    func bannerTapped() {
-        if tappedUserId != PFUser.currentUser()!.objectId! {
-            self.performSegueWithIdentifier("maptochat", sender: nil)
+    func setUpFriendManager() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
+        friendManager.delegate = self
+        if friends.count == 0 {
+            friendManager.getFriends()
+        }
+        if friendPics.count == 0 {
+            FacebookManager.downloadProfilePictures(friends)
         }
     }
+    
+    func setUpLocationManager() {
+        _locationUpdater?.delegate = self
+        firstLocation = true
+        if _locationUpdater == nil {
+            _locationUpdater = LocationUpdater()
+            _locationUpdater?.delegate = self
+            _locationUpdater?.startUpdates()
+        }
+        else if !_locationUpdater!.updating {
+            _locationUpdater?.startUpdates()
+        }
+        
+    }
+    
+    func setUpMap() {
+        
+        if let location = _locationUpdater!.getLocation() {
+            mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: GMSCameraPosition.cameraWithTarget(location.coordinate, zoom: 6))
+            _locationUpdater?.sendLocationToServer()
+            _locationUpdater?.getFriendLocationsFromServer()
+            mapView!.myLocationEnabled = true
+            firstLocation = false
 
+        }
+        else {
+            mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+
+        }
+        self.view.addSubview(mapView!)
+        self.view.bringSubviewToFront(friendsButton)
+        self.view.bringSubviewToFront(logout)
+        mapView?.delegate = self
+    }
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "maptochat" {
             let destVC = segue.destinationViewController as! MessagingViewController
@@ -76,11 +120,95 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             let destVC = segue.destinationViewController as! FriendsViewController
             destVC.friends = self.friends
             destVC.friendPics = self.friendPics
+            destVC.friendMap = self.friendMap
         }
         if segue.identifier == "logout" {
             mapView?.myLocationEnabled = false
             _locationUpdater?.stopUpdates()
         }
+        if segue.identifier == "mapcontainerembed" {
+            let destVC = segue.destinationViewController as! MapContainerViewController
+            containerVC = destVC
+        }
+    }
+
+    @IBAction func hereButton() {
+        
+    }
+}
+
+//Banner Methods
+extension AtchMapViewController {
+    
+    func putBannerDown() {
+        UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+            self.topContainerConstraint.constant = self.view.frame.height - 20
+            self.bannerConstraint.constant = -self.bannerView.frame.height
+            self.view.layoutIfNeeded()
+            }, completion: {
+                (finished) in
+                self.containerVC?.removeChildren()
+        })
+        bannerUp = false
+        bannerAtTop = false
+        mapView?.padding = zeroMapInsets
+    }
+    
+    @IBAction func handlePan(recognizer:UIPanGestureRecognizer) {
+        
+        if recognizer.state == UIGestureRecognizerState.Ended && self.bannerConstraint.constant > 0 {
+            bannerTapped()
+            return
+        }
+        let yTranslation = recognizer.translationInView(self.view).y
+        if let view = recognizer.view {
+            if (self.bannerConstraint.constant - yTranslation) > (self.view.frame.height - bannerView.frame.height) {
+                self.bannerConstraint.constant = self.view.frame.height - bannerView.frame.height
+                self.topContainerConstraint.constant = self.bannerView.frame.height - 20
+            }
+            else if (self.bannerConstraint.constant - yTranslation) < 0 {
+                self.bannerConstraint.constant = 0
+                self.topContainerConstraint.constant = self.view.frame.height - 20
+            }
+            else {
+                self.bannerConstraint.constant -= yTranslation
+                self.topContainerConstraint.constant += yTranslation
+            }
+            
+        }
+        recognizer.setTranslation(CGPointZero, inView: self.view)
+    }
+    
+    func bannerTapped() {
+        if !bannerAtTop {
+            UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+                self.topContainerConstraint.constant = self.bannerView.frame.height - 20
+                self.bannerConstraint.constant = self.view.frame.height - 120
+                self.view.layoutIfNeeded()
+            })
+            bannerAtTop = true
+        }
+        else {
+            putBannerDown()
+        }
+        
+    }
+    
+    func putBannerUp() {
+        //put up banner
+        bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("fullname") as? String
+        println("BANNER TEXT: \(bannerLabel.text)")
+        if bannerLabel.text == nil {
+            bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("username") as? String
+        }
+        self.view.bringSubviewToFront(bannerView)
+        self.view.layoutIfNeeded()
+        UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
+            self.bannerConstraint.constant = 0
+            self.mapView?.padding = self.bannerMapInsets
+            self.view.layoutIfNeeded()
+        })
+        bannerUp = true
     }
 
 }
@@ -92,16 +220,27 @@ extension AtchMapViewController {
         println("tapped marker")
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
-        //mapView!.animateToCameraPosition(GMSCameraPosition.cameraWithTarget(marker.position, zoom: 6))
-//
-        //put up banner
-        self.view.bringSubviewToFront(bannerView)
+        containerVC?.goToMessages([tappedUserId!, PFUser.currentUser()!.objectId!])
+        self.view.bringSubviewToFront(containerView)
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
-            self.bannerConstraint.constant = 0
-            self.view.layoutIfNeeded()
-        })
+        putBannerUp()
+        correctMarkerPosition(marker)
         return true
+    }
+    
+    func correctMarkerPosition(marker: GMSMarker) {
+        if var point = mapView?.projection.pointForCoordinate(marker.position) {
+            if point.y > self.view.frame.height - self.bannerView.frame.height - 20 {
+                
+                point.y = point.y - upwardsMapCorrection
+                let cameraUpdate = GMSCameraUpdate.setTarget(mapView!.projection.coordinateForPoint(point))
+                mapView?.animateWithCameraUpdate(cameraUpdate)
+            }
+            else if point.y < self.bannerView.frame.height - 20 || point.x < 40 || point.x > self.view.frame.width - 40 {
+                let cameraUpdate = GMSCameraUpdate.setTarget(mapView!.projection.coordinateForPoint(point))
+                mapView?.animateWithCameraUpdate(cameraUpdate)
+            }
+        }
     }
     
     private func setMarkerImage(marker: GMSMarker, userId: String) {
@@ -122,7 +261,6 @@ extension AtchMapViewController {
     
     func locationUpdated(location: CLLocationCoordinate2D) {
         print("location updated")
-        curLocation = location
         if firstLocation {
             println("first location")
             _locationUpdater?.sendLocationToServer()
@@ -141,7 +279,17 @@ extension AtchMapViewController {
     func friendListFound(friends: [PFUser]) {
         //map user ids to user objects
         FacebookManager.downloadProfilePictures(friends)
+        for friend in friends {
+            friendMap[friend.objectId!] = friend
+        }
         self.friends = friends
+        if self.tappedUserId != nil {
+            bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("fullname") as? String
+            println("BANNER TEXT POST FRIENDS: \(bannerLabel.text)")
+            if bannerLabel.text == nil {
+                bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("username") as? String
+            }
+        }
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {

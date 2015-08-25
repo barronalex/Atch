@@ -14,6 +14,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     
     var locationManager = CLLocationManager()
     var deferringUpdates = false
+    var updating = false
     var curLocation: CLLocation?
     var friendData: PFObject?
     var delegate: LocationUpdaterDelegate?
@@ -35,6 +36,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
+            updating = true
         }
         NSTimer.scheduledTimerWithTimeInterval(1200, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
         sendTimer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("sendLocationToServer"), userInfo: nil, repeats: true)
@@ -46,6 +48,12 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         sendTimer?.invalidate()
         getTimer?.invalidate()
         locationManager.stopUpdatingLocation()
+        updating = false
+    }
+    
+    func getLocation() -> CLLocation? {
+        println("\(locationManager.location)")
+        return locationManager.location
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {

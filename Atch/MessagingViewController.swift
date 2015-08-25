@@ -21,6 +21,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var messageTable: UITableView!
     
     
+    
     @IBOutlet weak var messageTextView: UITextView!
     
     @IBOutlet weak var sendButton: UIButton!
@@ -55,7 +56,10 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func moveKeyboardUpBy(delta: CGFloat, animationTime: NSNumber) {
         self.view.layoutIfNeeded()
-        
+        println("DELTA: \(delta)")
+        if delta == 0 {
+            return
+        }
         UIView.animateWithDuration(NSTimeInterval(animationTime), animations: {
             self.dockViewHeightConstraint.constant += delta
             var keyboardOffset = self.messageTable.contentSize.height - delta - self.messageTextView.frame.height
@@ -71,6 +75,10 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
+    override func viewDidDisappear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -145,6 +153,7 @@ extension MessagingViewController {
 extension MessagingViewController {
     
     func sentMessage() {
+        println("method finished")
         messenger.getMessageHistoryFrom(toUsers)
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTextView.text = ""

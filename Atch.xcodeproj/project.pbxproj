@@ -13,6 +13,7 @@
 		D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */; };
 		D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */; };
 		D02788591B8BC040007B76D9 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788581B8BC040007B76D9 /* Location.swift */; };
+		D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -76,6 +77,7 @@
 		D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendsViewController.swift; sourceTree = "<group>"; };
 		D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardHeight.swift; sourceTree = "<group>"; };
 		D02788581B8BC040007B76D9 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapContainerViewController.swift; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -213,6 +215,7 @@
 				D02E5B581B80D72C007F7FDB /* Friend Management */,
 				D06611691B868E4300CFE73C /* Messaging */,
 				D0519E811B6E6CF700C473E3 /* AtchMapViewController.swift */,
+				D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */,
 				D066115F1B84977F00CFE73C /* ImageProcessor.swift */,
 				D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */,
 				D0519E7F1B6E6CB900C473E3 /* IntroViewController.swift */,
@@ -227,7 +230,6 @@
 			children = (
 				D06611611B85434100CFE73C /* OperatorOverloads.swift */,
 				D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */,
-				D02788581B8BC040007B76D9 /* Location.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
 				D0519E661B6E0AD500C473E3 /* Images.xcassets */,
@@ -269,6 +271,7 @@
 			children = (
 				D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */,
 				D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */,
+				D02788581B8BC040007B76D9 /* Location.swift */,
 			);
 			name = Location;
 			sourceTree = "<group>";
@@ -485,6 +488,7 @@
 				D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */,
 				D02E5B5C1B81D563007F7FDB /* PendingFriendEntry.swift in Sources */,
 				D0519E821B6E6CF700C473E3 /* AtchMapViewController.swift in Sources */,
+				D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */,
 				D02E5B441B7E4FD7007F7FDB /* FriendManagerDelegate.swift in Sources */,
 				D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */,
 				D02E5B501B7F32BC007F7FDB /* UsernameManagerDelegate.swift in Sources */,

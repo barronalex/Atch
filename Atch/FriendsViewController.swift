@@ -17,6 +17,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     
     var friendManager = FriendManager()
     
+    var friendMap = [String:PFObject]()
     var friends = [PFObject]()
     var pendingFriendsToUser = [PFObject]()
     var pendingRequestsToUser = [PFObject]()
@@ -86,16 +87,19 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             let destVC = segue.destinationViewController as! AddFriendsViewController
             destVC.friends = self.friends
             destVC.friendPics = self.friendPics
+            destVC.friendMap = self.friendMap
         }
         if segue.identifier == "addfriendstofriends" {
             let destVC = segue.destinationViewController as! FriendsViewController
             destVC.friends = self.friends
             destVC.friendPics = self.friendPics
+            destVC.friendMap = self.friendMap
         }
         if segue.identifier == "friendstomap" {
             let destVC = segue.destinationViewController as! AtchMapViewController
             destVC.friends = self.friends
             destVC.friendPics = self.friendPics
+            destVC.friendMap = self.friendMap
         }
         
         
