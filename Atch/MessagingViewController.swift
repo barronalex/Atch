@@ -137,7 +137,7 @@ extension MessagingViewController {
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let message = messages[indexPath.row]
-        let text = message.objectForKey("messageText") as! String
+        let text = message.objectForKey(parse_message_text) as! String
         let textHeight = getHeightOfLabel(text) + messageSpacing
         return textHeight
         
@@ -154,12 +154,12 @@ extension MessagingViewController {
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
-        let messageUser = message.objectForKey("fromUser") as! PFUser
+        let messageUser = message.objectForKey(parse_message_fromUser) as! PFUser
         
         println("reloaded: \(indexPath.row)")
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
-            cell.messageText.text = message.objectForKey("messageText") as? String
+            cell.messageText.text = message.objectForKey(parse_message_text) as? String
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }
@@ -168,7 +168,7 @@ extension MessagingViewController {
         }
         else {
             let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
-            cell.messageText.text = message.objectForKey("messageText") as? String
+            cell.messageText.text = message.objectForKey(parse_message_text) as? String
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }

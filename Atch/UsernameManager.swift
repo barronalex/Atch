@@ -25,7 +25,7 @@ class UsernameManager {
         }
         let query = PFUser.query()!
         print("checking if free")
-        query.whereKey("username", equalTo: name)
+        query.whereKey(parse_user_username, equalTo: name)
         query.findObjectsInBackgroundWithBlock {
             (objects: [AnyObject]?, error: NSError?) -> Void in
             
@@ -57,8 +57,8 @@ class UsernameManager {
     }
     
     func setUsername(name: String) {
-        PFUser.currentUser()?.setObject(name, forKey: "username")
-        PFUser.currentUser()?.setObject(name.lowercaseString, forKey: "queryUsername")
+        PFUser.currentUser()?.setObject(name, forKey: parse_user_username)
+        PFUser.currentUser()?.setObject(name.lowercaseString, forKey: parse_user_queryUsername)
         PFUser.currentUser()?.saveInBackground()
         self.delegate?.finished()
     }

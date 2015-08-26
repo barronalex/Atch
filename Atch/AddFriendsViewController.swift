@@ -23,7 +23,6 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     
     override func friendListFound(friends: [PFUser]) {
         println("friend list found")
-        self.friends = friends
         table.reloadData()
     }
     
@@ -32,11 +31,11 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     }
     
     override func setUpTable() {
-        friendManager.getPendingRequests(true)
-        friendManager.getPendingRequests(false)
-        friendManager.getFacebookFriends()
-        if self.friends.count == 0 {
-            friendManager.getFriends()
+        _friendManager.getPendingRequests(true)
+        _friendManager.getPendingRequests(false)
+        _friendManager.getFacebookFriends()
+        if _friendManager.friends.count == 0 {
+            _friendManager.getFriends()
         }
         
     }
@@ -52,29 +51,29 @@ extension AddFriendsViewController {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
-        if let username = user.objectForKey("username") as? String {
+        if let username = user.objectForKey(parse_user_username) as? String {
             print("table doin: \(username)")
             cell.username.text = username
         }
-        if let fullname = user.objectForKey("fullname") as? String {
+        if let fullname = user.objectForKey(parse_user_fullname) as? String {
             cell.name.text = fullname
         }
-        if let image = friendPics[user.objectId!] {
+        if let image = _friendManager.friendPics[user.objectId!] {
             cell.profileImage.image = ImageProcessor.createCircle(image)
         }
         else {
             cell.profileImage.image = nil
         }
         //show tick if already friends
-        if contains(friends, user) {
+        if contains(_friendManager.friends, user) {
             cell.acceptButton.setTitle("√", forState: .Normal)
             cell.acceptButton.userInteractionEnabled = false
         }
-        else if contains(pendingFriendsFromUser, user) {
+        else if contains(_friendManager.pendingFriendsFromUser, user) {
             cell.acceptButton.setTitle("request sent", forState: .Normal)
             cell.acceptButton.userInteractionEnabled = false
         }
-        else if indexPath.section == 0 || contains(pendingRequestsToUser, user) {
+        else if indexPath.section == 0 || contains(_friendManager.pendingRequestsToUser, user) {
             cell.acceptButton.userInteractionEnabled = true
             cell.acceptButton.setTitle("accept", forState: .Normal)
             cell.acceptButton.tag = row
@@ -95,11 +94,11 @@ extension AddFriendsViewController {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
-        if contains(pendingFriendsFromUser, user) {
+        if contains(_friendManager.pendingFriendsFromUser, user) {
             let cancel = UITableViewRowAction(style: .Normal, title: "cancel") { action, index in
                 println("request cancelled")
-                let reqIndex = find(self.pendingFriendsFromUser, user)!
-                let friendRequest = self.pendingRequestsFromUser[reqIndex]
+                let reqIndex = find(_friendManager.pendingFriendsFromUser, user)!
+                let friendRequest = _friendManager.pendingRequestsFromUser[reqIndex]
                 PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!])
                 self.table.editing = false
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
@@ -110,12 +109,12 @@ extension AddFriendsViewController {
             cancel.backgroundColor = UIColor.redColor()
             return [cancel]
         }
-        if contains(pendingFriendsToUser, user) {
+        if contains(_friendManager.pendingFriendsToUser, user) {
             let reject = UITableViewRowAction(style: .Normal, title: "reject") { action, index in
                 println("request rejected")
-                let reqIndex = find(self.pendingFriendsFromUser, user)!
-                let friendRequest = self.pendingRequestsFromUser[reqIndex]
-                friendRequest.setObject("rejected", forKey: "state")
+                let reqIndex = find(_friendManager.pendingFriendsFromUser, user)!
+                let friendRequest = _friendManager.pendingRequestsFromUser[reqIndex]
+                friendRequest.setObject("rejected", forKey: parse_friendRequest_state)
                 friendRequest.saveInBackground()
                 self.table.editing = false
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
@@ -144,7 +143,7 @@ extension AddFriendsViewController {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
-        if contains(pendingFriendsFromUser, user) || contains(pendingFriendsToUser, user) || contains(friends, user) {
+        if contains(_friendManager.pendingFriendsFromUser, user) || contains(_friendManager.pendingFriendsToUser, user) || contains(_friendManager.friends, user) {
             return true
         }
         return false
@@ -174,7 +173,7 @@ extension FriendsViewController {
             self.reset()
         }
         else {
-            friendManager.search(searchBar.text!)
+            _friendManager.search(searchBar.text!)
         }
     }
     

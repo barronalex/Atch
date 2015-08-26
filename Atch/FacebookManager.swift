@@ -60,9 +60,9 @@ class FacebookManager {
                     print("User Name is: \(fullname)")
                     let id = result.valueForKey("id") as! String
                     print("ID: \(id)")
-                    PFUser.currentUser()?.setObject(fullname, forKey: "fullname")
-                    PFUser.currentUser()?.setObject(fullname.lowercaseString, forKey: "queryFullname")
-                    PFUser.currentUser()?.setObject(id, forKey: "fbid")
+                    PFUser.currentUser()?.setObject(fullname, forKey: parse_user_fullname)
+                    PFUser.currentUser()?.setObject(fullname.lowercaseString, forKey: parse_user_queryFullname)
+                    PFUser.currentUser()?.setObject(id, forKey: parse_user_fbid)
                     PFUser.currentUser()?.saveInBackground()
                     self.delegate?.parseLoginSucceeded()
                 }
@@ -77,7 +77,7 @@ class FacebookManager {
         var token = FBSDKAccessToken.currentAccessToken().tokenString
         println("token: \(token)")
         for user in users {
-            if let fbid = user.objectForKey("fbid") as? String {
+            if let fbid = user.objectForKey(parse_user_fbid) as? String {
                 let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?type=square")
                 let request = NSURLRequest(URL: url!)
                 urlRequests.append(request)
@@ -101,7 +101,8 @@ class FacebookManager {
             }
             dispatch_async(callerQueue) {
                 println("done")
-                NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: ["images":pics])
+                _friendManager.friendPics += pics
+                NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: nil)
             }
             
         }
@@ -124,7 +125,7 @@ class FacebookManager {
                         print("User signed up and logged in with Facebook")
                         //if new user fetch and store facebook id
                         let installation = PFInstallation.currentInstallation()
-                        installation.setObject(PFUser.currentUser()!.objectId!, forKey: "userId")
+                        installation.setObject(PFUser.currentUser()!.objectId!, forKey: parse_installation_userId)
                         installation.saveInBackground()
                         self.storeUserInfo()
                     } else {
@@ -168,7 +169,7 @@ class FacebookManager {
                     print("ID: \(id)")
                     //query parse for id
                     let query = PFUser.query()!
-                    query.whereKey("fbid", equalTo: id)
+                    query.whereKey(parse_user_fbid, equalTo: id)
                     query.getFirstObjectInBackgroundWithBlock() {
                         (user, error) in
                         if error != nil {

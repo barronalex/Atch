@@ -53,7 +53,7 @@ class Messenger {
     func getMessagesFromHistory() {
         if self.messageHistory != nil {
             //if there are messages
-            if let messageList = messageHistory!.objectForKey("messageList") as? [String] {
+            if let messageList = messageHistory!.objectForKey(parse_messageHistory_list) as? [String] {
                 var messageQuery = PFQuery(className: "Message")
                 messageQuery.whereKey("objectId", containedIn: messageList)
                 messageQuery.orderByDescending("createdAt")

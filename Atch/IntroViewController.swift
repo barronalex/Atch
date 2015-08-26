@@ -15,14 +15,29 @@ import CoreGraphics
 
 class IntroViewController: UIViewController {
     
+    @IBAction func logout() {
+        PFUser.logOutInBackgroundWithBlock() {
+            (error) in
+            if error == nil {
+                self.performSegueWithIdentifier("fullylogout", sender: nil)
+            }
+            else {
+                println("\(error)")
+//                UIAlertController.
+//                self.presentViewController(UIAlertController(title: "logout failed", message: "we were unable to log you out at this time", preferredStyle: UIAlertControllerStyle.Alert), animated: false, completion: nil)
+            }
+        }
+        
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     override func viewDidAppear(animated: Bool) {
-        if ["a", "b"] == ["b", "a"] {
-            println("YESSSSSSSS")
-        }
+//        if ["a", "b"] == ["b", "a"] {
+//            println("YESSSSSSSS")
+//        }
+//        self.presentViewController(UIAlertController(title: "logout failed", message: "we were unable to log you out at this time", preferredStyle: UIAlertControllerStyle.Alert), animated: false, completion: nil)
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
         }

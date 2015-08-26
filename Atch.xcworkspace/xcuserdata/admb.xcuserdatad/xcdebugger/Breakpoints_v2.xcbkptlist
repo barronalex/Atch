@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "462280773.02069"
+            timestampString = "462297205.480128"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "251"
-            endingLineNumber = "251"
+            startingLineNumber = "240"
+            endingLineNumber = "240"
             landmarkName = "putBannerDown()"
             landmarkType = "5">
          </BreakpointContent>

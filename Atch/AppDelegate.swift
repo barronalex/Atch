@@ -153,10 +153,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
             getVisibleViewController(self.window?.rootViewController).showViewController(atchVC, sender: nil)
             atchVC.tappedUserId = toUsers[1]
-            atchVC.friendMap = friendsVC.friendMap
             atchVC.containerVC?.goToMessages(toUsers)
             atchVC.bringUpMessagesScreen()
-            if let friendLocation = friendsVC.userMarkers[toUsers[1]]?.position {
+            if let friendLocation = _friendManager.userMarkers[toUsers[1]]?.position {
                 println("animating")
                 atchVC.mapView!.animateToLocation(friendLocation)
             }

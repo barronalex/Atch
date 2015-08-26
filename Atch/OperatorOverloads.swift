@@ -21,11 +21,11 @@ public func == (left: (PFObject), right: (PFObject)) -> Bool {
     return false
 }
 
-//func == (var left: [String], var right: [String]) -> Bool {
-//    left.sort( {$0 > $1} )
-//    right.sort( {$0 > $1} )
-//    if left == right { return true }
-//    return false
-//}
+func == (var left: [String], var right: [String]) -> Bool {
+    left.sort( {$0 > $1} )
+    right.sort( {$0 > $1} )
+    if left == right { return true }
+    return false
+}
 
 extension PFObject: Equatable {}

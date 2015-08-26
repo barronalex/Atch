@@ -15,6 +15,8 @@
 		D02788591B8BC040007B76D9 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788581B8BC040007B76D9 /* Location.swift */; };
 		D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */; };
 		D027885D1B8DC850007B76D9 /* my_location_button.png in Resources */ = {isa = PBXBuildFile; fileRef = D027885C1B8DC850007B76D9 /* my_location_button.png */; };
+		D02788611B8E11FD007B76D9 /* Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788601B8E11FD007B76D9 /* Friends.swift */; };
+		D02788631B8E1AC3007B76D9 /* ParseKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788621B8E1AC3007B76D9 /* ParseKeys.swift */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -80,6 +82,8 @@
 		D02788581B8BC040007B76D9 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapContainerViewController.swift; sourceTree = "<group>"; };
 		D027885C1B8DC850007B76D9 /* my_location_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = my_location_button.png; sourceTree = "<group>"; };
+		D02788601B8E11FD007B76D9 /* Friends.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Friends.swift; sourceTree = "<group>"; };
+		D02788621B8E1AC3007B76D9 /* ParseKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseKeys.swift; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -180,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				D02E5B491B7E8A18007F7FDB /* FriendsViewController.swift */,
+				D02788601B8E11FD007B76D9 /* Friends.swift */,
 				D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */,
 				D02E5B5B1B81D563007F7FDB /* PendingFriendEntry.swift */,
 				D02E5B411B7DE6A2007F7FDB /* FriendManager.swift */,
@@ -231,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				D06611611B85434100CFE73C /* OperatorOverloads.swift */,
+				D02788621B8E1AC3007B76D9 /* ParseKeys.swift */,
 				D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
@@ -472,6 +478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D02788631B8E1AC3007B76D9 /* ParseKeys.swift in Sources */,
 				D02E5B4C1B7F3271007F7FDB /* UsernameViewController.swift in Sources */,
 				D02E5B481B7E68C8007F7FDB /* FacebookManagerDelegate.swift in Sources */,
 				D06611601B84977F00CFE73C /* ImageProcessor.swift in Sources */,
@@ -487,6 +494,7 @@
 				D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */,
 				D0519E801B6E6CB900C473E3 /* IntroViewController.swift in Sources */,
 				D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */,
+				D02788611B8E11FD007B76D9 /* Friends.swift in Sources */,
 				D02E5B3C1B74D1F3007F7FDB /* LoginViewController.swift in Sources */,
 				D06611681B86898A00CFE73C /* MessengerDelegate.swift in Sources */,
 				D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */,

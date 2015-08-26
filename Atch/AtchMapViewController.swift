@@ -37,12 +37,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     var mapTapGesture: UITapGestureRecognizer?
     var containerVC: MapContainerViewController?
-    var friendManager = FriendManager()
-    var friends = [PFObject]()
-    var friendMap = [String:PFObject]()
-    var friendPics = [String:UIImage]()
     var firstLocation = true
-    var userMarkers = [String:GMSMarker]()
     var camera: GMSCameraPosition?
     var tappedUserId: String?
     var bannerUp = false
@@ -74,14 +69,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             
             destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         }
-        if segue.identifier == "maptofriends" {
-            let destVC = segue.destinationViewController as! FriendsViewController
-            destVC.friends = self.friends
-            destVC.friendPics = self.friendPics
-            destVC.friendMap = self.friendMap
-            destVC.userMarkers = userMarkers
-        }
-        if segue.identifier == "logout" {
+        if segue.identifier == "logoutfrommap" {
             mapView?.myLocationEnabled = false
             _locationUpdater?.stopUpdates()
         }
@@ -116,13 +104,14 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
 //Initialisation Methods
 extension AtchMapViewController {
     func setUpFriendManager() {
+        _friendManager = FriendManager()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
-        friendManager.delegate = self
-        if friends.count == 0 {
-            friendManager.getFriends()
+        _friendManager.delegate = self
+        if _friendManager.friends.count == 0 {
+            _friendManager.getFriends()
         }
-        if friendPics.count == 0 {
-            FacebookManager.downloadProfilePictures(friends)
+        if _friendManager.friendPics.count == 0 {
+            FacebookManager.downloadProfilePictures(_friendManager.friends)
         }
     }
     
@@ -225,12 +214,12 @@ extension AtchMapViewController {
     func putBannerUp() {
         
         //put up banner
-        println("friend map count: \(friendMap.count)")
+        println("friend map count: \(_friendManager.friendMap.count)")
         println("tapped id: \(tappedUserId)")
-        bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("fullname") as? String
+        bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
         println("BANNER TEXT: \(bannerLabel.text)")
         if bannerLabel.text == nil {
-            bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("username") as? String
+            bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_username) as? String
         }
         self.view.bringSubviewToFront(bannerView)
         self.view.bringSubviewToFront(containerView)
@@ -293,7 +282,7 @@ extension AtchMapViewController {
     }
     
     private func setMarkerImage(marker: GMSMarker, userId: String) {
-        if let image = friendPics[userId] {
+        if let image = _friendManager.friendPics[userId] {
             marker.icon = image
             marker.icon = ImageProcessor.createCircle(image)
             marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
@@ -303,7 +292,7 @@ extension AtchMapViewController {
     private func createNewMarker(user: PFObject, location: PFGeoPoint?) {
         let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude))
         marker.map = mapView
-        userMarkers[user.objectId!] = marker
+        _friendManager.userMarkers[user.objectId!] = marker
         setMarkerImage(marker, userId: user.objectId!)
         marker.userData = user.objectId!
     }
@@ -329,23 +318,20 @@ extension AtchMapViewController {
         //map user ids to user objects
         FacebookManager.downloadProfilePictures(friends)
         for friend in friends {
-            friendMap[friend.objectId!] = friend
+            _friendManager.friendMap[friend.objectId!] = friend
         }
-        self.friends = friends
         if self.tappedUserId != nil {
-            bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("fullname") as? String
+            bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
             println("BANNER TEXT POST FRIENDS: \(bannerLabel.text)")
             if bannerLabel.text == nil {
-                bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("username") as? String
+                bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
             }
         }
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
-        var dataMap = notification.userInfo as! [String:[String:UIImage]]
         println("pictures received")
-        friendPics += dataMap["images"]!
-        for (userId, marker) in userMarkers {
+        for (userId, marker) in _friendManager.userMarkers {
             setMarkerImage(marker, userId: userId)
         }
     }
@@ -356,11 +342,11 @@ extension AtchMapViewController {
         //make array of markers if first time
         //display them
         for data in friendData {
-            let location = data.objectForKey("location") as? PFGeoPoint
+            let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint
             if location != nil {
                 //make marker to display location
-                let user = data.objectForKey("user") as! PFObject
-                if let marker = userMarkers[user.objectId!] {
+                let user = data.objectForKey(parse_frienddata_user) as! PFObject
+                if let marker = _friendManager.userMarkers[user.objectId!] {
                     marker.position = CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude)
                     marker.userData = user.objectId!
                     

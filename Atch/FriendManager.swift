@@ -10,10 +10,21 @@ import Foundation
 import Parse
 import Bolts
 import FBSDKCoreKit
+import GoogleMaps
 
 class FriendManager {
     
     var delegate: FriendManagerDelegate?
+    
+    var userMarkers = [String:GMSMarker]()
+    var friendMap = [String:PFObject]()
+    var friends = [PFObject]()
+    var pendingFriendsToUser = [PFObject]()
+    var pendingRequestsToUser = [PFObject]()
+    var pendingRequestsFromUser = [PFObject]()
+    var pendingFriendsFromUser = [PFObject]()
+    var facebookFriends = [PFObject]()
+    var friendPics = [String:UIImage]()
     
     func sendRequest(targetUserID: String) {
         //gets user from id
@@ -21,7 +32,7 @@ class FriendManager {
         
         //checks if duplicate
         let query = PFQuery(className: "FriendRequest")
-        query.whereKey("toUser", equalTo: targetUser)
+        query.whereKey(parse_friendRequest_toUser, equalTo: targetUser)
         
         query.findObjectsInBackgroundWithBlock {
             (objects: [AnyObject]?, error: NSError?) -> Void in
@@ -47,24 +58,24 @@ class FriendManager {
     
     func createRequest(targetUser: PFUser) {
         let friendRequest = PFObject(className: "FriendRequest")
-        friendRequest.setObject(PFUser.currentUser()!, forKey: "fromUser")
-        friendRequest.setObject(targetUser, forKey: "toUser")
-        friendRequest.setObject("requested", forKey: "state")
+        friendRequest.setObject(PFUser.currentUser()!, forKey: parse_friendRequest_fromUser)
+        friendRequest.setObject(targetUser, forKey: parse_friendRequest_toUser)
+        friendRequest.setObject("requested", forKey: parse_friendRequest_state)
         friendRequest.saveInBackground()
     }
     
     func acceptRequest(friendId: String) {
         let friend = PFUser.objectWithoutDataWithObjectId(friendId)
         let query = PFQuery(className: "FriendRequest")
-        query.whereKey("toUser", equalTo: PFUser.currentUser()!)
-        query.whereKey("fromUser", equalTo: friend)
+        query.whereKey(parse_friendRequest_toUser, equalTo: PFUser.currentUser()!)
+        query.whereKey(parse_friendRequest_fromUser, equalTo: friend)
         query.findObjectsInBackgroundWithBlock {
             (objects: [AnyObject]?, error: NSError?) -> Void in
             
             if error == nil {
                 if let objects = objects as? [PFObject] {
                     for object in objects {
-                        object.setObject("accepted", forKey: "state")
+                        object.setObject("accepted", forKey: parse_friendRequest_state)
                         object.saveInBackground()
                     }
                 }
@@ -76,7 +87,7 @@ class FriendManager {
     }
     
     func acceptRequest(request: PFObject) {
-        request.setObject("accepted", forKey: "state")
+        request.setObject("accepted", forKey: parse_friendRequest_state)
         request.saveInBackground()
     }
     
@@ -90,17 +101,17 @@ class FriendManager {
         var result = [String]()
         let query = PFQuery(className: "FriendRequest")
         if fromUser {
-            query.whereKey("fromUser", equalTo: PFUser.currentUser()!)
+            query.whereKey(parse_friendRequest_fromUser, equalTo: PFUser.currentUser()!)
         }
         else {
-            query.whereKey("toUser", equalTo: PFUser.currentUser()!)
+            query.whereKey(parse_friendRequest_toUser, equalTo: PFUser.currentUser()!)
         }
-        query.whereKey("state", equalTo: "requested")
+        query.whereKey(parse_friendRequest_state, equalTo: "requested")
         if fromUser {
-            query.orderByAscending("toUser")
+            query.orderByAscending(parse_friendRequest_toUser)
         }
         else {
-            query.orderByAscending("fromUser")
+            query.orderByAscending(parse_friendRequest_fromUser)
 
         }
         query.findObjectsInBackgroundWithBlock {
@@ -131,11 +142,11 @@ class FriendManager {
         var userIds = [String]()
         for request in requests {
             if fromUser {
-                let pendingFriend = request["toUser"] as! PFObject
+                let pendingFriend = request[parse_friendRequest_toUser] as! PFObject
                 userIds.append(pendingFriend.objectId!)
             }
             else {
-                let pendingFriend = request["fromUser"] as! PFObject
+                let pendingFriend = request[parse_friendRequest_fromUser] as! PFObject
                 userIds.append(pendingFriend.objectId!)
             }
         }
@@ -148,9 +159,13 @@ class FriendManager {
                 if let pendingFriends = pendingFriends as? [PFUser] {
                     //sort requests and users so that they are in same order
                     if fromUser {
+                        self.pendingRequestsFromUser = requests
+                        self.pendingFriendsFromUser = pendingFriends
                         self.delegate?.pendingFromRequestsFound(requests, users: pendingFriends)
                     }
                     else {
+                        self.pendingRequestsToUser = requests
+                        self.pendingFriendsToUser = pendingFriends
                         self.delegate?.pendingToRequestsFound(requests, users: pendingFriends)
                     }
                     
@@ -165,11 +180,12 @@ class FriendManager {
     
     func findPFUserFromFbid(ids: [String]) {
         let query = PFUser.query()!
-        query.whereKey("fbid", containedIn: ids)
+        query.whereKey(parse_user_fbid, containedIn: ids)
         query.findObjectsInBackgroundWithBlock {
             (fbFriends: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {
                 if let fbFriends = fbFriends as? [PFUser] {
+                    self.facebookFriends = fbFriends
                     self.delegate?.facebookFriendsFound(fbFriends)
                     
                 }
@@ -217,6 +233,7 @@ class FriendManager {
                     (friends: [AnyObject]?, error: NSError?) -> Void in
                     if error == nil {
                         if let friends = friends as? [PFUser] {
+                            self.friends = friends
                             self.delegate?.friendListFound(friends)
                         }
                     } else {
@@ -239,9 +256,9 @@ class FriendManager {
     func search(search: String) {
         //search for Full Name or username
         let fbQuery = PFUser.query()!
-        fbQuery.whereKey("username", containsString: search)
+        fbQuery.whereKey(parse_user_username, containsString: search)
         let uQuery = PFUser.query()!
-        uQuery.whereKey("fullname", containsString: search)
+        uQuery.whereKey(parse_user_fullname, containsString: search)
         let query = PFQuery.orQueryWithSubqueries([fbQuery, uQuery])
         query.whereKey("objectId", notEqualTo: PFUser.currentUser()!.objectId!)
         query.findObjectsInBackgroundWithBlock {

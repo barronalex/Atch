@@ -147,18 +147,30 @@
                                     <constraint firstAttribute="width" constant="114" id="b2X-S0-0wr"/>
                                 </constraints>
                             </slider>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tGF-6C-1EI">
+                                <rect key="frame" x="20" y="40" width="56" height="30"/>
+                                <state key="normal" title="Log Out">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="logout" destination="BYZ-38-t0r" eventType="touchUpInside" id="RMd-X3-vrd"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="KCg-hj-QZg" secondAttribute="bottom" constant="92" id="NFu-4M-01o"/>
                             <constraint firstItem="SZE-Do-cSl" firstAttribute="centerX" secondItem="KCg-hj-QZg" secondAttribute="centerX" id="Oac-2W-2GB"/>
+                            <constraint firstItem="tGF-6C-1EI" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="eYb-FE-s7x"/>
                             <constraint firstAttribute="centerX" secondItem="KCg-hj-QZg" secondAttribute="centerX" id="nP6-4Z-ide"/>
                             <constraint firstAttribute="centerY" secondItem="SZE-Do-cSl" secondAttribute="centerY" id="nag-hs-2dL"/>
+                            <constraint firstItem="tGF-6C-1EI" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="rt1-1v-6SO"/>
                         </constraints>
                     </view>
                     <connections>
                         <segue destination="nCE-qK-v4L" kind="show" identifier="login" id="GsL-tS-UZP"/>
                         <segue destination="VkZ-1w-g7a" kind="show" identifier="testmessenger" id="Cz4-eA-7ro"/>
+                        <segue destination="nCE-qK-v4L" kind="show" identifier="fullylogout" id="NlR-YZ-plh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -307,7 +319,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="BYZ-38-t0r" kind="show" identifier="logout" id="xMe-qL-fjT"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="logoutfrommap" id="xMe-qL-fjT"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nlB-fw-7Uq" userLabel="Banner View">
@@ -733,7 +745,7 @@
                         <viewControllerLayoutGuide type="bottom" id="bgc-ua-741"/>
                     </layoutGuides>
                     <view key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="lZo-pa-rQ4">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="450"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -745,8 +757,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="ODg-sp-IpH"/>
         <segue reference="Ruv-oh-yYO"/>
+        <segue reference="vGk-LI-bBW"/>
         <segue reference="xMe-qL-fjT"/>
+        <segue reference="NlR-YZ-plh"/>
     </inferredMetricsTieBreakers>
 </document>

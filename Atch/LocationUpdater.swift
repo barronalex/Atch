@@ -24,7 +24,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     func startUpdates() {
         print("start updates")
         let query = PFQuery(className: "FriendData")
-        query.whereKey("user", equalTo: PFUser.currentUser()!)
+        query.whereKey(parse_frienddata_user, equalTo: PFUser.currentUser()!)
         query.getFirstObjectInBackgroundWithBlock {
             (data: AnyObject?, error: NSError?) -> Void in
             if let data = data as? PFObject {
@@ -75,15 +75,15 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     func sendLocationToServer() {
         print("sending location to server")
         if friendData != nil {
-            friendData!.setObject(PFGeoPoint(location: curLocation), forKey: "location")
+            friendData!.setObject(PFGeoPoint(location: curLocation), forKey: parse_frienddata_location)
             friendData!.saveInBackground()
         }
     }
     
     func getFriendLocationsFromServer() {
         let query = PFQuery(className: "FriendData")
-        query.whereKey("user", notEqualTo: PFUser.currentUser()!)
-        query.whereKeyExists("location")
+        query.whereKey(parse_frienddata_user, notEqualTo: PFUser.currentUser()!)
+        query.whereKeyExists(parse_frienddata_location)
         var date = NSDate(timeIntervalSinceNow: 0)
        // query.whereKey("updatedAt", greaterThan: date - NSTimeInterval.
         query.findObjectsInBackgroundWithBlock {
