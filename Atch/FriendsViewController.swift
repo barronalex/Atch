@@ -122,7 +122,6 @@ extension FriendsViewController {
         self.showViewController(atchVC, sender: nil)
         let friendId = friends[indexPath.row].objectId!
         var toUsers = [PFUser.currentUser()!.objectId!, friendId]
-        sort(&toUsers)
         if let friendLocation = userMarkers[friendId]?.position {
             println("animating")
             atchVC.mapView!.animateToLocation(friendLocation)

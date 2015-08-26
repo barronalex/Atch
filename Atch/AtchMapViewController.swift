@@ -269,7 +269,6 @@ extension AtchMapViewController {
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
         var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
-        sort(&toUsers)
         containerVC?.goToMessages(toUsers)
 //        self.view.bringSubviewToFront(containerView)
         self.view.layoutIfNeeded()

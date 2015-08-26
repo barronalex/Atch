@@ -111,7 +111,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func dealWithMessageNotification(application: UIApplication, userInfo: [NSObject : AnyObject]) {
         var toUsers = getToUsersFromNotification(userInfo)
         if toUsers == nil { return }
-        sort(&toUsers!)
         if application.applicationState == UIApplicationState.Active {
             //for now do nothing
             if let atchVC = getVisibleViewController(self.window?.rootViewController) as? AtchMapViewController {
@@ -157,6 +156,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             atchVC.friendMap = friendsVC.friendMap
             atchVC.containerVC?.goToMessages(toUsers)
             atchVC.bringUpMessagesScreen()
+            if let friendLocation = friendsVC.userMarkers[toUsers[1]]?.position {
+                println("animating")
+                atchVC.mapView!.animateToLocation(friendLocation)
+            }
             
         }
     }

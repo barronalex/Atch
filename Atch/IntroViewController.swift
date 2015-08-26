@@ -20,7 +20,9 @@ class IntroViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
-
+        if ["a", "b"] == ["b", "a"] {
+            println("YESSSSSSSS")
+        }
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
         }
