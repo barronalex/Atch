@@ -50,6 +50,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     let bannerMapInsets = UIEdgeInsetsMake(0.0, 0.0, 120, 0.0)
     let upwardsMapCorrection: CGFloat = 100
     let downwardsMapCorrection: CGFloat = 100
+    let topMargin: CGFloat = 20
     
     override func viewDidLoad() {
         
@@ -65,6 +66,52 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         self.bannerView.addGestureRecognizer(tapGesture)
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "maptochat" {
+            let destVC = segue.destinationViewController as! MessagingViewController
+            
+            destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
+        }
+        if segue.identifier == "maptofriends" {
+            let destVC = segue.destinationViewController as! FriendsViewController
+            destVC.friends = self.friends
+            destVC.friendPics = self.friendPics
+            destVC.friendMap = self.friendMap
+        }
+        if segue.identifier == "logout" {
+            mapView?.myLocationEnabled = false
+            _locationUpdater?.stopUpdates()
+        }
+        if segue.identifier == "mapcontainerembed" {
+            let destVC = segue.destinationViewController as! MapContainerViewController
+            containerVC = destVC
+        }
+    }
+
+    @IBAction func hereButton() {
+        let childVCs = containerVC?.childVCs
+        if let childVCs = childVCs {
+            let messageVC = childVCs[0] as! MessagingViewController
+            messageVC.messenger.sendMessage("meet here")
+        }
+    }
+    
+    @IBAction func thereButton() {
+        let childVCs = containerVC?.childVCs
+        if let childVCs = childVCs {
+            let messageVC = childVCs[0] as? MessagingViewController
+            messageVC?.messenger.sendMessage("meet there")
+        }
+    }
+    func bringUpMessagesScreen() {
+        putBannerUp()
+        bannerAtTop = false
+        bannerTapped()
+    }
+}
+
+//Initialisation Methods
+extension AtchMapViewController {
     func setUpFriendManager() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         friendManager.delegate = self
@@ -98,65 +145,29 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             _locationUpdater?.getFriendLocationsFromServer()
             mapView!.myLocationEnabled = true
             firstLocation = false
-
+            
         }
         else {
             mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-
+            
         }
         self.view.addSubview(mapView!)
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
         mapView?.delegate = self
     }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "maptochat" {
-            let destVC = segue.destinationViewController as! MessagingViewController
-            
-            destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
-        }
-        if segue.identifier == "maptofriends" {
-            let destVC = segue.destinationViewController as! FriendsViewController
-            destVC.friends = self.friends
-            destVC.friendPics = self.friendPics
-            destVC.friendMap = self.friendMap
-        }
-        if segue.identifier == "logout" {
-            mapView?.myLocationEnabled = false
-            _locationUpdater?.stopUpdates()
-        }
-        if segue.identifier == "mapcontainerembed" {
-            let destVC = segue.destinationViewController as! MapContainerViewController
-            containerVC = destVC
-        }
-    }
 
-    @IBAction func hereButton() {
-        
-    }
 }
 
 //Banner Methods
 extension AtchMapViewController {
     
-    func putBannerDown() {
-        UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
-            self.topContainerConstraint.constant = self.view.frame.height - 20
-            self.bannerConstraint.constant = -self.bannerView.frame.height
-            self.view.layoutIfNeeded()
-            }, completion: {
-                (finished) in
-                self.containerVC?.removeChildren()
-        })
-        bannerUp = false
-        bannerAtTop = false
-        mapView?.padding = zeroMapInsets
-    }
-    
     @IBAction func handlePan(recognizer:UIPanGestureRecognizer) {
         
         if recognizer.state == UIGestureRecognizerState.Ended && self.bannerConstraint.constant > 0 {
+            if self.bannerConstraint.constant == self.bannerView.frame.height - self.topMargin {
+                return
+            }
             bannerTapped()
             return
         }
@@ -164,11 +175,11 @@ extension AtchMapViewController {
         if let view = recognizer.view {
             if (self.bannerConstraint.constant - yTranslation) > (self.view.frame.height - bannerView.frame.height) {
                 self.bannerConstraint.constant = self.view.frame.height - bannerView.frame.height
-                self.topContainerConstraint.constant = self.bannerView.frame.height - 20
+                self.topContainerConstraint.constant = self.bannerView.frame.height - topMargin
             }
             else if (self.bannerConstraint.constant - yTranslation) < 0 {
                 self.bannerConstraint.constant = 0
-                self.topContainerConstraint.constant = self.view.frame.height - 20
+                self.topContainerConstraint.constant = self.view.frame.height - topMargin
             }
             else {
                 self.bannerConstraint.constant -= yTranslation
@@ -182,8 +193,8 @@ extension AtchMapViewController {
     func bannerTapped() {
         if !bannerAtTop {
             UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
-                self.topContainerConstraint.constant = self.bannerView.frame.height - 20
-                self.bannerConstraint.constant = self.view.frame.height - 120
+                self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin
+                self.bannerConstraint.constant = self.view.frame.height - self.bannerView.frame.height
                 self.view.layoutIfNeeded()
             })
             bannerAtTop = true
@@ -195,13 +206,17 @@ extension AtchMapViewController {
     }
     
     func putBannerUp() {
+        
         //put up banner
+        println("friend map count: \(friendMap.count)")
+        println("tapped id: \(tappedUserId)")
         bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("fullname") as? String
         println("BANNER TEXT: \(bannerLabel.text)")
         if bannerLabel.text == nil {
             bannerLabel.text = friendMap[self.tappedUserId!]?.objectForKey("username") as? String
         }
         self.view.bringSubviewToFront(bannerView)
+        self.view.bringSubviewToFront(containerView)
         self.view.layoutIfNeeded()
         UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
             self.bannerConstraint.constant = 0
@@ -209,6 +224,21 @@ extension AtchMapViewController {
             self.view.layoutIfNeeded()
         })
         bannerUp = true
+    }
+    
+    func putBannerDown() {
+        self.view.endEditing(true)
+        UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+            self.topContainerConstraint.constant = self.view.frame.height - 20
+            self.bannerConstraint.constant = -self.bannerView.frame.height
+            self.view.layoutIfNeeded()
+            }, completion: {
+                (finished) in
+                self.containerVC?.removeChildren()
+        })
+        bannerUp = false
+        bannerAtTop = false
+        mapView?.padding = zeroMapInsets
     }
 
 }
@@ -220,8 +250,10 @@ extension AtchMapViewController {
         println("tapped marker")
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
-        containerVC?.goToMessages([tappedUserId!, PFUser.currentUser()!.objectId!])
-        self.view.bringSubviewToFront(containerView)
+        var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
+        sort(&toUsers)
+        containerVC?.goToMessages(toUsers)
+//        self.view.bringSubviewToFront(containerView)
         self.view.layoutIfNeeded()
         putBannerUp()
         correctMarkerPosition(marker)
@@ -260,7 +292,7 @@ extension AtchMapViewController {
     }
     
     func locationUpdated(location: CLLocationCoordinate2D) {
-        print("location updated")
+        //print("location updated")
         if firstLocation {
             println("first location")
             _locationUpdater?.sendLocationToServer()

@@ -11,8 +11,10 @@ import Foundation
 class MapContainerViewController: UIViewController {
     
     var childVCs = [UIViewController]()
+    var toUsers = [String]()
     
     func goToMessages(toUsers: [String]) {
+        self.toUsers = toUsers
         //add a messagingviewcontroller as a child view controller
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let messageVC = storyboard.instantiateViewControllerWithIdentifier("MessagingViewController") as! MessagingViewController
@@ -23,8 +25,6 @@ class MapContainerViewController: UIViewController {
         self.view.addSubview(messageVC.view)
         messageVC.didMoveToParentViewController(self)
         childVCs.append(messageVC)
-//        let hconstraint = NSLayoutConstraint(item: self.view, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: messageVC.view, attribute: NSLayoutAttribute.Left, multiplier: 1, constant: 0)
-//        self.view.addConstraint(hconstraint)
         self.view.layoutIfNeeded()
     }
     

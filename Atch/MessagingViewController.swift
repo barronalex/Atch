@@ -17,10 +17,12 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     //have a map of messageids to height
     var messageHeights = [String:CGFloat]()
     
+    let messageSpacing: CGFloat = 20
+    let labelWidth: CGFloat = 115
     
     @IBOutlet weak var messageTable: UITableView!
     
-    
+    @IBOutlet weak var textViewConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var messageTextView: UITextView!
     
@@ -31,6 +33,23 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         //self.messageTextView.enabled = false
         self.sendButton.enabled = false
         messenger.sendMessage(messageTextView.text)
+    }
+    
+    
+    
+    func resizeTextView() {
+        let prevHeight = messageTextView.frame.height
+        let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
+        textViewConstraint.constant = sizeThatFitsContent.height
+        dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
+        println("change: \(sizeThatFitsContent.height - prevHeight)")
+        let offset = sizeThatFitsContent.height - prevHeight
+        println("offset: \(offset)")
+        self.messageTable.contentOffset.y += offset
+    }
+    
+    func textViewDidChange(textView: UITextView) {
+        resizeTextView()
     }
     
     func keyboardWillShow(notification: NSNotification) {
@@ -62,8 +81,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         UIView.animateWithDuration(NSTimeInterval(animationTime), animations: {
             self.dockViewHeightConstraint.constant += delta
-            var keyboardOffset = self.messageTable.contentSize.height - delta - self.messageTextView.frame.height
-            self.messageTable.setContentOffset(CGPoint(x: 0, y: keyboardOffset), animated: false)
+            self.messageTable.contentOffset.y += delta
             self.view.layoutIfNeeded()
             
         }, completion: nil)
@@ -82,39 +100,47 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        let prevHeight = messageTextView.frame.height
+        let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
+        textViewConstraint.constant = sizeThatFitsContent.height
+        dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
             NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
         println("toUsers: \(toUsers)")
-        self.messageTable.rowHeight = UITableViewAutomaticDimension
+        //self.messageTable.rowHeight = UITableViewAutomaticDimension
         self.messageTable.delegate = self
         self.messageTable.dataSource = self
         self.messageTextView.delegate = self
         let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
         self.messageTable.addGestureRecognizer(tapGesture)
-        //self.messageTable.estimatedRowHeight = 70
         self.messenger.delegate = self
         self.messenger.getMessageHistoryFrom(toUsers)
         
     }
     
-    override func viewDidAppear(animated: Bool) {
-        
+    func getHeightOfLabel(text: String) -> CGFloat {
+        var sizeGettingLabel = UILabel()
+        sizeGettingLabel.font = UIFont.systemFontOfSize(17)
+        sizeGettingLabel.text = text
+        sizeGettingLabel.numberOfLines = 0
+        sizeGettingLabel.lineBreakMode = NSLineBreakMode.ByWordWrapping
+        let maxSize = CGSizeMake(self.view.frame.width - labelWidth, 9999)
+        let expectedSize = sizeGettingLabel.sizeThatFits(maxSize)
+        return expectedSize.height
     }
 
 }
 
 //Table View Methods
 extension MessagingViewController {
-    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let message = messages[indexPath.row]
         let text = message.objectForKey("messageText") as! String
-        let length = count(text)
-        println("length: \(length)")
-        let result = CGFloat(((length / 27) + 1) * 50)
-        println("result: \(result)")
-        return result
+        let textHeight = getHeightOfLabel(text) + messageSpacing
+        return textHeight
+        
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -129,6 +155,7 @@ extension MessagingViewController {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let messageUser = message.objectForKey("fromUser") as! PFUser
+        
         println("reloaded: \(indexPath.row)")
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
@@ -136,6 +163,7 @@ extension MessagingViewController {
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }
+            println("CELL HEIGHT: \(cell.frame.height)")
             return cell
         }
         else {
@@ -144,6 +172,7 @@ extension MessagingViewController {
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }
+            println("CELL HEIGHT: \(cell.frame.height)")
             return cell
         }
     }
@@ -157,6 +186,7 @@ extension MessagingViewController {
         messenger.getMessageHistoryFrom(toUsers)
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTextView.text = ""
+            self.resizeTextView()
             //self.messageTextField.enabled = true
             self.sendButton.enabled = true
         }

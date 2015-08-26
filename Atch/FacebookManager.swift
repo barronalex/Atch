@@ -148,7 +148,7 @@ class FacebookManager {
             }
             else {
                 println("user has already signed up")
-                self.delegate?.alreadySignedUp()
+                self.delegate?.parseLoginSucceeded()
             }
         }
     }
