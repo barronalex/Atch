@@ -34,6 +34,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var logout: UIButton!
     
+    
+    var mapTapGesture: UITapGestureRecognizer?
     var containerVC: MapContainerViewController?
     var friendManager = FriendManager()
     var friends = [PFObject]()
@@ -77,6 +79,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             destVC.friends = self.friends
             destVC.friendPics = self.friendPics
             destVC.friendMap = self.friendMap
+            destVC.userMarkers = userMarkers
         }
         if segue.identifier == "logout" {
             mapView?.myLocationEnabled = false
@@ -137,6 +140,12 @@ extension AtchMapViewController {
         
     }
     
+    func mapView(mapView: GMSMapView!, didTapAtCoordinate coordinate: CLLocationCoordinate2D) {
+        if bannerUp {
+            putBannerDown()
+        }
+    }
+    
     func setUpMap() {
         
         if let location = _locationUpdater!.getLocation() {
@@ -152,6 +161,7 @@ extension AtchMapViewController {
             
         }
         self.view.addSubview(mapView!)
+        mapView!.settings.myLocationButton = true
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
         mapView?.delegate = self
@@ -163,11 +173,7 @@ extension AtchMapViewController {
 extension AtchMapViewController {
     
     @IBAction func handlePan(recognizer:UIPanGestureRecognizer) {
-        
         if recognizer.state == UIGestureRecognizerState.Ended && self.bannerConstraint.constant > 0 {
-            if self.bannerConstraint.constant == self.bannerView.frame.height - self.topMargin {
-                return
-            }
             bannerTapped()
             return
         }
@@ -200,9 +206,20 @@ extension AtchMapViewController {
             bannerAtTop = true
         }
         else {
-            putBannerDown()
+            lowerBanner()
         }
         
+    }
+    
+    func lowerBanner() {
+        self.view.layoutIfNeeded()
+        UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
+            self.bannerConstraint.constant = 0
+            self.topContainerConstraint.constant = self.view.frame.height - 20
+            self.mapView?.padding = self.bannerMapInsets
+            self.view.layoutIfNeeded()
+        })
+        bannerAtTop = false
     }
     
     func putBannerUp() {
@@ -231,6 +248,7 @@ extension AtchMapViewController {
         UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
             self.topContainerConstraint.constant = self.view.frame.height - 20
             self.bannerConstraint.constant = -self.bannerView.frame.height
+            self.mapView?.padding = self.zeroMapInsets
             self.view.layoutIfNeeded()
             }, completion: {
                 (finished) in
@@ -238,7 +256,7 @@ extension AtchMapViewController {
         })
         bannerUp = false
         bannerAtTop = false
-        mapView?.padding = zeroMapInsets
+        
     }
 
 }
@@ -356,6 +374,7 @@ extension AtchMapViewController {
                 
             }
         }
+        mapView!.myLocationEnabled = true
     }
     
     //to fufill delegates

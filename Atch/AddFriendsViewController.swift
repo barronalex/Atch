@@ -17,6 +17,8 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
         super.viewDidLoad()
         println("LOADED")
         searchBar.delegate = self
+        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+        self.table.addGestureRecognizer(tapGesture)
     }
     
     override func friendListFound(friends: [PFUser]) {

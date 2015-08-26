@@ -8,6 +8,7 @@
 
 import Parse
 import Bolts
+import GoogleMaps
 
 
 class FriendsViewController: UIViewController, FriendManagerDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
@@ -17,6 +18,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     
     var friendManager = FriendManager()
     
+    var userMarkers = [String:GMSMarker]()
     var friendMap = [String:PFObject]()
     var friends = [PFObject]()
     var pendingFriendsToUser = [PFObject]()
@@ -35,9 +37,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         super.viewDidLoad()
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
-        self.table.addGestureRecognizer(tapGesture)
         
         table.delegate = self
         table.dataSource = self
@@ -116,6 +115,26 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
 //Table View Methods
 extension FriendsViewController {
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        //go to friends messaging screen
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
+        self.showViewController(atchVC, sender: nil)
+        let friendId = friends[indexPath.row].objectId!
+        var toUsers = [PFUser.currentUser()!.objectId!, friendId]
+        sort(&toUsers)
+        if let friendLocation = userMarkers[friendId]?.position {
+            println("animating")
+            atchVC.mapView!.animateToLocation(friendLocation)
+        }
+        atchVC.friendPics = friendPics
+        atchVC.friends = friends
+        atchVC.tappedUserId = friendId
+        atchVC.friendMap = self.friendMap
+        atchVC.containerVC?.goToMessages(toUsers)
+        atchVC.bringUpMessagesScreen()
+    }
+    
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sectionTitles[section]
     }
@@ -127,6 +146,7 @@ extension FriendsViewController {
     func setUpCell(tableView: UITableView, indexPath: NSIndexPath) -> PendingFriendEntry {
         print("row: \(indexPath.row)")
         let cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! PendingFriendEntry
+        cell.userInteractionEnabled = true
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]

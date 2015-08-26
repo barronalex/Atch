@@ -14,6 +14,7 @@
 		D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */; };
 		D02788591B8BC040007B76D9 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788581B8BC040007B76D9 /* Location.swift */; };
 		D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */; };
+		D027885D1B8DC850007B76D9 /* my_location_button.png in Resources */ = {isa = PBXBuildFile; fileRef = D027885C1B8DC850007B76D9 /* my_location_button.png */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -78,6 +79,7 @@
 		D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardHeight.swift; sourceTree = "<group>"; };
 		D02788581B8BC040007B76D9 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapContainerViewController.swift; sourceTree = "<group>"; };
+		D027885C1B8DC850007B76D9 /* my_location_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = my_location_button.png; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -233,6 +235,7 @@
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
 				D0519E661B6E0AD500C473E3 /* Images.xcassets */,
+				D027885C1B8DC850007B76D9 /* my_location_button.png */,
 				D0519E681B6E0AD500C473E3 /* LaunchScreen.xib */,
 				D02E5B341B723D10007F7FDB /* Atch-Bridging-Header.h */,
 				D0519E5E1B6E0AD500C473E3 /* Info.plist */,
@@ -417,6 +420,7 @@
 			files = (
 				D027884F1B892073007B76D9 /* Main.storyboard in Resources */,
 				D0519E6A1B6E0AD500C473E3 /* LaunchScreen.xib in Resources */,
+				D027885D1B8DC850007B76D9 /* my_location_button.png in Resources */,
 				D0519E671B6E0AD500C473E3 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
