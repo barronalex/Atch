@@ -234,6 +234,9 @@ class FriendManager {
                     if error == nil {
                         if let friends = friends as? [PFUser] {
                             self.friends = friends
+                            for friend in friends {
+                                self.friendMap[friend.objectId!] = friend
+                            }
                             self.delegate?.friendListFound(friends)
                         }
                     } else {

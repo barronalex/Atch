@@ -29,7 +29,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var sendButton: UIButton!
     
     @IBAction func sendButtonTapped() {
-        self.messageTextView.endEditing(true)
+        //self.messageTextView.endEditing(true)
         //self.messageTextView.enabled = false
         self.sendButton.enabled = false
         messenger.sendMessage(messageTextView.text)
@@ -94,6 +94,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
     override func viewDidDisappear(animated: Bool) {
+        println("removing observers")
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
     }
@@ -105,6 +106,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         textViewConstraint.constant = sizeThatFitsContent.height
         dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
+        println("adding observers")
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
             NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
         println("toUsers: \(toUsers)")
@@ -135,6 +137,25 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
 //Table View Methods
 extension MessagingViewController {
     
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        let message = messages[indexPath.row]
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "h:mm a"
+        let time = message.createdAt!
+        
+        let timeString = formatter.stringFromDate(time)
+        println("time: \(timeString)")
+        let timeStamp = UITableViewRowAction(style: .Normal, title: timeString) { action, index in
+        }
+        timeStamp.backgroundColor = UIColor.whiteColor()
+        UIButton.appearance().setTitleColor(UIColor.blackColor(), forState: .Normal)
+        return [timeStamp]
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+    }
+    
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let message = messages[indexPath.row]
         let text = message.objectForKey(parse_message_text) as! String
@@ -155,8 +176,6 @@ extension MessagingViewController {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let messageUser = message.objectForKey(parse_message_fromUser) as! PFUser
-        
-        println("reloaded: \(indexPath.row)")
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
             cell.messageText.text = message.objectForKey(parse_message_text) as? String

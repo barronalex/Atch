@@ -17,6 +17,9 @@
 		D027885D1B8DC850007B76D9 /* my_location_button.png in Resources */ = {isa = PBXBuildFile; fileRef = D027885C1B8DC850007B76D9 /* my_location_button.png */; };
 		D02788611B8E11FD007B76D9 /* Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788601B8E11FD007B76D9 /* Friends.swift */; };
 		D02788631B8E1AC3007B76D9 /* ParseKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788621B8E1AC3007B76D9 /* ParseKeys.swift */; };
+		D02788651B8E2993007B76D9 /* NotificationBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788641B8E2993007B76D9 /* NotificationBanner.swift */; };
+		D02788671B8F2935007B76D9 /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788661B8F2935007B76D9 /* Navigator.swift */; };
+		D02788691B8F5B66007B76D9 /* LeftToRightSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788681B8F5B66007B76D9 /* LeftToRightSegue.swift */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -84,6 +87,9 @@
 		D027885C1B8DC850007B76D9 /* my_location_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = my_location_button.png; sourceTree = "<group>"; };
 		D02788601B8E11FD007B76D9 /* Friends.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Friends.swift; sourceTree = "<group>"; };
 		D02788621B8E1AC3007B76D9 /* ParseKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseKeys.swift; sourceTree = "<group>"; };
+		D02788641B8E2993007B76D9 /* NotificationBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationBanner.swift; sourceTree = "<group>"; };
+		D02788661B8F2935007B76D9 /* Navigator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
+		D02788681B8F5B66007B76D9 /* LeftToRightSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftToRightSegue.swift; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -223,9 +229,9 @@
 				D06611691B868E4300CFE73C /* Messaging */,
 				D0519E811B6E6CF700C473E3 /* AtchMapViewController.swift */,
 				D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */,
-				D066115F1B84977F00CFE73C /* ImageProcessor.swift */,
 				D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */,
 				D0519E7F1B6E6CB900C473E3 /* IntroViewController.swift */,
+				D02788641B8E2993007B76D9 /* NotificationBanner.swift */,
 				D027884E1B892073007B76D9 /* Main.storyboard */,
 				D0519E5D1B6E0AD500C473E3 /* Supporting Files */,
 			);
@@ -236,8 +242,11 @@
 			isa = PBXGroup;
 			children = (
 				D06611611B85434100CFE73C /* OperatorOverloads.swift */,
+				D02788681B8F5B66007B76D9 /* LeftToRightSegue.swift */,
+				D066115F1B84977F00CFE73C /* ImageProcessor.swift */,
 				D02788621B8E1AC3007B76D9 /* ParseKeys.swift */,
 				D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */,
+				D02788661B8F2935007B76D9 /* Navigator.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
 				D0519E661B6E0AD500C473E3 /* Images.xcassets */,
@@ -489,6 +498,7 @@
 				D02E5B461B7E681A007F7FDB /* FacebookManager.swift in Sources */,
 				D06611661B85EE3C00CFE73C /* Messenger.swift in Sources */,
 				D0519E601B6E0AD500C473E3 /* AppDelegate.swift in Sources */,
+				D02788671B8F2935007B76D9 /* Navigator.swift in Sources */,
 				D066116F1B879F5E00CFE73C /* IncomingMessageCell.swift in Sources */,
 				D02E5B421B7DE6A2007F7FDB /* FriendManager.swift in Sources */,
 				D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */,
@@ -499,9 +509,11 @@
 				D06611681B86898A00CFE73C /* MessengerDelegate.swift in Sources */,
 				D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */,
 				D02E5B5C1B81D563007F7FDB /* PendingFriendEntry.swift in Sources */,
+				D02788691B8F5B66007B76D9 /* LeftToRightSegue.swift in Sources */,
 				D0519E821B6E6CF700C473E3 /* AtchMapViewController.swift in Sources */,
 				D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */,
 				D02E5B441B7E4FD7007F7FDB /* FriendManagerDelegate.swift in Sources */,
+				D02788651B8E2993007B76D9 /* NotificationBanner.swift in Sources */,
 				D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */,
 				D02E5B501B7F32BC007F7FDB /* UsernameManagerDelegate.swift in Sources */,
 				D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */,

@@ -20,6 +20,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     var delegate: LocationUpdaterDelegate?
     var sendTimer: NSTimer?
     var getTimer: NSTimer?
+    var locationTimer: NSTimer?
     
     func startUpdates() {
         print("start updates")
@@ -47,6 +48,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         println("stop updating")
         sendTimer?.invalidate()
         getTimer?.invalidate()
+        locationTimer?.invalidate()
         locationManager.stopUpdatingLocation()
         updating = false
     }
@@ -57,6 +59,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {
+        print("location updated")
         curLocation = manager.location
         if !self.deferringUpdates && CLLocationManager.deferredLocationUpdatesAvailable() {
             print("started deferred updates")
@@ -92,9 +95,5 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
                 self.delegate?.friendLocationsUpdated(friends)
             }
         }
-    }
-    
-    func goOnline() {
-        
     }
 }

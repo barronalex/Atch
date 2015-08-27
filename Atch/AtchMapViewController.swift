@@ -28,8 +28,6 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var bannerConstraint: NSLayoutConstraint!
     
-    var mapView: GMSMapView?
-    
     @IBOutlet weak var friendsButton: UIButton!
     
     @IBOutlet weak var logout: UIButton!
@@ -70,7 +68,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         }
         if segue.identifier == "logoutfrommap" {
-            mapView?.myLocationEnabled = false
+            _mapView?.myLocationEnabled = false
             _locationUpdater?.stopUpdates()
         }
         if segue.identifier == "mapcontainerembed" {
@@ -104,7 +102,6 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
 //Initialisation Methods
 extension AtchMapViewController {
     func setUpFriendManager() {
-        _friendManager = FriendManager()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         _friendManager.delegate = self
         if _friendManager.friends.count == 0 {
@@ -138,23 +135,37 @@ extension AtchMapViewController {
     func setUpMap() {
         
         if let location = _locationUpdater!.getLocation() {
-            mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: GMSCameraPosition.cameraWithTarget(location.coordinate, zoom: 6))
+            if _mapView == nil {
+                _mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: GMSCameraPosition.cameraWithTarget(location.coordinate, zoom: 6))
+            }
             _locationUpdater?.sendLocationToServer()
             _locationUpdater?.getFriendLocationsFromServer()
-            mapView!.myLocationEnabled = true
+            _mapView!.myLocationEnabled = true
             firstLocation = false
             
         }
         else {
-            mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            if _mapView == nil {
+                _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            }
             
         }
-        self.view.addSubview(mapView!)
-        mapView!.settings.myLocationButton = true
+        self.view.addSubview(_mapView!)
+        _mapView!.settings.myLocationButton = true
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
-        mapView?.delegate = self
+        _mapView?.delegate = self
+        //addMarkers()
     }
+    
+//    func addMarkers() {
+//        for (user, marker) in _friendManager.userMarkers {
+//            let marker = GMSMarker(position: marker.position)
+//            marker.map = _mapView!
+//            setMarkerImage(marker, userId: user)
+//            marker.userData = user
+//        }
+//    }
 
 }
 
@@ -205,14 +216,16 @@ extension AtchMapViewController {
         UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
             self.bannerConstraint.constant = 0
             self.topContainerConstraint.constant = self.view.frame.height - 20
-            self.mapView?.padding = self.bannerMapInsets
+            _mapView?.padding = self.bannerMapInsets
             self.view.layoutIfNeeded()
         })
         bannerAtTop = false
+        self.view.endEditing(true)
     }
     
     func putBannerUp() {
-        
+        var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
+        containerVC?.goToMessages(toUsers)
         //put up banner
         println("friend map count: \(_friendManager.friendMap.count)")
         println("tapped id: \(tappedUserId)")
@@ -226,7 +239,7 @@ extension AtchMapViewController {
         self.view.layoutIfNeeded()
         UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
             self.bannerConstraint.constant = 0
-            self.mapView?.padding = self.bannerMapInsets
+            _mapView?.padding = self.bannerMapInsets
             self.view.layoutIfNeeded()
         })
         bannerUp = true
@@ -237,7 +250,7 @@ extension AtchMapViewController {
         UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
             self.topContainerConstraint.constant = self.view.frame.height - 20
             self.bannerConstraint.constant = -self.bannerView.frame.height
-            self.mapView?.padding = self.zeroMapInsets
+            _mapView?.padding = self.zeroMapInsets
             self.view.layoutIfNeeded()
             }, completion: {
                 (finished) in
@@ -257,26 +270,22 @@ extension AtchMapViewController {
         println("tapped marker")
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
-        var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
-        containerVC?.goToMessages(toUsers)
-//        self.view.bringSubviewToFront(containerView)
-        self.view.layoutIfNeeded()
         putBannerUp()
         correctMarkerPosition(marker)
         return true
     }
     
     func correctMarkerPosition(marker: GMSMarker) {
-        if var point = mapView?.projection.pointForCoordinate(marker.position) {
+        if var point = _mapView?.projection.pointForCoordinate(marker.position) {
             if point.y > self.view.frame.height - self.bannerView.frame.height - 20 {
                 
                 point.y = point.y - upwardsMapCorrection
-                let cameraUpdate = GMSCameraUpdate.setTarget(mapView!.projection.coordinateForPoint(point))
-                mapView?.animateWithCameraUpdate(cameraUpdate)
+                let cameraUpdate = GMSCameraUpdate.setTarget(_mapView!.projection.coordinateForPoint(point))
+                _mapView?.animateWithCameraUpdate(cameraUpdate)
             }
             else if point.y < self.bannerView.frame.height - 20 || point.x < 40 || point.x > self.view.frame.width - 40 {
-                let cameraUpdate = GMSCameraUpdate.setTarget(mapView!.projection.coordinateForPoint(point))
-                mapView?.animateWithCameraUpdate(cameraUpdate)
+                let cameraUpdate = GMSCameraUpdate.setTarget(_mapView!.projection.coordinateForPoint(point))
+                _mapView?.animateWithCameraUpdate(cameraUpdate)
             }
         }
     }
@@ -291,7 +300,7 @@ extension AtchMapViewController {
     
     private func createNewMarker(user: PFObject, location: PFGeoPoint?) {
         let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude))
-        marker.map = mapView
+        marker.map = _mapView
         _friendManager.userMarkers[user.objectId!] = marker
         setMarkerImage(marker, userId: user.objectId!)
         marker.userData = user.objectId!
@@ -304,8 +313,8 @@ extension AtchMapViewController {
             _locationUpdater?.sendLocationToServer()
             _locationUpdater?.getFriendLocationsFromServer()
             camera = GMSCameraPosition.cameraWithTarget(location, zoom: 6)
-            mapView!.animateToCameraPosition(camera)
-            mapView!.myLocationEnabled = true
+            _mapView!.animateToCameraPosition(camera)
+            _mapView!.myLocationEnabled = true
             firstLocation = false
         }
     }
@@ -359,7 +368,11 @@ extension AtchMapViewController {
                 
             }
         }
-        mapView!.myLocationEnabled = true
+        _mapView!.myLocationEnabled = true
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        containerVC?.removeChildren()
     }
     
     //to fufill delegates

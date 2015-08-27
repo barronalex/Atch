@@ -23,7 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-
+        PFInstallation.currentInstallation().setObject(0, forKey: "badge")
+        PFInstallation.currentInstallation().saveInBackground()
         
         //add googlemaps SDK
         GMSServices.provideAPIKey("AIzaSyANU3A5FMQqMjgdWEYb1uZhXym68Cppc_o")
@@ -50,11 +51,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-
+        _mapView?.myLocationEnabled = false
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-
+        _mapView?.myLocationEnabled = true
     }
     
 
@@ -84,12 +85,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         println("receiving notification")
-        //if userInfo["type"] as? String == "message" {
+        let curVC = getVisibleViewController(self.window?.rootViewController)
+        if curVC is LoginViewController {
+            return
+        }
+        if userInfo["type"] as? String == "message" {
             dealWithMessageNotification(application, userInfo: userInfo)
-        //}
+        }
         if userInfo["type"] as? String == "friendRequest" {
             if application.applicationState != UIApplicationState.Active {
-                self.goToAddFriends()
+                Navigator.goToAddFriends()
+            }
+            else {
+                let aps = userInfo["aps"] as! [NSObject : AnyObject]
+                if let text = aps["alert"] as? String {
+                    _notificationBanner.displayNotification(text, type: "friendRequest", toUsers: [String]())
+                }
+            }
+        }
+        if userInfo["type"] as? String == "friendAccept" {
+            if application.applicationState != UIApplicationState.Active {
+                Navigator.goToFriends()
+            }
+            else {
+                let aps = userInfo["aps"] as! [NSObject : AnyObject]
+                if let text = aps["alert"] as? String {
+                    _notificationBanner.displayNotification(text, type: "friendAccept", toUsers: [String]())
+                }
             }
         }
     }
@@ -98,12 +120,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let curUser = PFUser.currentUser() {
             if let toUserId = userInfo["chatterParseId"] as? String {
                 println("working")
-                return [curUser.objectId!, toUserId]
+                return [PFUser.currentUser()!.objectId!, toUserId]
             }
             else { return nil }
         }
         else {
-            self.goToLogin()
+            Navigator.goToLogin()
             return nil
         }
     }
@@ -118,14 +140,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     NSNotificationCenter.defaultCenter().postNotificationName(messageNotificationReceivedKey, object: self, userInfo: nil)
                     return
                 }
+                
             }
-            PFPush.handlePush(userInfo)
-           
+            let curVC = getVisibleViewController(self.window?.rootViewController)
+            if curVC is LoginViewController || curVC is IntroViewController {
+                return
+            }
+            let aps = userInfo["aps"] as! [NSObject : AnyObject]
             
+            if let text = aps["alert"] as? String {
+                //let goodtext = String(text)
+                _notificationBanner.displayNotification(text, type: "message", toUsers: toUsers!)
+            }
+        
         }
         else {
             println("inactive")
-            self.goToMessages(toUsers!)
+            Navigator.goToMessages(toUsers!)
         }
 
     }
@@ -137,50 +168,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return getVisibleViewController(rootVC!.presentedViewController)
     }
     
-    private func goToMessages(toUsers: [String]) {
-        
-        println("past clauses")
-        if let atchVC = getVisibleViewController(self.window?.rootViewController) as? AtchMapViewController {
-            println("ATCH MAP CONTROLLER PRESENTED")
-            atchVC.tappedUserId = toUsers[1]
-            atchVC.containerVC?.goToMessages(toUsers)
-            atchVC.bringUpMessagesScreen()
-        }
-        else if let introVC = getVisibleViewController(self.window?.rootViewController) as? IntroViewController { }
-        else if let friendsVC = getVisibleViewController(self.window?.rootViewController) as? FriendsViewController {
-            println("FRIEND VIEWCONTROLLER PRESENTED")
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
-            getVisibleViewController(self.window?.rootViewController).showViewController(atchVC, sender: nil)
-            atchVC.tappedUserId = toUsers[1]
-            atchVC.containerVC?.goToMessages(toUsers)
-            atchVC.bringUpMessagesScreen()
-            if let friendLocation = _friendManager.userMarkers[toUsers[1]]?.position {
-                println("animating")
-                atchVC.mapView!.animateToLocation(friendLocation)
-            }
-            
-        }
-    }
-    
-    private func goToLogin() {
-        if !(getVisibleViewController(self.window?.rootViewController) is LoginViewController)  {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let loginVC = storyboard.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
-            getVisibleViewController(self.window?.rootViewController).showViewController(loginVC, sender: nil)
-        }
-    }
-    
-    private func goToAddFriends() {
-        if !(getVisibleViewController(self.window?.rootViewController) is AddFriendsViewController)  {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let loginVC = storyboard.instantiateViewControllerWithIdentifier("AddFriendsViewController") as! AddFriendsViewController
-            getVisibleViewController(self.window?.rootViewController).showViewController(loginVC, sender: nil)
-        }
-
-    }
-    
-
-
 }
 

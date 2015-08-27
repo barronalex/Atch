@@ -36,10 +36,11 @@ class MapContainerViewController: UIViewController {
             println("disappearing VC")
             childVC.viewDidDisappear(false)
         }
+        childVCs.removeAll(keepCapacity: true)
     }
     
     override func viewDidLoad() {
-        
+        self.view.alpha = 0.95
     }
     
 }

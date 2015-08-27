@@ -73,6 +73,33 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         self.view.endEditing(true)
         setUpTable()
     }
+    
+    func goToChat(sender: AnyObject) {
+        if let button = sender as? UIButton {
+            let row = button.tag
+            goToMap(row, toMessages: true)
+        }
+    }
+    
+    func goToMap(row: Int, toMessages: Bool) {
+        //go to friends messaging screen
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
+        self.showViewController(atchVC, sender: nil)
+        let friendId = _friendManager.friends[row].objectId!
+        if let friendLocation = _friendManager.userMarkers[friendId]?.position {
+            println("animating")
+            _mapView?.animateToLocation(friendLocation)
+        }
+        atchVC.tappedUserId = friendId
+        if toMessages {
+            atchVC.bringUpMessagesScreen()
+        }
+        else {
+            atchVC.putBannerUp()
+        }
+    }
+
 
 }
 
@@ -80,19 +107,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
 extension FriendsViewController {
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        //go to friends messaging screen
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
-        self.showViewController(atchVC, sender: nil)
-        let friendId = _friendManager.friends[indexPath.row].objectId!
-        var toUsers = [PFUser.currentUser()!.objectId!, friendId]
-        if let friendLocation = _friendManager.userMarkers[friendId]?.position {
-            println("animating")
-            atchVC.mapView!.animateToLocation(friendLocation)
-        }
-        atchVC.tappedUserId = friendId
-        atchVC.containerVC?.goToMessages(toUsers)
-        atchVC.bringUpMessagesScreen()
+        goToMap(indexPath.row, toMessages: false)
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -114,7 +129,10 @@ extension FriendsViewController {
             print("table doin: \(username)")
             cell.username.text = username
         }
-        cell.acceptButton.hidden = true
+        cell.acceptButton.userInteractionEnabled = true
+        cell.acceptButton.setTitle("chat", forState: .Normal)
+        cell.acceptButton.tag = row
+        cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
             cell.name.text = fullname
         }
