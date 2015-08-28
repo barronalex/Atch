@@ -22,8 +22,6 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var topContainerConstraint: NSLayoutConstraint!
     
-    @IBOutlet weak var circleImageLeft: UIImageView!
-    
     @IBOutlet weak var containerHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var containerView: UIView!
@@ -139,13 +137,6 @@ extension AtchMapViewController {
     }
     
     func setUpMap() {
-        if _locationUpdater == nil {
-            println("this is nillll")
-        }
-        if _locationUpdater?.getLocation() != nil {
-            println("this is also nil")
-        }
-        
         if let location = _locationUpdater!.getLocation() {
             if _mapView == nil {
                 _mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: GMSCameraPosition.cameraWithTarget(location.coordinate, zoom: 6))
@@ -164,7 +155,7 @@ extension AtchMapViewController {
         }
         self.view.addSubview(_mapView!)
         _mapView!.settings.myLocationButton = true
-        self.view.bringSubviewToFront(circleImageLeft)
+        //self.view.bringSubviewToFront(circleImageLeft)
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
         _mapView?.delegate = self
