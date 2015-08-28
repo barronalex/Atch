@@ -43,6 +43,7 @@ class IntroViewController: UIViewController {
 //            println("YESSSSSSSS")
 //        }
 //        self.presentViewController(UIAlertController(title: "logout failed", message: "we were unable to log you out at this time", preferredStyle: UIAlertControllerStyle.Alert), animated: false, completion: nil)
+        //_notificationBanner.displayNotification("this is a testy test", type: "message", toUsers: [String]())
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
         }

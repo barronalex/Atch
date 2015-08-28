@@ -234,12 +234,12 @@ extension AtchMapViewController {
         var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         containerVC?.goToMessages(toUsers)
         //put up banner
-        println("friend map count: \(_friendManager.friendMap.count)")
+        println("friend map count: \(_friendManager.friends.count)")
         println("tapped id: \(tappedUserId)")
-        bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
+        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_fullname) as? String
         println("BANNER TEXT: \(bannerLabel.text)")
         if bannerLabel.text == nil {
-            bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_username) as? String
+           bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
         }
         self.view.bringSubviewToFront(bannerView)
         self.view.bringSubviewToFront(containerView)
@@ -258,11 +258,11 @@ extension AtchMapViewController {
         var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         containerVC?.goToMessages(toUsers)
         //put up banner
-        println("friend map count: \(_friendManager.friendMap.count)")
+        println("friend map count: \(_friendManager.friends.count)")
         println("tapped id: \(tappedUserId)")
-        bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
+        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_fullname) as? String
         if bannerLabel.text == nil {
-            bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_username) as? String
+            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
         }
 
     }
@@ -352,14 +352,11 @@ extension AtchMapViewController {
     func friendListFound(friends: [PFUser]) {
         //map user ids to user objects
         FacebookManager.downloadProfilePictures(friends)
-        for friend in friends {
-            _friendManager.friendMap[friend.objectId!] = friend
-        }
         if self.tappedUserId != nil {
-            bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
+            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_fullname) as? String
             println("BANNER TEXT POST FRIENDS: \(bannerLabel.text)")
             if bannerLabel.text == nil {
-                bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
+                bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
             }
         }
     }
@@ -402,7 +399,7 @@ extension AtchMapViewController {
     }
     
     //to fufill delegates
-    func friendRequestSent() { }
+    func friendRequestSent(req: PFObject, userId: String) { }
     func friendRequestAccepted() { }
     func pendingFromRequestsFound(requests: [PFObject], users: [PFUser]) { }
     func pendingToRequestsFound(requests: [PFObject], users: [PFUser]) { }

@@ -18,6 +18,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     
     var sectionMap = [Int:[PFObject]]()
     var sectionTitles = ["", ""]
+    var userToRequestMap = [String:PFObject]()
     
     override func viewDidLoad() {
         
@@ -73,7 +74,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         let friendId = _friendManager.friends[row].objectId!
         if let friendLocation = _friendManager.userMarkers[friendId]?.position {
             println("animating")
-            _mapView?.animateToLocation(friendLocation)
+            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 14, bearing: 0, viewingAngle: 0))
         }
         atchVC.tappedUserId = friendId
         if toMessages {
@@ -190,10 +191,13 @@ extension FriendsViewController {
     
     func pendingToRequestsFound(requests: [PFObject], users: [PFUser]) {
         //present requests
+        for var i = 0; i < users.count; i++ {
+            userToRequestMap[users[i].objectId!] = requests[i]
+        }
         print("requests found")
-        if _friendManager.pendingFriendsToUser.count > 0 {
+        if users.count > 0 {
             sectionTitles[0] = "Pending Requests"
-            sectionMap[0] = _friendManager.pendingFriendsToUser
+            sectionMap[0] = users
             FacebookManager.downloadProfilePictures(users)
             table.reloadData()
         }
@@ -201,13 +205,16 @@ extension FriendsViewController {
     
     func pendingFromRequestsFound(requests: [PFObject], users: [PFUser]) {
         //present requests
-        println("count: \(_friendManager.pendingFriendsFromUser.count)")
+        for var i = 0; i < users.count; i++ {
+            userToRequestMap[users[i].objectId!] = requests[i]
+        }
         print("from requests found")
         table.reloadData()
     }
     
-    func friendRequestSent() {
-        println("count: \(_friendManager.pendingFriendsFromUser.count)")
+    func friendRequestSent(req: PFObject, userId: String) {
+        println("friend request sent")
+        self.userToRequestMap[userId] = req
     }
     
     func friendRequestAccepted() {

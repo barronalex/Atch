@@ -8,19 +8,25 @@
 
 import Foundation
 import Parse
+import GoogleMaps
 
-enum UserType {
-    case Friends
-    case FacebookFriends
-    case PendingFrom
-    case PendingTo
-    case None
+enum UserType: Int {
+    case Friends = 1, PendingTo, PendingFrom, FacebookFriends, None
 }
 
-class User: PFUser {
+class User {
     
     var type = UserType.None
     
     var colour: UIColor?
+    
+    var marker: GMSMarker?
+    
+    var parseObject: PFObject?
+    
+    init(type: UserType, parseObject: PFObject) {
+        self.type = type
+        self.parseObject = parseObject
+    }
     
 }

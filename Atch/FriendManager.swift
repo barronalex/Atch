@@ -17,13 +17,8 @@ class FriendManager {
     var delegate: FriendManagerDelegate?
     
     var userMarkers = [String:GMSMarker]()
-    var friendMap = [String:User]()
-    var friends = [User]()
-    var pendingFriendsToUser = [PFObject]()
-    var pendingRequestsToUser = [PFObject]()
-    var pendingRequestsFromUser = [PFObject]()
-    var pendingFriendsFromUser = [PFObject]()
-    var facebookFriends = [PFObject]()
+    var userMap = [String:User]()
+    var friends = [PFUser]()
     var friendPics = [String:UIImage]()
     
     func sendRequest(targetUserID: String) {
@@ -40,7 +35,8 @@ class FriendManager {
             if error == nil {
                 if let objects = objects as? [PFObject] {
                     if objects.count == 0 {
-                        self.createRequest(targetUser)
+                        let req = self.createRequest(targetUser)
+                        self.delegate?.friendRequestSent(req, userId: targetUserID)
                     }
                     else {
                         print("duplicate request")
@@ -52,16 +48,17 @@ class FriendManager {
                 print("error in sending request")
                 
             }
-            self.delegate?.friendRequestSent()
+            
         }
     }
     
-    func createRequest(targetUser: PFUser) {
+    func createRequest(targetUser: PFUser) -> PFObject {
         let friendRequest = PFObject(className: "FriendRequest")
         friendRequest.setObject(PFUser.currentUser()!, forKey: parse_friendRequest_fromUser)
         friendRequest.setObject(targetUser, forKey: parse_friendRequest_toUser)
         friendRequest.setObject("requested", forKey: parse_friendRequest_state)
         friendRequest.saveInBackground()
+        return friendRequest
     }
     
     func acceptRequest(friendId: String) {
@@ -158,15 +155,14 @@ class FriendManager {
             if error == nil {
                 if let pendingFriends = pendingFriends as? [PFUser] {
                     //sort requests and users so that they are in same order
+                    
                     if fromUser {
-                        self.pendingRequestsFromUser = requests
-                        self.pendingFriendsFromUser = pendingFriends
                         self.delegate?.pendingFromRequestsFound(requests, users: pendingFriends)
+                        self.addUsersToMap(pendingFriends, type: UserType.PendingFrom)
                     }
                     else {
-                        self.pendingRequestsToUser = requests
-                        self.pendingFriendsToUser = pendingFriends
                         self.delegate?.pendingToRequestsFound(requests, users: pendingFriends)
+                        self.addUsersToMap(pendingFriends, type: UserType.PendingTo)
                     }
                     
                 }
@@ -178,6 +174,25 @@ class FriendManager {
 
     }
     
+    func addUsersToMap(parseObjects: [PFObject], type: UserType) {
+        
+        for object in parseObjects {
+            if let user = self.userMap[object.objectId!] {
+                //if user already exists, change their flag if necessary
+                if type.rawValue < user.type.rawValue {
+                    user.type = type
+                    self.userMap[object.objectId!] = user
+                }
+            }
+            else {
+                let user = User(type: type, parseObject: object)
+                self.userMap[object.objectId!] = user
+            }
+            
+            
+        }
+    }
+    
     func findPFUserFromFbid(ids: [String]) {
         let query = PFUser.query()!
         query.whereKey(parse_user_fbid, containedIn: ids)
@@ -185,9 +200,8 @@ class FriendManager {
             (fbFriends: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {
                 if let fbFriends = fbFriends as? [PFUser] {
-                    self.facebookFriends = fbFriends
+                    self.addUsersToMap(fbFriends, type: UserType.FacebookFriends)
                     self.delegate?.facebookFriendsFound(fbFriends)
-                    
                 }
             } else {
                 print("error in GETTING PENDING USERS request")
@@ -234,9 +248,7 @@ class FriendManager {
                     if error == nil {
                         if let friends = friends as? [PFUser] {
                             self.friends = friends
-                            for friend in friends {
-                                self.friendMap[friend.objectId!] = friend
-                            }
+                            self.addUsersToMap(friends, type: UserType.Friends)
                             self.delegate?.friendListFound(friends)
                         }
                     } else {
@@ -268,6 +280,7 @@ class FriendManager {
             (searchResults: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {
                 if let searchResults = searchResults as? [PFUser] {
+                    self.addUsersToMap(searchResults, type: UserType.None)
                     self.delegate?.searchFinished(searchResults)
                 }
             } else {

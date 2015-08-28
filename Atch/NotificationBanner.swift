@@ -20,34 +20,64 @@ class NotificationBanner: NSObject {
     var toUsers = [String]()
     var type = ""
     var notifView = UIView()
+    var view: UIView?
     
     func displayNotification(text: String, type: String, toUsers: [String]) {
         self.toUsers = toUsers
         self.type = type
         let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
-        let view = curVC.view
-        //make banner in main view and animate it down
-        //make container view controller in current view of certain width and height
-        //set its child to notification banner 
-        notifView = UIView(frame: CGRectMake(0, -notification_banner_height, view.frame.width, notification_banner_height))
-        
-        view.addSubview(notifView)
-        notifView.backgroundColor = UIColor.grayColor()
-        let tapGesture = UITapGestureRecognizer(target: self, action: Selector("notificationTapped"))
-        notifView.addGestureRecognizer(tapGesture)
-        let notifText = UILabel()
-        notifText.text = text
-        let maxsize = CGSize(width: view.frame.width - notification_text_margin * 2, height: notification_text_height)
-        let actualsize = notifText.sizeThatFits(maxsize)
-        notifText.frame = CGRectMake(notification_text_margin + ((view.frame.width - notification_text_margin * 2) - actualsize.width)/2, (notification_banner_height/2 - notification_text_height/2) + notification_top_margin, actualsize.width, actualsize.height)
+        self.view = curVC.view
+        setUpView(self.view!)
+        let notifText = setUpLabel(self.view!, text: text)
         notifView.addSubview(notifText)
-        view.bringSubviewToFront(notifView)
+        self.view!.bringSubviewToFront(notifView)
         UIView.animateWithDuration(0.5, animations: {
             self.notifView.frame.origin.y = 0
             notifText.frame.origin.y = (notification_banner_height/2 - notification_text_height/2) + notification_top_margin/2
         })
         //put banner back up
         NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: Selector("putBannerDown:"), userInfo: ["notifView":notifView], repeats: false)
+    }
+    
+    private func setUpLabel(view: UIView, text: String) -> UILabel{
+        let notifText = UILabel()
+        notifText.text = text
+        let maxsize = CGSize(width: view.frame.width - notification_text_margin * 2, height: notification_text_height)
+        let actualsize = notifText.sizeThatFits(maxsize)
+        notifText.frame = CGRectMake(notification_text_margin + ((view.frame.width - notification_text_margin * 2) - actualsize.width)/2, (notification_banner_height/2 - notification_text_height/2) + notification_top_margin, actualsize.width, actualsize.height)
+        return notifText
+
+    }
+    
+    private func setUpView(view: UIView) {
+        notifView = UIView(frame: CGRectMake(0, -notification_banner_height, view.frame.width, notification_banner_height))
+        
+        view.addSubview(notifView)
+        notifView.backgroundColor = UIColor.grayColor()
+        let tapGesture = UITapGestureRecognizer(target: self, action: Selector("notificationTapped"))
+        notifView.addGestureRecognizer(tapGesture)
+        let panGesture = UIPanGestureRecognizer(target: self, action: Selector("notificationSwiped:"))
+        notifView.addGestureRecognizer(panGesture)
+    }
+    
+    func notificationSwiped(recognizer: UIPanGestureRecognizer) {
+        if recognizer.state == UIGestureRecognizerState.Ended {
+            if notifView.frame.origin.y < 0 {
+                UIView.animateWithDuration(0.5, animations: {
+                    self.notifView.frame.origin.y = -notification_banner_height
+                    }, completion: {
+                        (finished) in
+                        self.notifView.removeFromSuperview()
+                })
+            }
+        }
+        let yTranslation = recognizer.translationInView(self.view!).y
+        if notifView.frame.origin.y + yTranslation > 0 {
+            notifView.frame.origin.y = 0
+        }
+        else {
+            notifView.frame.origin.y += yTranslation
+        }
     }
     
     func putBannerDown(notification: NSNotification) {

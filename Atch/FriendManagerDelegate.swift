@@ -10,7 +10,7 @@ import Parse
 
 protocol FriendManagerDelegate {
     
-    func friendRequestSent()
+    func friendRequestSent(req: PFObject, userId: String)
     
     func friendRequestAccepted()
     

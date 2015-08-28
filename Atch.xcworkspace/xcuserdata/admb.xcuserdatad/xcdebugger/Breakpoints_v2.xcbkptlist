@@ -41,22 +41,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Atch/FriendManager.swift"
-            timestampString = "462379013.917995"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "238"
-            endingLineNumber = "238"
-            landmarkName = "getFriends()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
             timestampString = "462455161.479581"
             startingColumnNumber = "9223372036854775807"
@@ -64,6 +48,22 @@
             startingLineNumber = "122"
             endingLineNumber = "122"
             landmarkName = "setUpLocationManager()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Atch/NotificationBanner.swift"
+            timestampString = "462473603.510809"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
+            landmarkName = "displayNotification(_:type:toUsers:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

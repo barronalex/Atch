@@ -42,9 +42,26 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     
     func acceptButton(sender: AnyObject) {
         let button = sender as! UIButton
-        let request = _friendManager.pendingRequestsToUser[button.tag]
-        _friendManager.acceptRequest(request)
-        button.setTitle("friends", forState: .Normal)
+        if sectionTitles[1] == "Search Results" {
+            let user = sectionMap[1]![button.tag]
+            if let request = userToRequestMap[user.objectId!] {
+                _friendManager.acceptRequest(request)
+                //update usermap to show that these people are friends
+                let friend = _friendManager.userMap[user.objectId!]!
+                friend.type = UserType.Friends
+                _friendManager.userMap[user.objectId!]! = friend
+            }
+        }
+        else {
+            let user = sectionMap[0]![button.tag]
+            if let request = userToRequestMap[user.objectId!] {
+                _friendManager.acceptRequest(request)
+                let friend = _friendManager.userMap[user.objectId!]!
+                friend.type = UserType.Friends
+                _friendManager.userMap[user.objectId!]! = friend
+            }
+        }
+        table.reloadData()
     }
     
     func addButton(sender: AnyObject) {
@@ -58,7 +75,11 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
             println("here")
             cell.acceptButton.hidden = false
             cell.acceptButton.setImage(UIImage(named: "Sent-100.png"), forState: .Normal)
-            _friendManager.pendingFriendsFromUser.append(friend)
+            //set flag in map to pending from user
+            let user = _friendManager.userMap[friend.objectId!]!
+            user.type = UserType.PendingFrom
+            _friendManager.userMap[friend.objectId!] = user
+
             table.reloadData()
         }
         print("Requested: \(friend.objectId)")
@@ -93,22 +114,16 @@ extension AddFriendsViewController {
         else {
             cell.profileImage.image = nil
         }
+        let fulluser = _friendManager.userMap[user.objectId!]!
         //show tick if already friends
-        if contains(_friendManager.friends, user) {
+        if fulluser.type == UserType.Friends {
             cell.acceptButton.setImage(UIImage(named: "Ok-512.png"), forState: .Normal)
             cell.acceptButton.setTitle("", forState: .Normal)
             cell.acceptButton.userInteractionEnabled = false
         }
-        else if contains(_friendManager.pendingFriendsFromUser, user) {
+        else if fulluser.type == UserType.PendingFrom {
             cell.acceptButton.setImage(UIImage(named: "Sent-100.png"), forState: .Normal)
             cell.acceptButton.userInteractionEnabled = false
-        }
-        else if indexPath.section == 0 || contains(_friendManager.pendingRequestsToUser, user) {
-            cell.acceptButton.userInteractionEnabled = true
-            cell.acceptButton.setTitle("accept", forState: .Normal)
-            cell.acceptButton.tag = row
-            cell.acceptButton.addTarget(self, action: "acceptButton:", forControlEvents: .TouchUpInside)
-            
         }
         else {
             cell.addButton.hidden = false
@@ -124,37 +139,40 @@ extension AddFriendsViewController {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
-        if contains(_friendManager.pendingFriendsFromUser, user) {
+        let fulluser = _friendManager.userMap[user.objectId!]!
+        if fulluser.type == UserType.PendingFrom {
             let cancel = UITableViewRowAction(style: .Normal, title: "cancel") { action, index in
                 println("request cancelled")
-                let reqIndex = find(_friendManager.pendingFriendsFromUser, user)!
-                let friendRequest = _friendManager.pendingRequestsFromUser[reqIndex]
-                PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!]) {
-                    (response) in
-                    dispatch_async(dispatch_get_main_queue()) {
-                        _friendManager.getPendingRequests(true)
-                    }
+                if let friendRequest = self.userToRequestMap[user.objectId!] {
+                    PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!])
+                    fulluser.type = UserType.None
+                    _friendManager.userMap[user.objectId!] = fulluser
+                    self.table.editing = false
+                    let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+                    cell.acceptButton.userInteractionEnabled = false
+                    self.table.reloadData()
                 }
-                self.table.editing = false
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
-                cell.acceptButton.userInteractionEnabled = false
+                
                 
             }
             cancel.backgroundColor = UIColor.redColor()
             return [cancel]
         }
-        if contains(_friendManager.pendingFriendsToUser, user) {
+        if fulluser.type == UserType.PendingTo {
             let reject = UITableViewRowAction(style: .Normal, title: "reject") { action, index in
                 println("request rejected")
-                let reqIndex = find(_friendManager.pendingFriendsFromUser, user)!
-                let friendRequest = _friendManager.pendingRequestsFromUser[reqIndex]
-                friendRequest.setObject("rejected", forKey: parse_friendRequest_state)
-                friendRequest.saveInBackground()
-                self.table.editing = false
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
-                cell.acceptButton.setImage(UIImage(named: "Cancel 2-100.png"), forState: .Normal)
-                _friendManager.pendingFriendsToUser.removeAtIndex(reqIndex)
-                cell.acceptButton.userInteractionEnabled = false
+                if let friendRequest = self.userToRequestMap[user.objectId!] {
+                    friendRequest.setObject("rejected", forKey: parse_friendRequest_state)
+                    friendRequest.saveInBackground()
+                    self.table.editing = false
+                    let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+                    cell.acceptButton.setImage(UIImage(named: "Cancel 2-100.png"), forState: .Normal)
+                    cell.acceptButton.userInteractionEnabled = false
+                    fulluser.type = UserType.None
+                    _friendManager.userMap[user.objectId!] = fulluser
+                    self.table.reloadData()
+
+                }
             }
             reject.backgroundColor = UIColor.redColor()
             return [reject]
@@ -181,7 +199,8 @@ extension AddFriendsViewController {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
-        if contains(_friendManager.pendingFriendsFromUser, user) || contains(_friendManager.pendingFriendsToUser, user) || contains(_friendManager.friends, user) {
+        let fulluser = _friendManager.userMap[user.objectId!]!
+        if fulluser.type == UserType.PendingFrom || fulluser.type == UserType.PendingTo || fulluser.type == UserType.Friends {
             return true
         }
         return false
