@@ -14,6 +14,12 @@ class MapContainerViewController: UIViewController {
     var toUsers = [String]()
     
     func goToMessages(toUsers: [String]) {
+        if childVCs.count > 0 {
+            if let messageVC = childVCs[0] as? MessagingViewController {
+                messageVC.refreshMessages()
+            }
+            return
+        }
         self.toUsers = toUsers
         //add a messagingviewcontroller as a child view controller
         let storyboard = UIStoryboard(name: "Main", bundle: nil)

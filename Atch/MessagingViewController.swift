@@ -17,12 +17,18 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     //have a map of messageids to height
     var messageHeights = [String:CGFloat]()
     
-    let messageSpacing: CGFloat = 20
+    let messageSpacing: CGFloat = 10
     let labelWidth: CGFloat = 115
+    let textViewSpacingInitial: CGFloat = 10
+    let textViewSpacingSend: CGFloat = 60
     
     @IBOutlet weak var messageTable: UITableView!
     
     @IBOutlet weak var textViewConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var textViewLeftConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var dockView: UIView!
     
     @IBOutlet weak var messageTextView: UITextView!
     
@@ -35,7 +41,19 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         messenger.sendMessage(messageTextView.text)
     }
     
+    func showSend() {
+        UIView.animateWithDuration(0.2, animations: {
+            self.textViewLeftConstraint.constant = self.textViewSpacingSend
+            self.view.layoutIfNeeded()
+        })
+    }
     
+    func hideSend() {
+        UIView.animateWithDuration(0.2, animations: {
+            self.textViewLeftConstraint.constant = self.textViewSpacingInitial
+            self.view.layoutIfNeeded()
+        })
+    }
     
     func resizeTextView() {
         let prevHeight = messageTextView.frame.height
@@ -49,6 +67,13 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func textViewDidChange(textView: UITextView) {
+        if textView.text == "" {
+            println("here")
+            hideSend()
+        }
+        else {
+            showSend()
+        }
         resizeTextView()
     }
     
@@ -101,6 +126,12 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        dockView.bringSubviewToFront(messageTextView)
+        messageTextView.layer.borderColor = UIColor.grayColor().CGColor
+        messageTextView.layer.borderWidth = 1.0
+        messageTextView.layer.cornerRadius = 5
+        messageTextView.layer.masksToBounds = true
+        //messageTextView.
         let prevHeight = messageTextView.frame.height
         let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
         textViewConstraint.constant = sizeThatFitsContent.height
@@ -158,7 +189,7 @@ extension MessagingViewController {
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let message = messages[indexPath.row]
-        let text = message.objectForKey(parse_message_text) as! String
+        var text = message.objectForKey(parse_message_text) as! String
         let textHeight = getHeightOfLabel(text) + messageSpacing
         return textHeight
         
@@ -179,6 +210,7 @@ extension MessagingViewController {
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
             cell.messageText.text = message.objectForKey(parse_message_text) as? String
+            cell.contentView.bringSubviewToFront(cell.messageText)
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }
@@ -188,6 +220,7 @@ extension MessagingViewController {
         else {
             let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
             cell.messageText.text = message.objectForKey(parse_message_text) as? String
+            cell.contentView.bringSubviewToFront(cell.messageText)
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }
@@ -203,8 +236,10 @@ extension MessagingViewController {
     func sentMessage() {
         println("method finished")
         messenger.getMessageHistoryFrom(toUsers)
+        self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTextView.text = ""
+            self.hideSend()
             self.resizeTextView()
             //self.messageTextField.enabled = true
             self.sendButton.enabled = true

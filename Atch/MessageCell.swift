@@ -12,9 +12,13 @@ class MessageCell: UITableViewCell {
 
     @IBOutlet weak var messageText: UILabel!
     
+    @IBOutlet weak var messageView: UIView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        messageView.layer.cornerRadius = 5
+        messageView.layer.masksToBounds = true
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

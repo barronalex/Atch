@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7205E760A2ED1A1EC96D506A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FDB37463484F4C44125EB0 /* libPods.a */; };
-		D027884F1B892073007B76D9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D027884E1B892073007B76D9 /* Main.storyboard */; };
 		D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788501B8A2E80007B76D9 /* NotificationKeys.swift */; };
 		D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */; };
 		D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */; };
@@ -20,6 +19,10 @@
 		D02788651B8E2993007B76D9 /* NotificationBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788641B8E2993007B76D9 /* NotificationBanner.swift */; };
 		D02788671B8F2935007B76D9 /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788661B8F2935007B76D9 /* Navigator.swift */; };
 		D02788691B8F5B66007B76D9 /* LeftToRightSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02788681B8F5B66007B76D9 /* LeftToRightSegue.swift */; };
+		D027886B1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D027886A1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg */; };
+		D02788771B8FE032007B76D9 /* List-100.png in Resources */ = {isa = PBXBuildFile; fileRef = D02788761B8FE032007B76D9 /* List-100.png */; };
+		D02788791B8FE125007B76D9 /* Exit-100.png in Resources */ = {isa = PBXBuildFile; fileRef = D02788781B8FE125007B76D9 /* Exit-100.png */; };
+		D02788811B8FE311007B76D9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D02788801B8FE311007B76D9 /* Main.storyboard */; };
 		D02E5B011B6FB92E007F7FDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */; };
 		D02E5B051B6FB93E007F7FDB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */; };
 		D02E5B071B6FB947007F7FDB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02E5B061B6FB947007F7FDB /* CoreLocation.framework */; };
@@ -78,7 +81,6 @@
 		27FDB37463484F4C44125EB0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58330834A18AEF6389B79757 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		CB206771C4791D7C1C097AF3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		D027884E1B892073007B76D9 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		D02788501B8A2E80007B76D9 /* NotificationKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationKeys.swift; sourceTree = "<group>"; };
 		D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendsViewController.swift; sourceTree = "<group>"; };
 		D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardHeight.swift; sourceTree = "<group>"; };
@@ -90,6 +92,10 @@
 		D02788641B8E2993007B76D9 /* NotificationBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationBanner.swift; sourceTree = "<group>"; };
 		D02788661B8F2935007B76D9 /* Navigator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
 		D02788681B8F5B66007B76D9 /* LeftToRightSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftToRightSegue.swift; sourceTree = "<group>"; };
+		D027886A1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg"; sourceTree = "<group>"; };
+		D02788761B8FE032007B76D9 /* List-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List-100.png"; sourceTree = "<group>"; };
+		D02788781B8FE125007B76D9 /* Exit-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Exit-100.png"; sourceTree = "<group>"; };
+		D02788801B8FE311007B76D9 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		D02E5B001B6FB92E007F7FDB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D02E5B041B6FB93E007F7FDB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D02E5B061B6FB947007F7FDB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -229,10 +235,10 @@
 				D06611691B868E4300CFE73C /* Messaging */,
 				D0519E811B6E6CF700C473E3 /* AtchMapViewController.swift */,
 				D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */,
+				D02788801B8FE311007B76D9 /* Main.storyboard */,
 				D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */,
 				D0519E7F1B6E6CB900C473E3 /* IntroViewController.swift */,
 				D02788641B8E2993007B76D9 /* NotificationBanner.swift */,
-				D027884E1B892073007B76D9 /* Main.storyboard */,
 				D0519E5D1B6E0AD500C473E3 /* Supporting Files */,
 			);
 			path = Atch;
@@ -249,7 +255,10 @@
 				D02788661B8F2935007B76D9 /* Navigator.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
+				D02788761B8FE032007B76D9 /* List-100.png */,
+				D02788781B8FE125007B76D9 /* Exit-100.png */,
 				D0519E661B6E0AD500C473E3 /* Images.xcassets */,
+				D027886A1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg */,
 				D027885C1B8DC850007B76D9 /* my_location_button.png */,
 				D0519E681B6E0AD500C473E3 /* LaunchScreen.xib */,
 				D02E5B341B723D10007F7FDB /* Atch-Bridging-Header.h */,
@@ -433,8 +442,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D027884F1B892073007B76D9 /* Main.storyboard in Resources */,
+				D027886B1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg in Resources */,
 				D0519E6A1B6E0AD500C473E3 /* LaunchScreen.xib in Resources */,
+				D02788771B8FE032007B76D9 /* List-100.png in Resources */,
+				D02788811B8FE311007B76D9 /* Main.storyboard in Resources */,
+				D02788791B8FE125007B76D9 /* Exit-100.png in Resources */,
 				D027885D1B8DC850007B76D9 /* my_location_button.png in Resources */,
 				D0519E671B6E0AD500C473E3 /* Images.xcassets in Resources */,
 			);

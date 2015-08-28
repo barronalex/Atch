@@ -40,10 +40,31 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
         
     }
     
+    func acceptButton(sender: AnyObject) {
+        let button = sender as! UIButton
+        let request = _friendManager.pendingRequestsToUser[button.tag]
+        _friendManager.acceptRequest(request)
+        button.setTitle("friends", forState: .Normal)
+    }
+    
+    func addButton(sender: AnyObject) {
+        let button = sender as! UIButton
+        let friend = sectionMap[1]![button.tag]
+        print("Requested: \(friend.objectId)")
+        _friendManager.sendRequest(friend.objectId!)
+        button.setTitle("sent", forState: .Normal)
+        button.userInteractionEnabled = false
+        
+    }
+    
 }
 
 //table view methods
 extension AddFriendsViewController {
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+    }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         print("row: \(indexPath.row)")
@@ -81,11 +102,9 @@ extension AddFriendsViewController {
             
         }
         else {
-            cell.acceptButton.setTitle("add", forState: .Normal)
-            println("ADDING")
-            cell.acceptButton.userInteractionEnabled = true
-            cell.acceptButton.tag = row
-            cell.acceptButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
+//            cell.plusButton.hidden = false
+//            cell.plusButton.userInteractionEnabled = true
+//            cell.plusButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
         }
         return cell
     }

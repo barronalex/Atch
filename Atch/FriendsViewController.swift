@@ -51,22 +51,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             }
         }
     }
-
-    func acceptButton(sender: AnyObject) {
-        let button = sender as! UIButton
-        let request = _friendManager.pendingRequestsToUser[button.tag]
-        _friendManager.acceptRequest(request)
-        button.setTitle("friends", forState: .Normal)
-    }
-    
-    func addButton(sender: AnyObject) {
-        let button = sender as! UIButton
-        let friend = sectionMap[1]![button.tag]
-        print("Requested: \(friend.objectId)")
-        _friendManager.sendRequest(friend.objectId!)
-        button.setTitle("sent", forState: .Normal)
-        button.userInteractionEnabled = false
-    }
     
     func reset() {
         print("cancelllllleedd")
@@ -217,11 +201,13 @@ extension FriendsViewController {
     
     func pendingFromRequestsFound(requests: [PFObject], users: [PFUser]) {
         //present requests
+        println("count: \(_friendManager.pendingFriendsFromUser.count)")
         print("from requests found")
     }
     
     func friendRequestSent() {
-
+        println("count: \(_friendManager.pendingFriendsFromUser.count)")
+        _friendManager.getPendingRequests(true)
     }
     
     func friendRequestAccepted() {

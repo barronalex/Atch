@@ -13,7 +13,11 @@ import Parse
 import Bolts
 import CoreGraphics
 
+
+
 class IntroViewController: UIViewController {
+    
+    @IBOutlet weak var image: UIImageView!
     
     @IBAction func logout() {
         PFUser.logOutInBackgroundWithBlock() {
@@ -31,6 +35,7 @@ class IntroViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.sendSubviewToBack(image)
     }
     
     override func viewDidAppear(animated: Bool) {

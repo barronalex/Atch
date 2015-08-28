@@ -22,6 +22,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var topContainerConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var circleImageLeft: UIImageView!
+    
     @IBOutlet weak var containerHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var containerView: UIView!
@@ -50,6 +52,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        println("loading Atch")
         self.containerHeightConstraint.constant = self.view.frame.height - bannerView.frame.height
         self.view.layoutIfNeeded()
         self.topContainerConstraint.constant = self.view.frame.height - 20
@@ -68,7 +71,9 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         }
         if segue.identifier == "logoutfrommap" {
+            putBannerDown()
             _mapView?.myLocationEnabled = false
+            _mapView?.settings.myLocationButton = false
             _locationUpdater?.stopUpdates()
         }
         if segue.identifier == "mapcontainerembed" {
@@ -113,16 +118,17 @@ extension AtchMapViewController {
     }
     
     func setUpLocationManager() {
-        _locationUpdater?.delegate = self
         firstLocation = true
         if _locationUpdater == nil {
+            println("here")
             _locationUpdater = LocationUpdater()
-            _locationUpdater?.delegate = self
-            _locationUpdater?.startUpdates()
+            _locationUpdater!.delegate = self
+            _locationUpdater!.startUpdates()
         }
         else if !_locationUpdater!.updating {
             _locationUpdater?.startUpdates()
         }
+         _locationUpdater?.delegate = self
         
     }
     
@@ -133,6 +139,12 @@ extension AtchMapViewController {
     }
     
     func setUpMap() {
+        if _locationUpdater == nil {
+            println("this is nillll")
+        }
+        if _locationUpdater?.getLocation() != nil {
+            println("this is also nil")
+        }
         
         if let location = _locationUpdater!.getLocation() {
             if _mapView == nil {
@@ -152,6 +164,7 @@ extension AtchMapViewController {
         }
         self.view.addSubview(_mapView!)
         _mapView!.settings.myLocationButton = true
+        self.view.bringSubviewToFront(circleImageLeft)
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
         _mapView?.delegate = self
@@ -258,7 +271,6 @@ extension AtchMapViewController {
         })
         bannerUp = false
         bannerAtTop = false
-        
     }
 
 }
