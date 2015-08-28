@@ -49,6 +49,16 @@
 		D02E5B4E1B7F32A9007F7FDB /* UsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02E5B4D1B7F32A9007F7FDB /* UsernameManager.swift */; };
 		D02E5B501B7F32BC007F7FDB /* UsernameManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02E5B4F1B7F32BC007F7FDB /* UsernameManagerDelegate.swift */; };
 		D02E5B5C1B81D563007F7FDB /* PendingFriendEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02E5B5B1B81D563007F7FDB /* PendingFriendEntry.swift */; };
+		D02F321A1B906195002F9D20 /* circle-xxl.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F32191B906195002F9D20 /* circle-xxl.png */; };
+		D02F321C1B906279002F9D20 /* FriendEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02F321B1B906279002F9D20 /* FriendEntry.swift */; };
+		D02F321E1B906494002F9D20 /* Plus-50.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F321D1B906494002F9D20 /* Plus-50.png */; };
+		D02F32201B90689D002F9D20 /* Ok-50.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F321F1B90689D002F9D20 /* Ok-50.png */; };
+		D02F32221B906A66002F9D20 /* Ok-25.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F32211B906A66002F9D20 /* Ok-25.png */; };
+		D02F32241B906AFB002F9D20 /* Ok-512.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F32231B906AFB002F9D20 /* Ok-512.png */; };
+		D02F32261B906C5B002F9D20 /* Chat-100.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F32251B906C5B002F9D20 /* Chat-100.png */; };
+		D02F32281B906EC2002F9D20 /* Sent-100.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F32271B906EC2002F9D20 /* Sent-100.png */; };
+		D02F322A1B9077EB002F9D20 /* Cancel 2-100.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F32291B9077EB002F9D20 /* Cancel 2-100.png */; };
+		D02F322C1B909FFD002F9D20 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02F322B1B909FFD002F9D20 /* User.swift */; };
 		D0519E601B6E0AD500C473E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */; };
 		D0519E671B6E0AD500C473E3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0519E661B6E0AD500C473E3 /* Images.xcassets */; };
 		D0519E6A1B6E0AD500C473E3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0519E681B6E0AD500C473E3 /* LaunchScreen.xib */; };
@@ -63,6 +73,7 @@
 		D066116D1B878BEE00CFE73C /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116C1B878BEE00CFE73C /* MessageCell.swift */; };
 		D066116F1B879F5E00CFE73C /* IncomingMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116E1B879F5E00CFE73C /* IncomingMessageCell.swift */; };
 		D0A458251B83E53700FE2217 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A458241B83E53700FE2217 /* Bolts.framework */; };
+		D0AF66B41B8FFC4A00A8E509 /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AF66B31B8FFC4A00A8E509 /* plus.png */; };
 		D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */; };
 		D0FA22F61B83526E0055F7F1 /* LocationUpdaterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -124,6 +135,16 @@
 		D02E5B4D1B7F32A9007F7FDB /* UsernameManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameManager.swift; sourceTree = "<group>"; };
 		D02E5B4F1B7F32BC007F7FDB /* UsernameManagerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameManagerDelegate.swift; sourceTree = "<group>"; };
 		D02E5B5B1B81D563007F7FDB /* PendingFriendEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingFriendEntry.swift; sourceTree = "<group>"; };
+		D02F32191B906195002F9D20 /* circle-xxl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "circle-xxl.png"; sourceTree = "<group>"; };
+		D02F321B1B906279002F9D20 /* FriendEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendEntry.swift; sourceTree = "<group>"; };
+		D02F321D1B906494002F9D20 /* Plus-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Plus-50.png"; sourceTree = "<group>"; };
+		D02F321F1B90689D002F9D20 /* Ok-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Ok-50.png"; sourceTree = "<group>"; };
+		D02F32211B906A66002F9D20 /* Ok-25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Ok-25.png"; sourceTree = "<group>"; };
+		D02F32231B906AFB002F9D20 /* Ok-512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Ok-512.png"; sourceTree = "<group>"; };
+		D02F32251B906C5B002F9D20 /* Chat-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Chat-100.png"; sourceTree = "<group>"; };
+		D02F32271B906EC2002F9D20 /* Sent-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Sent-100.png"; sourceTree = "<group>"; };
+		D02F32291B9077EB002F9D20 /* Cancel 2-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Cancel 2-100.png"; sourceTree = "<group>"; };
+		D02F322B1B909FFD002F9D20 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		D0519E5A1B6E0AD500C473E3 /* Atch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Atch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0519E5E1B6E0AD500C473E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -142,6 +163,7 @@
 		D066116C1B878BEE00CFE73C /* MessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		D066116E1B879F5E00CFE73C /* IncomingMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingMessageCell.swift; sourceTree = "<group>"; };
 		D0A458241B83E53700FE2217 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "parse-library-1.7.5/Bolts.framework"; sourceTree = "<group>"; };
+		D0AF66B31B8FFC4A00A8E509 /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdater.swift; sourceTree = "<group>"; };
 		D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdaterDelegate.swift; sourceTree = "<group>"; };
 		D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CrossCountry.gpx; sourceTree = "<group>"; };
@@ -197,8 +219,10 @@
 			children = (
 				D02E5B491B7E8A18007F7FDB /* FriendsViewController.swift */,
 				D02788601B8E11FD007B76D9 /* Friends.swift */,
+				D02F322B1B909FFD002F9D20 /* User.swift */,
 				D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */,
 				D02E5B5B1B81D563007F7FDB /* PendingFriendEntry.swift */,
+				D02F321B1B906279002F9D20 /* FriendEntry.swift */,
 				D02E5B411B7DE6A2007F7FDB /* FriendManager.swift */,
 				D02E5B431B7E4FD7007F7FDB /* FriendManagerDelegate.swift */,
 			);
@@ -255,6 +279,15 @@
 				D02788661B8F2935007B76D9 /* Navigator.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
+				D02F32291B9077EB002F9D20 /* Cancel 2-100.png */,
+				D02F32271B906EC2002F9D20 /* Sent-100.png */,
+				D02F32251B906C5B002F9D20 /* Chat-100.png */,
+				D02F32231B906AFB002F9D20 /* Ok-512.png */,
+				D02F32211B906A66002F9D20 /* Ok-25.png */,
+				D02F321F1B90689D002F9D20 /* Ok-50.png */,
+				D02F321D1B906494002F9D20 /* Plus-50.png */,
+				D0AF66B31B8FFC4A00A8E509 /* plus.png */,
+				D02F32191B906195002F9D20 /* circle-xxl.png */,
 				D02788761B8FE032007B76D9 /* List-100.png */,
 				D02788781B8FE125007B76D9 /* Exit-100.png */,
 				D0519E661B6E0AD500C473E3 /* Images.xcassets */,
@@ -443,12 +476,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				D027886B1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg in Resources */,
+				D02F32261B906C5B002F9D20 /* Chat-100.png in Resources */,
+				D02F321A1B906195002F9D20 /* circle-xxl.png in Resources */,
+				D02F32221B906A66002F9D20 /* Ok-25.png in Resources */,
+				D02F32241B906AFB002F9D20 /* Ok-512.png in Resources */,
 				D0519E6A1B6E0AD500C473E3 /* LaunchScreen.xib in Resources */,
+				D02F32281B906EC2002F9D20 /* Sent-100.png in Resources */,
 				D02788771B8FE032007B76D9 /* List-100.png in Resources */,
+				D02F321E1B906494002F9D20 /* Plus-50.png in Resources */,
+				D02F322A1B9077EB002F9D20 /* Cancel 2-100.png in Resources */,
 				D02788811B8FE311007B76D9 /* Main.storyboard in Resources */,
+				D02F32201B90689D002F9D20 /* Ok-50.png in Resources */,
 				D02788791B8FE125007B76D9 /* Exit-100.png in Resources */,
 				D027885D1B8DC850007B76D9 /* my_location_button.png in Resources */,
 				D0519E671B6E0AD500C473E3 /* Images.xcassets in Resources */,
+				D0AF66B41B8FFC4A00A8E509 /* plus.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,6 +555,7 @@
 				D02788671B8F2935007B76D9 /* Navigator.swift in Sources */,
 				D066116F1B879F5E00CFE73C /* IncomingMessageCell.swift in Sources */,
 				D02E5B421B7DE6A2007F7FDB /* FriendManager.swift in Sources */,
+				D02F321C1B906279002F9D20 /* FriendEntry.swift in Sources */,
 				D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */,
 				D0519E801B6E6CB900C473E3 /* IntroViewController.swift in Sources */,
 				D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */,
@@ -522,6 +565,7 @@
 				D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */,
 				D02E5B5C1B81D563007F7FDB /* PendingFriendEntry.swift in Sources */,
 				D02788691B8F5B66007B76D9 /* LeftToRightSegue.swift in Sources */,
+				D02F322C1B909FFD002F9D20 /* User.swift in Sources */,
 				D0519E821B6E6CF700C473E3 /* AtchMapViewController.swift in Sources */,
 				D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */,
 				D02E5B441B7E4FD7007F7FDB /* FriendManagerDelegate.swift in Sources */,

@@ -1,20 +1,18 @@
 //
-//  PendingFriendEntry.swift
-//  
+//  FriendEntry.swift
+//  Atch
 //
-//  Created by Alex Barron on 8/17/15.
-//
+//  Created by Alex Barron on 8/28/15.
+//  Copyright (c) 2015 Alex Barron. All rights reserved.
 //
 
+import Foundation
 
-
-class PendingFriendEntry: UITableViewCell {
+class FriendEntry: UITableViewCell {
     
     @IBOutlet weak var name: UITextField!
     
     @IBOutlet weak var username: UITextField!
-    
-    @IBOutlet weak var addButton: UIButton!
     
     @IBOutlet weak var profileImage: UIImageView!
     
@@ -23,6 +21,6 @@ class PendingFriendEntry: UITableViewCell {
     override func awakeFromNib() {
         username.userInteractionEnabled = false
         name.userInteractionEnabled = false
-        addButton.hidden = true
     }
 }
+

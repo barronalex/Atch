@@ -50,25 +50,33 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     func addButton(sender: AnyObject) {
         let button = sender as! UIButton
         let friend = sectionMap[1]![button.tag]
+        println("here")
+        button.hidden = true
+        button.userInteractionEnabled = false
+        if let cell = table.cellForRowAtIndexPath(NSIndexPath(forRow: button.tag, inSection: 1)) as? PendingFriendEntry {
+            println("row: \(button.tag)")
+            println("here")
+            cell.acceptButton.hidden = false
+            cell.acceptButton.setImage(UIImage(named: "Sent-100.png"), forState: .Normal)
+            _friendManager.pendingFriendsFromUser.append(friend)
+            table.reloadData()
+        }
         print("Requested: \(friend.objectId)")
         _friendManager.sendRequest(friend.objectId!)
-        button.setTitle("sent", forState: .Normal)
-        button.userInteractionEnabled = false
-        
     }
-    
 }
 
 //table view methods
 extension AddFriendsViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         print("row: \(indexPath.row)")
         let cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! PendingFriendEntry
+        cell.addButton.hidden = true
+        cell.acceptButton.hidden = false
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
@@ -87,11 +95,12 @@ extension AddFriendsViewController {
         }
         //show tick if already friends
         if contains(_friendManager.friends, user) {
-            cell.acceptButton.setTitle("√", forState: .Normal)
+            cell.acceptButton.setImage(UIImage(named: "Ok-512.png"), forState: .Normal)
+            cell.acceptButton.setTitle("", forState: .Normal)
             cell.acceptButton.userInteractionEnabled = false
         }
         else if contains(_friendManager.pendingFriendsFromUser, user) {
-            cell.acceptButton.setTitle("request sent", forState: .Normal)
+            cell.acceptButton.setImage(UIImage(named: "Sent-100.png"), forState: .Normal)
             cell.acceptButton.userInteractionEnabled = false
         }
         else if indexPath.section == 0 || contains(_friendManager.pendingRequestsToUser, user) {
@@ -102,9 +111,11 @@ extension AddFriendsViewController {
             
         }
         else {
-//            cell.plusButton.hidden = false
-//            cell.plusButton.userInteractionEnabled = true
-//            cell.plusButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
+            cell.addButton.hidden = false
+            cell.addButton.userInteractionEnabled = true
+            cell.acceptButton.hidden = true
+            cell.addButton.tag = row
+            cell.addButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
         }
         return cell
     }
@@ -118,10 +129,14 @@ extension AddFriendsViewController {
                 println("request cancelled")
                 let reqIndex = find(_friendManager.pendingFriendsFromUser, user)!
                 let friendRequest = _friendManager.pendingRequestsFromUser[reqIndex]
-                PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!])
+                PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!]) {
+                    (response) in
+                    dispatch_async(dispatch_get_main_queue()) {
+                        _friendManager.getPendingRequests(true)
+                    }
+                }
                 self.table.editing = false
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
-                cell.acceptButton.setTitle("request cancelled", forState: .Normal)
                 cell.acceptButton.userInteractionEnabled = false
                 
             }
@@ -137,7 +152,8 @@ extension AddFriendsViewController {
                 friendRequest.saveInBackground()
                 self.table.editing = false
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
-                cell.acceptButton.setTitle("rejected", forState: .Normal)
+                cell.acceptButton.setImage(UIImage(named: "Cancel 2-100.png"), forState: .Normal)
+                _friendManager.pendingFriendsToUser.removeAtIndex(reqIndex)
                 cell.acceptButton.userInteractionEnabled = false
             }
             reject.backgroundColor = UIColor.redColor()
@@ -147,11 +163,14 @@ extension AddFriendsViewController {
         
         let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
             println("delete friend")
-            PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
+            PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!]) {
+                (response) in
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+                cell.acceptButton.setImage(UIImage(named: "Cancel 2-100.png"), forState: .Normal)
+                cell.acceptButton.userInteractionEnabled = false
+                _friendManager.getFriends()
+            }
             self.table.editing = false
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
-            cell.acceptButton.setTitle("deleted", forState: .Normal)
-            cell.acceptButton.userInteractionEnabled = false
 
         }
         delete.backgroundColor = UIColor.redColor()

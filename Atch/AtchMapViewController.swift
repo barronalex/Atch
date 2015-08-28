@@ -78,6 +78,9 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             let destVC = segue.destinationViewController as! MapContainerViewController
             containerVC = destVC
         }
+        if segue.identifier == "maptofriends" {
+            _mapView?.padding = self.zeroMapInsets
+        }
     }
 
     @IBAction func hereButton() {
@@ -249,6 +252,21 @@ extension AtchMapViewController {
         bannerUp = true
     }
     
+    func switchBanners() {
+        self.view.endEditing(true)
+        self.containerVC?.removeChildren()
+        var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
+        containerVC?.goToMessages(toUsers)
+        //put up banner
+        println("friend map count: \(_friendManager.friendMap.count)")
+        println("tapped id: \(tappedUserId)")
+        bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_fullname) as? String
+        if bannerLabel.text == nil {
+            bannerLabel.text = _friendManager.friendMap[self.tappedUserId!]?.objectForKey(parse_user_username) as? String
+        }
+
+    }
+    
     func putBannerDown() {
         self.view.endEditing(true)
         UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
@@ -273,7 +291,12 @@ extension AtchMapViewController {
         println("tapped marker")
         tappedUserId = marker.userData as? String
         println("marker user id: \(tappedUserId!)")
-        putBannerUp()
+        if bannerUp {
+            switchBanners()
+        }
+        else {
+            putBannerUp()
+        }
         correctMarkerPosition(marker)
         return true
     }

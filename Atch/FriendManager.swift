@@ -17,8 +17,8 @@ class FriendManager {
     var delegate: FriendManagerDelegate?
     
     var userMarkers = [String:GMSMarker]()
-    var friendMap = [String:PFObject]()
-    var friends = [PFObject]()
+    var friendMap = [String:User]()
+    var friends = [User]()
     var pendingFriendsToUser = [PFObject]()
     var pendingRequestsToUser = [PFObject]()
     var pendingRequestsFromUser = [PFObject]()

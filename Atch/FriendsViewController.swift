@@ -102,9 +102,9 @@ extension FriendsViewController {
         return setUpCell(tableView, indexPath: indexPath)
     }
     
-    func setUpCell(tableView: UITableView, indexPath: NSIndexPath) -> PendingFriendEntry {
+    func setUpCell(tableView: UITableView, indexPath: NSIndexPath) -> FriendEntry {
         print("row: \(indexPath.row)")
-        let cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! PendingFriendEntry
+        let cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! FriendEntry
         cell.userInteractionEnabled = true
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
@@ -203,11 +203,11 @@ extension FriendsViewController {
         //present requests
         println("count: \(_friendManager.pendingFriendsFromUser.count)")
         print("from requests found")
+        table.reloadData()
     }
     
     func friendRequestSent() {
         println("count: \(_friendManager.pendingFriendsFromUser.count)")
-        _friendManager.getPendingRequests(true)
     }
     
     func friendRequestAccepted() {

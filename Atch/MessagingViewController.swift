@@ -236,7 +236,9 @@ extension MessagingViewController {
     func sentMessage() {
         println("method finished")
         messenger.getMessageHistoryFrom(toUsers)
-        self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+        if self.messages.count > 0 {
+            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+        }
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTextView.text = ""
             self.hideSend()
@@ -258,8 +260,10 @@ extension MessagingViewController {
         self.messages = messages
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
-            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
-            println("to bottom")
+            if messages.count > 0 {
+                self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+                println("to bottom")
+            }
         }
     }
     
