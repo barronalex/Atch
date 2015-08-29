@@ -401,6 +401,7 @@ extension AtchMapViewController {
         for (userId, marker) in _friendManager.userMarkers {
             setMarkerImage(marker, userId: userId)
         }
+        _locationUpdater?.getFriendLocationsFromServer()
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {
@@ -416,6 +417,9 @@ extension AtchMapViewController {
                 if let marker = _friendManager.userMarkers[user.objectId!] {
                     marker.position = CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude)
                     marker.userData = user.objectId!
+                    if marker.icon == nil {
+                        setMarkerImage(marker, userId: user.objectId!)
+                    }
                     
                 }
                 else {

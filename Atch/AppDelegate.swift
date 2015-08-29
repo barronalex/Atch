@@ -24,9 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        PFInstallation.currentInstallation().setObject(0, forKey: "badge")
-        PFInstallation.currentInstallation().saveInBackground()
-        
         //add googlemaps SDK
         GMSServices.provideAPIKey("AIzaSyANU3A5FMQqMjgdWEYb1uZhXym68Cppc_o")
         
@@ -57,6 +54,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
+        PFInstallation.currentInstallation().setObject(0, forKey: "badge")
+        PFInstallation.currentInstallation().saveInBackground()
         _mapView?.myLocationEnabled = true
         _mapView?.settings.myLocationButton = true
     }

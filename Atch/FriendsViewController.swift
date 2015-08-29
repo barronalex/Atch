@@ -93,16 +93,16 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         atchVC.firstLocation = false
         self.showViewController(atchVC, sender: nil)
         let friendId = _friendManager.friends[row].objectId!
+        atchVC.tappedUserId = friendId
+        if !toMessages {
+            atchVC.putBannerUp()
+        }
         if let friendLocation = _friendManager.userMarkers[friendId]?.position {
             println("animating")
             _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 16, bearing: 0, viewingAngle: 0))
         }
-        atchVC.tappedUserId = friendId
         if toMessages {
             atchVC.bringUpMessagesScreen()
-        }
-        else {
-            atchVC.putBannerUp()
         }
     }
 

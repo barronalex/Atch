@@ -174,6 +174,9 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
 extension MessagingViewController {
     
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        if indexPath.row == 0 {
+            return nil
+        }
         let message = messages[indexPath.row]
         let formatter = NSDateFormatter()
         formatter.dateFormat = "h:mm a"
@@ -193,6 +196,9 @@ extension MessagingViewController {
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath.row == 0 {
+            return 8
+        }
         let message = messages[indexPath.row]
         var text = message.objectForKey(parse_message_text) as! String
         let textHeight = getHeightOfLabel(text) + messageSpacing
@@ -210,6 +216,11 @@ extension MessagingViewController {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        if indexPath.row == 0 {
+            let cell = messageTable.dequeueReusableCellWithIdentifier("Padding") as! UITableViewCell
+            cell.textLabel?.text = ""
+            return cell
+        }
         let message = messages[indexPath.row]
         let messageUser = message.objectForKey(parse_message_fromUser) as! PFUser
         if messageUser.objectId == PFUser.currentUser()!.objectId {
@@ -269,7 +280,8 @@ extension MessagingViewController {
         println("message count: \(messages.count)")
         
         //self.messages = [PFObject()]
-        self.messages = messages
+        self.messages = [PFObject]()
+        self.messages = self.messages + messages
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
             if messages.count > 0 {
