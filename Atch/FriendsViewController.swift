@@ -37,6 +37,13 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         setUpTable()
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "friendstomap" {
+            let destVC = segue.destinationViewController as! AtchMapViewController
+            destVC.firstLocation = false
+        }
+    }
+    
     func tableViewTapped() {
         
     }

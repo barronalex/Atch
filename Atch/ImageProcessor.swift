@@ -83,4 +83,58 @@ class ImageProcessor {
         return ImageProcessor.maskImage(colourImage!, withMask: otherImage!)
     }
     
+    static func createImageFromGroup(group: Group) -> UIImage? {
+        
+        if let image = _friendManager.friendPics[group.toUsers[0]] {
+            return ImageProcessor.createCircle(image, borderColour: _friendManager.userMap[group.toUsers[0]]!.colour!, markerSize: true)
+        }
+        return nil
+        
+//        println("here")
+//        println("friendPics: \(_friendManager.friendPics)")
+//        let users = group.toUsers
+//        var userImages = [UIImage]()
+//        for user in users {
+//            if let image = _friendManager.friendPics[user] {
+//                
+//                userImages.append(ImageProcessor.createCircle(image, borderColour: UIColor.blueColor(), markerSize: true))
+//            }
+//        }
+//        if userImages.count == 0 {
+//            
+//            return nil
+//        }
+//        let testImage = userImages[0]
+//        userImages.append(testImage)
+//        println("userImages.count: \(userImages.count)")
+//        let k = CGFloat(userImages.count)
+//        let d = CGFloat(60)
+//        
+//        let internalRadius: CGFloat = (sin(180 * (0.5 - (1/k)))) / (sin(360/k)) * d
+//        let externalRadius = internalRadius + (d/2)
+//        println("external radius \(externalRadius)")
+//        UIGraphicsBeginImageContextWithOptions(CGSizeMake(externalRadius * 2, externalRadius * 2), false, 0.0)
+//        //at end we'll clip to external circle bounds
+//        //put first circle at top of rectangle
+//        //draw circle in rect
+//        //get points on circle
+//        for var i = 0; i < Int(k); i++ {
+//            let theta = (360 * CGFloat(i)) / k
+//            println("theta: \(theta)")
+//            let centrexfromOrigin = internalRadius * sin(theta)
+//            let centreyfromOrigin = internalRadius * cos(theta)
+//            println("centrex: \(centrexfromOrigin) centrey: \(centreyfromOrigin)")
+//            let realx = externalRadius + centrexfromOrigin
+//            let realy = externalRadius - centreyfromOrigin
+//            println("realx: \(realx) realy \(realy)")
+//            //draw a circle with centre at realx, realy
+//            let outsideCircleRect = CGRectMake(realx - d/2, realy - d/2, d, d)
+//            userImages[i].drawInRect(outsideCircleRect)
+//        }
+//        //UIBezierPath(roundedRect: CGRectMake(0, 0, externalRadius * 2, externalRadius * 2), cornerRadius: 50).addClip()
+//        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+//        return finalImage
+    }
+    
 }

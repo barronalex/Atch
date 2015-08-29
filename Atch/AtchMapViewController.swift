@@ -334,7 +334,7 @@ extension AtchMapViewController {
     
     func mapView(mapView: GMSMapView!, didTapMarker marker: GMSMarker!) -> Bool {
         println("tapped marker")
-        tappedUserId = marker.userData as? String
+        tappedUserId = (marker.userData as! Group).toUsers[0]
         println("marker user id: \(tappedUserId!)")
         if bannerUp {
             switchBanners()
@@ -361,21 +361,27 @@ extension AtchMapViewController {
         }
     }
     
-    private func setMarkerImage(marker: GMSMarker, userId: String) {
-        if let image = _friendManager.friendPics[userId] {
+    private func setMarkerImage(marker: GMSMarker) {
+//        if let image = _friendManager.friendPics[userId] {
+//            marker.icon = image
+//            let colour = _friendManager.userMap[userId]?.colour
+//            marker.icon = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: true)
+//            marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+//        }
+        if let image = ImageProcessor.createImageFromGroup(marker.userData as! Group) {
             marker.icon = image
-            let colour = _friendManager.userMap[userId]?.colour
-            marker.icon = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: true)
-            marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
+        
     }
     
-    private func createNewMarker(user: PFObject, location: PFGeoPoint?) {
-        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude))
+    private func createNewMarker(group: Group) {
+        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: group.position!.coordinate.latitude, longitude: group.position!.coordinate.longitude))
         marker.map = _mapView
-        _friendManager.userMarkers[user.objectId!] = marker
-        setMarkerImage(marker, userId: user.objectId!)
-        marker.userData = user.objectId!
+        for user in group.toUsers {
+            _friendManager.userMarkers[user] = marker
+        }
+        marker.userData = group
+        setMarkerImage(marker)
     }
     
     func locationUpdated(location: CLLocationCoordinate2D) {
@@ -410,7 +416,7 @@ extension AtchMapViewController {
     func friendProfilePicturesReceived(notification: NSNotification) {
         println("pictures received")
         for (userId, marker) in _friendManager.userMarkers {
-            setMarkerImage(marker, userId: userId)
+            setMarkerImage(marker)
         }
         _locationUpdater?.getFriendLocationsFromServer()
     }
@@ -420,27 +426,42 @@ extension AtchMapViewController {
         print("friends location updated")
         //make array of markers if first time
         //display them
+        var locations = [CLLocation]()
+        var users = [String]()
         for data in friendData {
-            let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint
-            if location != nil {
-                //make marker to display location
-                let user = data.objectForKey(parse_frienddata_user) as! PFObject
-                if let marker = _friendManager.userMarkers[user.objectId!] {
-                    marker.position = CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude)
-                    marker.userData = user.objectId!
-                    if marker.icon == nil {
-                        setMarkerImage(marker, userId: user.objectId!)
-                    }
-                    
+            if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
+                if let user = data.objectForKey(parse_frienddata_user) as? PFObject {
+                    let clLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+                    locations.append(clLocation)
+                    users.append(user.objectId!)
                 }
-                else {
-                    createNewMarker(user, location: location)
-                }
-                
-                print("location: \(location!.latitude) \(location!.longitude)")
-                
             }
         }
+        let groups = MarkerUtils.findGroups(users, locations: locations)
+        for group in groups {
+            println("Group members: \(group.toUsers)")
+            //create a new marker and remove all old ones
+            createNewMarker(group)
+        }
+//            if location != nil {
+//                //make marker to display location
+//                
+//                if let marker = _friendManager.userMarkers[user.objectId!] {
+//                    marker.position = CLLocationCoordinate2D(latitude: location!.latitude, longitude: location!.longitude)
+//                    marker.userData = user.objectId!
+//                    if marker.icon == nil {
+//                        setMarkerImage(marker, userId: user.objectId!)
+//                    }
+//                    
+//                }
+//                else {
+//                    createNewMarker(user, location: location)
+//                }
+//                
+//                print("location: \(location!.latitude) \(location!.longitude)")
+//                
+//            }
+//        }
         _mapView!.myLocationEnabled = true
     }
     
