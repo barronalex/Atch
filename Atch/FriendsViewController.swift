@@ -32,12 +32,33 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         sectionMap[0] = []
         sectionMap[1] = []
         
+        
         _friendManager.delegate = self
         setUpTable()
     }
     
     func tableViewTapped() {
         
+    }
+    
+    func imageTapped(sender: AnyObject) {
+        println("imageTapped")
+        if let recognizer = sender as? UIGestureRecognizer {
+            println("down a level")
+            let row = recognizer.view!.tag
+            if let user = sectionMap[0]?[row] {
+                println("down another level")
+                //change colour of given user
+                if let fulluser = _friendManager.userMap[user.objectId!] {
+                    _friendManager.changeUserColour(fulluser)
+                    if let marker = _friendManager.userMarkers[user.objectId!] {
+                        marker.icon = ImageProcessor.createCircle(_friendManager.friendPics[user.objectId!]!, borderColour: _friendManager.userMap[user.objectId!]!.colour!, markerSize: true)
+                        _friendManager.userMarkers[user.objectId!]! = marker
+                    }
+                }
+            }
+        }
+        table.reloadData()
     }
     
     func setUpTable() {
@@ -69,11 +90,12 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         //go to friends messaging screen
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
+        atchVC.firstLocation = false
         self.showViewController(atchVC, sender: nil)
         let friendId = _friendManager.friends[row].objectId!
         if let friendLocation = _friendManager.userMarkers[friendId]?.position {
             println("animating")
-            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 14, bearing: 0, viewingAngle: 0))
+            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 16, bearing: 0, viewingAngle: 0))
         }
         atchVC.tappedUserId = friendId
         if toMessages {
@@ -118,6 +140,10 @@ extension FriendsViewController {
         if let colour = fulluser?.colour {
             cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
         }
+        let tapGesture = UITapGestureRecognizer(target: self, action: Selector("imageTapped:"))
+        cell.profileImage.tag = row
+        cell.profileImage.addGestureRecognizer(tapGesture)
+        cell.profileImage.userInteractionEnabled = true
         cell.acceptButton.tag = row
         cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
@@ -125,7 +151,7 @@ extension FriendsViewController {
         }
         if let image = _friendManager.friendPics[user.objectId!] {
             let colour = _friendManager.userMap[user.objectId!]?.colour
-            cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!)
+            cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: false)
         }
         else {
             cell.profileImage.image = nil

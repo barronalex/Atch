@@ -78,7 +78,7 @@ class FacebookManager {
         println("token: \(token)")
         for user in users {
             if let fbid = user.objectForKey(parse_user_fbid) as? String {
-                let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?type=square")
+                let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=100&height=100")
                 let request = NSURLRequest(URL: url!)
                 urlRequests.append(request)
                 reqMap[request] = user.objectId!

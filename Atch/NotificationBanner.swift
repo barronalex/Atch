@@ -69,8 +69,6 @@ class NotificationBanner: NSObject {
             notifView.backgroundColor = UIColor.whiteColor()
         }
         view.addSubview(notifView)
-        
-        notifView.alpha = 0.9
         let tapGesture = UITapGestureRecognizer(target: self, action: Selector("notificationTapped"))
         notifView.addGestureRecognizer(tapGesture)
         let panGesture = UIPanGestureRecognizer(target: self, action: Selector("notificationSwiped:"))

@@ -226,10 +226,11 @@ extension MessagingViewController {
             let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
             cell.messageText.text = message.objectForKey(parse_message_text) as? String
             cell.contentView.bringSubviewToFront(cell.messageText)
-            let colour = _friendManager.userMap[messageUser.objectId!]!.colour!
-            let newcolour = ColourGenerator.getAssociatedColour(colour)
-            cell.messageView.backgroundColor = newcolour
-            cell.messageText.backgroundColor = newcolour
+            if let colour = _friendManager.userMap[messageUser.objectId!]?.colour {
+                let newcolour = ColourGenerator.getAssociatedColour(colour)
+                cell.messageView.backgroundColor = newcolour
+                cell.messageText.backgroundColor = newcolour
+            }
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }

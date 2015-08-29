@@ -198,6 +198,29 @@ class FriendManager {
         }
     }
     
+    func changeUserColour(user: User) {
+        let fetchRequest = NSFetchRequest(entityName: "UserColour")
+        let predicate = NSPredicate(format: "userId == %@", user.parseObject!.objectId!)
+        fetchRequest.predicate = predicate
+        let colour = ColourGenerator.generateRandomColour()
+        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [UserColour] {
+            if fetchResults.count > 0 {
+                println("inside if statement")
+                fetchResults[0].colour = colour
+            }
+            else {
+                println("did not find colour")
+                //if not make new object
+                let newUserColour = NSEntityDescription.insertNewObjectForEntityForName("UserColour", inManagedObjectContext: self.managedObjectContext!) as! UserColour
+                newUserColour.userId = user.parseObject!.objectId!
+                newUserColour.colour = colour
+            }
+            user.colour = colour
+            self.userMap[user.parseObject!.objectId!] = user
+        }
+
+    }
+    
     func addColourToUser(user: User) -> User {
         //perform query to see if colour already exists
         let fetchRequest = NSFetchRequest(entityName: "UserColour")

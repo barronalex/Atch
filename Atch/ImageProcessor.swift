@@ -12,7 +12,7 @@ import Foundation
 
 class ImageProcessor {
     
-    static func createCircle(image: UIImage, borderColour: UIColor) -> UIImage {
+    static func createCircle(image: UIImage, borderColour: UIColor, markerSize: Bool) -> UIImage {
         
         let borderSize = CGSizeMake(image.size.width+10, image.size.height+10)
         UIGraphicsBeginImageContextWithOptions(borderSize, false,0.0)
@@ -25,6 +25,14 @@ class ImageProcessor {
         image.drawInRect(imageBounds)
         let finalImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
+        if markerSize {
+            let size = CGSizeMake(60, 60)
+            UIGraphicsBeginImageContext(size)
+            finalImage.drawInRect(CGRectMake(0, 0, size.width, size.height))
+            let newImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            return newImage
+        }
         return finalImage
     }
     

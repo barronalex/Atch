@@ -110,7 +110,7 @@ extension AddFriendsViewController {
         }
         if let image = _friendManager.friendPics[user.objectId!] {
             let colour = _friendManager.userMap[user.objectId!]?.colour
-            cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!)
+            cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: false)
         }
         else {
             cell.profileImage.image = nil

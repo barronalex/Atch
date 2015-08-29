@@ -137,18 +137,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func dealWithMessageNotification(application: UIApplication, userInfo: [NSObject : AnyObject]) {
         var toUsers = getToUsersFromNotification(userInfo)
         if toUsers == nil { return }
-        if application.applicationState == UIApplicationState.Active {
-            //for now do nothing
-            if let atchVC = getVisibleViewController(self.window?.rootViewController) as? AtchMapViewController {
-                println("USERS: \(atchVC.containerVC!.toUsers)")
-                println("Other USERS: \(toUsers!)")
-                if atchVC.bannerAtTop && atchVC.containerVC!.toUsers == toUsers! {
-                    println("broadcasting notification")
-                    NSNotificationCenter.defaultCenter().postNotificationName(messageNotificationReceivedKey, object: self, userInfo: nil)
-                    return
-                }
-                
+        if let atchVC = getVisibleViewController(self.window?.rootViewController) as? AtchMapViewController {
+            println("USERS: \(atchVC.containerVC!.toUsers)")
+            println("Other USERS: \(toUsers!)")
+            if atchVC.bannerAtTop && atchVC.containerVC!.toUsers == toUsers! {
+                println("broadcasting notification")
+                NSNotificationCenter.defaultCenter().postNotificationName(messageNotificationReceivedKey, object: self, userInfo: nil)
+                return
             }
+            
+        }
+        if application.applicationState == UIApplicationState.Active {
             let curVC = getVisibleViewController(self.window?.rootViewController)
             if curVC is LoginViewController || curVC is IntroViewController {
                 return

@@ -21,6 +21,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var bannerView: UIView!
     
+    @IBOutlet weak var bannerHeightConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var topContainerConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var containerHeightConstraint: NSLayoutConstraint!
@@ -45,11 +47,13 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     var bannerAtTop = false
     
     let zeroMapInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
-    let bannerMapInsets = UIEdgeInsetsMake(0.0, 0.0, 100, 0.0)
-    let upwardsMapCorrection: CGFloat = 100
-    let downwardsMapCorrection: CGFloat = 100
+    let bannerMapInsets = UIEdgeInsetsMake(0.0, 0.0, 110, 0.0)
+    let upwardsMapCorrection: CGFloat = 110
+    let downwardsMapCorrection: CGFloat = 110
     let topMargin: CGFloat = 20
     let bannerAppearAnimationTime = 0.3
+    let bannerHeightAtTop: CGFloat = 100
+    let bannerHeightAtBottom: CGFloat = 110
     
     override func viewDidLoad() {
         
@@ -60,11 +64,12 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         self.view.layoutIfNeeded()
         self.topContainerConstraint.constant = self.view.frame.height - 20
         self.view.layoutIfNeeded()
+        let tapGesture = UITapGestureRecognizer(target: self, action: "bannerTapped")
+        self.bannerView.addGestureRecognizer(tapGesture)
         setUpLocationManager()
         setUpMap()
         setUpFriendManager()
-        let tapGesture = UITapGestureRecognizer(target: self, action: "bannerTapped")
-        self.bannerView.addGestureRecognizer(tapGesture)
+        
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -121,7 +126,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     }
 }
 
-//Initialisation Methods
+//#MARK: Initialisation Methods
 extension AtchMapViewController {
     func setUpFriendManager() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
@@ -135,7 +140,6 @@ extension AtchMapViewController {
     }
     
     private func setUpLocationManager() {
-        firstLocation = true
         if _locationUpdater == nil {
             println("here")
             _locationUpdater = LocationUpdater()
@@ -190,13 +194,16 @@ extension AtchMapViewController {
 
 }
 
-//Banner Methods
+//#MARK: Banner Methods
 extension AtchMapViewController {
     
     @IBAction func handlePan(recognizer:UIPanGestureRecognizer) {
-        if recognizer.state == UIGestureRecognizerState.Ended && self.bannerConstraint.constant > 0 {
+        if recognizer.state == UIGestureRecognizerState.Ended {
             bannerTapped()
             return
+        }
+        if recognizer.state == UIGestureRecognizerState.Began && bannerAtTop {
+            self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
         }
         let yTranslation = recognizer.translationInView(self.view).y
         if let view = recognizer.view {
@@ -218,12 +225,15 @@ extension AtchMapViewController {
     }
     
     func bannerTapped() {
+        println("banner tapped")
         if !bannerAtTop {
             UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
-                self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin
-                self.bannerConstraint.constant = self.view.frame.height - self.bannerView.frame.height
+                self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin - (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+                self.bannerConstraint.constant = self.view.frame.height - self.bannerView.frame.height + (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+                self.bannerHeightConstraint.constant = self.bannerHeightAtTop
+                self.containerHeightConstraint.constant = self.view.frame.height - self.bannerHeightAtTop
                 self.view.layoutIfNeeded()
-            })
+                })
             bannerAtTop = true
         }
         else {
@@ -238,8 +248,10 @@ extension AtchMapViewController {
             self.bannerConstraint.constant = 0
             self.topContainerConstraint.constant = self.view.frame.height - 20
             _mapView?.padding = self.bannerMapInsets
+            self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
+            self.containerHeightConstraint.constant -= (self.bannerHeightAtBottom - self.bannerHeightAtTop)
             self.view.layoutIfNeeded()
-        })
+            })
         bannerAtTop = false
         self.view.endEditing(true)
     }
@@ -288,10 +300,13 @@ extension AtchMapViewController {
     
     func putBannerDown() {
         self.view.endEditing(true)
+        
         UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
             self.topContainerConstraint.constant = self.view.frame.height - 20
             self.bannerConstraint.constant = -self.bannerView.frame.height
             _mapView?.padding = self.zeroMapInsets
+            self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
+            self.containerHeightConstraint.constant -= (self.bannerHeightAtBottom - self.bannerHeightAtTop)
             self.view.layoutIfNeeded()
             }, completion: {
                 (finished) in
@@ -303,7 +318,7 @@ extension AtchMapViewController {
 
 }
 
-//Map Methods
+//#MARK: Map Methods
 extension AtchMapViewController {
     
     func mapView(mapView: GMSMapView!, didTapMarker marker: GMSMarker!) -> Bool {
@@ -339,7 +354,7 @@ extension AtchMapViewController {
         if let image = _friendManager.friendPics[userId] {
             marker.icon = image
             let colour = _friendManager.userMap[userId]?.colour
-            marker.icon = ImageProcessor.createCircle(image, borderColour: colour!)
+            marker.icon = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: true)
             marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
     }
@@ -366,7 +381,7 @@ extension AtchMapViewController {
     }
 }
 
-//Friend Methods
+//#MARK: Friend Methods
 extension AtchMapViewController {
     
     func friendListFound(friends: [PFUser]) {
