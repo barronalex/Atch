@@ -126,16 +126,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        dockView.bringSubviewToFront(messageTextView)
-        messageTextView.layer.borderColor = UIColor.grayColor().CGColor
-        messageTextView.layer.borderWidth = 1.0
-        messageTextView.layer.cornerRadius = 5
-        messageTextView.layer.masksToBounds = true
-        //messageTextView.
-        let prevHeight = messageTextView.frame.height
-        let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
-        textViewConstraint.constant = sizeThatFitsContent.height
-        dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
+        setMessageViewBorders()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
         println("adding observers")
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
@@ -150,6 +141,20 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.messenger.delegate = self
         self.messenger.getMessageHistoryFrom(toUsers)
         
+    }
+    
+    func setMessageViewBorders() {
+        dockView.bringSubviewToFront(messageTextView)
+        dockView.layer.borderColor = UIColor.grayColor().CGColor
+        dockView.layer.borderWidth = 1.0
+        messageTextView.layer.borderColor = UIColor.grayColor().CGColor
+        messageTextView.layer.borderWidth = 1.0
+        messageTextView.layer.cornerRadius = 5
+        messageTextView.layer.masksToBounds = true
+        let prevHeight = messageTextView.frame.height
+        let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
+        textViewConstraint.constant = sizeThatFitsContent.height
+        dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
     }
     
     func getHeightOfLabel(text: String) -> CGFloat {
@@ -221,6 +226,10 @@ extension MessagingViewController {
             let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
             cell.messageText.text = message.objectForKey(parse_message_text) as? String
             cell.contentView.bringSubviewToFront(cell.messageText)
+            let colour = _friendManager.userMap[messageUser.objectId!]!.colour!
+            let newcolour = ColourGenerator.getAssociatedColour(colour)
+            cell.messageView.backgroundColor = newcolour
+            cell.messageText.backgroundColor = newcolour
             if messageHeights[message.objectId!] == nil {
                 messageHeights[message.objectId!] = cell.messageText.frame.height
             }
@@ -257,6 +266,8 @@ extension MessagingViewController {
         //display messages
         println("got messages")
         println("message count: \(messages.count)")
+        
+        //self.messages = [PFObject()]
         self.messages = messages
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
@@ -275,6 +286,7 @@ extension MessagingViewController {
                 self.toUsers = toUsers
             }
         }
+        
         self.refreshMessages()
     }
 

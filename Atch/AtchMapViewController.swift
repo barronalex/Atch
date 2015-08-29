@@ -11,6 +11,7 @@ import GoogleMaps
 import Parse
 import Bolts
 import CoreLocation
+import CoreData
 
 class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendManagerDelegate, GMSMapViewDelegate {
     
@@ -32,6 +33,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var logout: UIButton!
     
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    
     
     var mapTapGesture: UITapGestureRecognizer?
     var containerVC: MapContainerViewController?
@@ -42,15 +45,17 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     var bannerAtTop = false
     
     let zeroMapInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
-    let bannerMapInsets = UIEdgeInsetsMake(0.0, 0.0, 120, 0.0)
+    let bannerMapInsets = UIEdgeInsetsMake(0.0, 0.0, 100, 0.0)
     let upwardsMapCorrection: CGFloat = 100
     let downwardsMapCorrection: CGFloat = 100
     let topMargin: CGFloat = 20
+    let bannerAppearAnimationTime = 0.3
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
         println("loading Atch")
+        setShadows()
         self.containerHeightConstraint.constant = self.view.frame.height - bannerView.frame.height
         self.view.layoutIfNeeded()
         self.topContainerConstraint.constant = self.view.frame.height - 20
@@ -81,6 +86,17 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         if segue.identifier == "maptofriends" {
             _mapView?.padding = self.zeroMapInsets
         }
+    }
+    
+    func setShadows() {
+        logout.layer.shadowColor = UIColor.grayColor().CGColor
+        logout.layer.shadowOffset = CGSizeMake(1, 1)
+        logout.layer.shadowRadius = 1
+        logout.layer.shadowOpacity = 1.0
+        friendsButton.layer.shadowColor = UIColor.grayColor().CGColor
+        friendsButton.layer.shadowOffset = CGSizeMake(1, 1)
+        friendsButton.layer.shadowRadius = 1
+        friendsButton.layer.shadowOpacity = 1.0
     }
 
     @IBAction func hereButton() {
@@ -118,7 +134,7 @@ extension AtchMapViewController {
         }
     }
     
-    func setUpLocationManager() {
+    private func setUpLocationManager() {
         firstLocation = true
         if _locationUpdater == nil {
             println("here")
@@ -139,22 +155,20 @@ extension AtchMapViewController {
         }
     }
     
-    func setUpMap() {
-        if let location = _locationUpdater!.getLocation() {
-            if _mapView == nil {
-                _mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: GMSCameraPosition.cameraWithTarget(location.coordinate, zoom: 6))
-            }
-            _locationUpdater?.sendLocationToServer()
-            _locationUpdater?.getFriendLocationsFromServer()
-            _mapView!.myLocationEnabled = true
-            firstLocation = false
-            
-        }
-        else {
-            if _mapView == nil {
+    private func setUpMap() {
+//        if let location = _locationUpdater!.getLocation() {
+//            if _mapView == nil {
+//                _mapView = GMSMapView.mapWithFrame(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height), camera: GMSCameraPosition.cameraWithTarget(location.coordinate, zoom: 6))
+//            }
+//            _locationUpdater?.sendLocationToServer()
+//            _locationUpdater?.getFriendLocationsFromServer()
+//            _mapView!.myLocationEnabled = true
+//            firstLocation = false
+//            
+//        }
+//        else {
+        if _mapView == nil {
                 _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-            }
-            
         }
         self.view.addSubview(_mapView!)
         _mapView!.settings.myLocationButton = true
@@ -220,7 +234,7 @@ extension AtchMapViewController {
     
     func lowerBanner() {
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
+        UIView.animateWithDuration(NSTimeInterval(bannerAppearAnimationTime), animations: {
             self.bannerConstraint.constant = 0
             self.topContainerConstraint.constant = self.view.frame.height - 20
             _mapView?.padding = self.bannerMapInsets
@@ -233,10 +247,12 @@ extension AtchMapViewController {
     func putBannerUp() {
         var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         containerVC?.goToMessages(toUsers)
+        let colour = _friendManager.userMap[tappedUserId!]?.colour
+        bannerView.backgroundColor = colour
         //put up banner
         println("friend map count: \(_friendManager.friends.count)")
         println("tapped id: \(tappedUserId)")
-        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_fullname) as? String
+        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
         println("BANNER TEXT: \(bannerLabel.text)")
         if bannerLabel.text == nil {
            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
@@ -244,7 +260,7 @@ extension AtchMapViewController {
         self.view.bringSubviewToFront(bannerView)
         self.view.bringSubviewToFront(containerView)
         self.view.layoutIfNeeded()
-        UIView.animateWithDuration(NSTimeInterval(0.5), animations: {
+        UIView.animateWithDuration(NSTimeInterval(bannerAppearAnimationTime), animations: {
             self.bannerConstraint.constant = 0
             _mapView?.padding = self.bannerMapInsets
             self.view.layoutIfNeeded()
@@ -257,10 +273,13 @@ extension AtchMapViewController {
         self.containerVC?.removeChildren()
         var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
         containerVC?.goToMessages(toUsers)
+        let colour = _friendManager.userMap[tappedUserId!]?.colour
+        bannerView.backgroundColor = colour
         //put up banner
         println("friend map count: \(_friendManager.friends.count)")
         println("tapped id: \(tappedUserId)")
-        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_fullname) as? String
+        
+        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
         if bannerLabel.text == nil {
             bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
         }
@@ -319,7 +338,8 @@ extension AtchMapViewController {
     private func setMarkerImage(marker: GMSMarker, userId: String) {
         if let image = _friendManager.friendPics[userId] {
             marker.icon = image
-            marker.icon = ImageProcessor.createCircle(image)
+            let colour = _friendManager.userMap[userId]?.colour
+            marker.icon = ImageProcessor.createCircle(image, borderColour: colour!)
             marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
     }
@@ -353,7 +373,7 @@ extension AtchMapViewController {
         //map user ids to user objects
         FacebookManager.downloadProfilePictures(friends)
         if self.tappedUserId != nil {
-            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_fullname) as? String
+            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
             println("BANNER TEXT POST FRIENDS: \(bannerLabel.text)")
             if bannerLabel.text == nil {
                 bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String

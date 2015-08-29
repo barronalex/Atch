@@ -16,9 +16,15 @@ class MapContainerViewController: UIViewController {
     func goToMessages(toUsers: [String]) {
         if childVCs.count > 0 {
             if let messageVC = childVCs[0] as? MessagingViewController {
-                messageVC.refreshMessages()
+                if messageVC.toUsers == toUsers {
+                    messageVC.refreshMessages()
+                    return
+                }
+                else {
+                    removeChildren()
+                }
             }
-            return
+            
         }
         self.toUsers = toUsers
         //add a messagingviewcontroller as a child view controller
@@ -46,7 +52,7 @@ class MapContainerViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        self.view.alpha = 0.95
+        self.view.alpha = 0.97
     }
     
 }

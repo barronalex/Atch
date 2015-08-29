@@ -55,7 +55,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     
     func reset() {
         print("cancelllllleedd")
-        self.view.endEditing(true)
         setUpTable()
     }
     
@@ -115,14 +114,18 @@ extension FriendsViewController {
             cell.username.text = username
         }
         cell.acceptButton.userInteractionEnabled = true
-        cell.acceptButton.setTitle("chat", forState: .Normal)
+        let fulluser = _friendManager.userMap[user.objectId!]
+        if let colour = fulluser?.colour {
+            cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
+        }
         cell.acceptButton.tag = row
         cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
             cell.name.text = fullname
         }
         if let image = _friendManager.friendPics[user.objectId!] {
-            cell.profileImage.image = ImageProcessor.createCircle(image)
+            let colour = _friendManager.userMap[user.objectId!]?.colour
+            cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!)
         }
         else {
             cell.profileImage.image = nil
@@ -146,7 +149,7 @@ extension FriendsViewController {
             println("delete friend")
             PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
             self.table.editing = false
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as! FriendEntry
             cell.acceptButton.setTitle("deleted", forState: .Normal)
         }
         delete.backgroundColor = UIColor.redColor()

@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import Parse
 
-let notification_banner_height: CGFloat = 80
+let notification_banner_height: CGFloat = 100
 let notification_text_height: CGFloat = 20
 let notification_text_margin: CGFloat = 20
 let notification_top_margin: CGFloat = 20
@@ -27,7 +28,13 @@ class NotificationBanner: NSObject {
         self.type = type
         let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
         self.view = curVC.view
-        setUpView(self.view!)
+        for user in toUsers {
+            if user != PFUser.currentUser()!.objectId! {
+                println("user: \(user)")
+                setUpView(self.view!, user: user)
+            }
+        }
+        
         let notifText = setUpLabel(self.view!, text: text)
         notifView.addSubview(notifText)
         self.view!.bringSubviewToFront(notifView)
@@ -42,6 +49,7 @@ class NotificationBanner: NSObject {
     private func setUpLabel(view: UIView, text: String) -> UILabel{
         let notifText = UILabel()
         notifText.text = text
+        notifText.textColor = UIColor.whiteColor()
         let maxsize = CGSize(width: view.frame.width - notification_text_margin * 2, height: notification_text_height)
         let actualsize = notifText.sizeThatFits(maxsize)
         notifText.frame = CGRectMake(notification_text_margin + ((view.frame.width - notification_text_margin * 2) - actualsize.width)/2, (notification_banner_height/2 - notification_text_height/2) + notification_top_margin, actualsize.width, actualsize.height)
@@ -49,11 +57,20 @@ class NotificationBanner: NSObject {
 
     }
     
-    private func setUpView(view: UIView) {
+    private func setUpView(view: UIView, user: String?) {
         notifView = UIView(frame: CGRectMake(0, -notification_banner_height, view.frame.width, notification_banner_height))
-        
+        if user != nil {
+            let colour = _friendManager.userMap[user!]!.colour!
+            println("assign colour")
+            notifView.backgroundColor = colour
+            
+        }
+        else {
+            notifView.backgroundColor = UIColor.whiteColor()
+        }
         view.addSubview(notifView)
-        notifView.backgroundColor = UIColor.grayColor()
+        
+        notifView.alpha = 0.9
         let tapGesture = UITapGestureRecognizer(target: self, action: Selector("notificationTapped"))
         notifView.addGestureRecognizer(tapGesture)
         let panGesture = UIPanGestureRecognizer(target: self, action: Selector("notificationSwiped:"))

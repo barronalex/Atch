@@ -11,8 +11,11 @@ import Parse
 import Bolts
 import FBSDKCoreKit
 import GoogleMaps
+import CoreData
 
 class FriendManager {
+    
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
     var delegate: FriendManagerDelegate?
     
@@ -185,12 +188,42 @@ class FriendManager {
                 }
             }
             else {
-                let user = User(type: type, parseObject: object)
+                var user = User(type: type, parseObject: object)
+                //add colour
+                user = addColourToUser(user)
                 self.userMap[object.objectId!] = user
             }
             
             
         }
+    }
+    
+    func addColourToUser(user: User) -> User {
+        //perform query to see if colour already exists
+        let fetchRequest = NSFetchRequest(entityName: "UserColour")
+        let predicate = NSPredicate(format: "userId == %@", user.parseObject!.objectId!)
+        fetchRequest.predicate = predicate
+        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [UserColour] {
+            println("found colour")
+            if fetchResults.count > 0 {
+                println("inside if statement")
+                let usercolour = fetchResults[0]
+                user.colour = usercolour.colour as? UIColor
+            }
+            else {
+                println("did not find colour")
+                //if not make new object
+                let newUserColour = NSEntityDescription.insertNewObjectForEntityForName("UserColour", inManagedObjectContext: self.managedObjectContext!) as! UserColour
+                newUserColour.userId = user.parseObject!.objectId!
+                let colour = ColourGenerator.generateRandomColour()
+                
+                newUserColour.colour = colour
+                user.colour = colour
+            }
+        }
+        return user
+        
+        
     }
     
     func findPFUserFromFbid(ids: [String]) {

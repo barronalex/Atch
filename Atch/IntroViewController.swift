@@ -19,16 +19,18 @@ class IntroViewController: UIViewController {
     
     @IBOutlet weak var image: UIImageView!
     
+    @IBOutlet weak var logOut: UIButton!
+    
     @IBAction func logout() {
         PFUser.logOutInBackgroundWithBlock() {
             (error) in
             if error == nil {
+                PFInstallation.currentInstallation().setObject("", forKey: "userId")
+                PFInstallation.currentInstallation().saveInBackground()
                 self.performSegueWithIdentifier("fullylogout", sender: nil)
             }
             else {
                 println("\(error)")
-//                UIAlertController.
-//                self.presentViewController(UIAlertController(title: "logout failed", message: "we were unable to log you out at this time", preferredStyle: UIAlertControllerStyle.Alert), animated: false, completion: nil)
             }
         }
         
@@ -39,11 +41,7 @@ class IntroViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
-//        if ["a", "b"] == ["b", "a"] {
-//            println("YESSSSSSSS")
-//        }
-//        self.presentViewController(UIAlertController(title: "logout failed", message: "we were unable to log you out at this time", preferredStyle: UIAlertControllerStyle.Alert), animated: false, completion: nil)
-        //_notificationBanner.displayNotification("this is a testy test", type: "message", toUsers: [String]())
+
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
         }

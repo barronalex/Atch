@@ -9,6 +9,7 @@
 import UIKit
 import GoogleMaps
 import CoreLocation
+import Parse
 
 class LoginViewController: UIViewController, FacebookManagerDelegate {
     
@@ -72,6 +73,9 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     
     func parseLoginSucceeded() {
         println("login completed")
+        let installation = PFInstallation.currentInstallation()
+        installation.setObject(PFUser.currentUser()!.objectId!, forKey: parse_installation_userId)
+        installation.saveInBackground()
         self.performSegueWithIdentifier("postlogin", sender: nil)
     }
     

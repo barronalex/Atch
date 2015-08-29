@@ -124,9 +124,6 @@ class FacebookManager {
                     } else if user!.isNew {
                         print("User signed up and logged in with Facebook")
                         //if new user fetch and store facebook id
-                        let installation = PFInstallation.currentInstallation()
-                        installation.setObject(PFUser.currentUser()!.objectId!, forKey: parse_installation_userId)
-                        installation.saveInBackground()
                         self.storeUserInfo()
                     } else {
                         //check if user has username
