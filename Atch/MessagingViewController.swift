@@ -9,6 +9,8 @@
 import UIKit
 import Parse
 
+let defaultBlueColour = UIColor(red: 0, green: CGFloat(122)/255, blue: CGFloat(255)/255, alpha: 255)
+
 class MessagingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, MessengerDelegate {
     //includes current user
     var toUsers = [String]()
@@ -17,7 +19,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     //have a map of messageids to height
     var messageHeights = [String:CGFloat]()
     
-    let messageSpacing: CGFloat = 10
+    let messageSpacing: CGFloat = 4
     let labelWidth: CGFloat = 115
     let textViewSpacingInitial: CGFloat = 10
     let textViewSpacingSend: CGFloat = 60
@@ -38,6 +40,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         //self.messageTextView.endEditing(true)
         //self.messageTextView.enabled = false
         self.sendButton.enabled = false
+        self.sendButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
         messenger.sendMessage(messageTextView.text)
     }
     
@@ -52,6 +55,9 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         UIView.animateWithDuration(0.2, animations: {
             self.textViewLeftConstraint.constant = self.textViewSpacingInitial
             self.view.layoutIfNeeded()
+            }, completion: {
+                (finished) in
+                 self.sendButton.setTitleColor(defaultBlueColour, forState: .Normal)
         })
     }
     
@@ -82,8 +88,8 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         let value = info![UIKeyboardFrameEndUserInfoKey] as! NSValue
         let kbRect = value.CGRectValue()
         let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
-        let delta = kbRect.size.height - currentKeyboardHeight
-        currentKeyboardHeight = kbRect.size.height
+        let delta = kbRect.size.height - _currentKeyboardHeight
+        _currentKeyboardHeight = kbRect.size.height
         moveKeyboardUpBy(delta, animationTime: animationTime)
     }
     
@@ -93,7 +99,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         let kbRect = value.CGRectValue()
         let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
         let delta = -kbRect.height
-        currentKeyboardHeight = 0
+        _currentKeyboardHeight = 0
         println("keyboard hiding: \(kbRect.height)")
         moveKeyboardUpBy(delta, animationTime: animationTime)
     }
@@ -122,9 +128,11 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         println("removing observers")
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: messageNotificationReceivedKey, object: nil)
     }
     
     override func viewDidLoad() {
+        println("LOADING")
         super.viewDidLoad()
         setMessageViewBorders()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("messageReceived:"), name: messageNotificationReceivedKey, object: nil)
@@ -132,7 +140,6 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
             NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
         println("toUsers: \(toUsers)")
-        //self.messageTable.rowHeight = UITableViewAutomaticDimension
         self.messageTable.delegate = self
         self.messageTable.dataSource = self
         self.messageTextView.delegate = self
@@ -174,7 +181,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
 extension MessagingViewController {
     
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
-        if indexPath.row == 0 {
+        if indexPath.row == 0 || indexPath.row == messages.count - 1 {
             return nil
         }
         let message = messages[indexPath.row]
@@ -196,12 +203,12 @@ extension MessagingViewController {
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath.row == 0 {
-            return 8
+        if indexPath.row == 0 || indexPath.row == messages.count - 1 {
+            return messageSpacing
         }
         let message = messages[indexPath.row]
         var text = message.objectForKey(parse_message_text) as! String
-        let textHeight = getHeightOfLabel(text) + messageSpacing
+        let textHeight = getHeightOfLabel(text) + messageSpacing * 2
         return textHeight
         
     }
@@ -216,7 +223,7 @@ extension MessagingViewController {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
+        if indexPath.row == 0 || indexPath.row == messages.count - 1 {
             let cell = messageTable.dequeueReusableCellWithIdentifier("Padding") as! UITableViewCell
             cell.textLabel?.text = ""
             return cell
@@ -278,10 +285,13 @@ extension MessagingViewController {
         //display messages
         println("got messages")
         println("message count: \(messages.count)")
-        
-        //self.messages = [PFObject()]
-        self.messages = [PFObject]()
-        self.messages = self.messages + messages
+        self.messages = messages
+        if messages.count > 0 {
+            //add padding
+            let dummyObject = messages[0]
+            self.messages = [dummyObject] + self.messages + [dummyObject]
+        }
+        println("message count: \(self.messages.count)")
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
             if messages.count > 0 {

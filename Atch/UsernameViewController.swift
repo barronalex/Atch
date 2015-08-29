@@ -43,10 +43,6 @@ class UsernameViewController: UIViewController, UsernameManagerDelegate, Faceboo
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("textFieldDidChange:"), name: UITextFieldTextDidChangeNotification, object: usernameField)
     }
     
-    func textFieldDidBeginEditing(textField: UITextField) {
-        self.loginVC?.moveKeyboardUp()
-    }
-    
     func textFieldDidChange(notification: NSNotification) {
         if let username = usernameField.text {
             usernameManager.checkIfUsernameFree(username)

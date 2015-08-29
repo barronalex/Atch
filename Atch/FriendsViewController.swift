@@ -90,8 +90,8 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         //go to friends messaging screen
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
-        atchVC.firstLocation = false
         self.showViewController(atchVC, sender: nil)
+        atchVC.firstLocation = false
         let friendId = _friendManager.friends[row].objectId!
         atchVC.tappedUserId = friendId
         if !toMessages {
@@ -139,6 +139,7 @@ extension FriendsViewController {
         let fulluser = _friendManager.userMap[user.objectId!]
         if let colour = fulluser?.colour {
             cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
+            cell.acceptButton.showsTouchWhenHighlighted = true
         }
         let tapGesture = UITapGestureRecognizer(target: self, action: Selector("imageTapped:"))
         cell.profileImage.tag = row

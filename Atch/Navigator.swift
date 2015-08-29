@@ -51,9 +51,12 @@ class Navigator {
         println("past clauses")
         if let atchVC = curVC as? AtchMapViewController {
             println("ATCH MAP CONTROLLER PRESENTED")
+            atchVC.lowerBanner()
             atchVC.tappedUserId = toUsers[1]
             atchVC.containerVC?.goToMessages(toUsers)
-            atchVC.bringUpMessagesScreen()
+            atchVC.bannerAtTop = false
+            atchVC.switchBanners()
+            atchVC.bannerTapped()
         }
         else if let introVC = curVC as? IntroViewController { }
         else if let friendsVC = curVC as? FriendsViewController {

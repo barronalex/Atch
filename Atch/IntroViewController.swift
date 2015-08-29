@@ -22,11 +22,12 @@ class IntroViewController: UIViewController {
     @IBOutlet weak var logOut: UIButton!
     
     @IBAction func logout() {
+        PFInstallation.currentInstallation().setObject("", forKey: "userId")
+        PFInstallation.currentInstallation().saveInBackground()
         PFUser.logOutInBackgroundWithBlock() {
             (error) in
             if error == nil {
-                PFInstallation.currentInstallation().setObject("", forKey: "userId")
-                PFInstallation.currentInstallation().saveInBackground()
+                
                 self.performSegueWithIdentifier("fullylogout", sender: nil)
             }
             else {

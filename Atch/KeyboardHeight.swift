@@ -6,4 +6,4 @@
 //  Copyright (c) 2015 Alex Barron. All rights reserved.
 //
 
-var currentKeyboardHeight = CGFloat(0)
+var _currentKeyboardHeight = CGFloat(0)

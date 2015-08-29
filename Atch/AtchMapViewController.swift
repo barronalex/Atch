@@ -59,8 +59,9 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         
         super.viewDidLoad()
         println("loading Atch")
+        //friendsButton.setImage(UIImage(named: "circle.png"), forState: .Highlighted)
         setShadows()
-        self.containerHeightConstraint.constant = self.view.frame.height - bannerView.frame.height
+        self.containerHeightConstraint.constant = self.view.frame.height - self.bannerHeightAtBottom
         self.view.layoutIfNeeded()
         self.topContainerConstraint.constant = self.view.frame.height - 20
         self.view.layoutIfNeeded()
@@ -102,6 +103,10 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         friendsButton.layer.shadowOffset = CGSizeMake(1, 1)
         friendsButton.layer.shadowRadius = 1
         friendsButton.layer.shadowOpacity = 1.0
+        bannerView.layer.shadowColor = UIColor.grayColor().CGColor
+        bannerView.layer.shadowOffset = CGSizeMake(1, 1)
+        bannerView.layer.shadowRadius = 1
+        bannerView.layer.shadowOpacity = 1.0
     }
 
     @IBAction func hereButton() {
@@ -118,11 +123,6 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             let messageVC = childVCs[0] as? MessagingViewController
             messageVC?.messenger.sendMessage("meet there")
         }
-    }
-    func bringUpMessagesScreen() {
-        putBannerUp()
-        bannerAtTop = false
-        bannerTapped()
     }
 }
 
@@ -204,6 +204,7 @@ extension AtchMapViewController {
         }
         if recognizer.state == UIGestureRecognizerState.Began && bannerAtTop {
             self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
+            self.view.endEditing(true)
         }
         let yTranslation = recognizer.translationInView(self.view).y
         if let view = recognizer.view {
@@ -228,8 +229,12 @@ extension AtchMapViewController {
         println("banner tapped")
         if !bannerAtTop {
             UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+                _mapView?.padding = self.bannerMapInsets
                 self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin - (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+                
                 self.bannerConstraint.constant = self.view.frame.height - self.bannerView.frame.height + (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+                println("bannerConstraint: \(self.bannerConstraint.constant)")
+                println("banner height: \(self.bannerHeightAtTop)")
                 self.bannerHeightConstraint.constant = self.bannerHeightAtTop
                 self.containerHeightConstraint.constant = self.view.frame.height - self.bannerHeightAtTop
                 self.view.layoutIfNeeded()
@@ -239,7 +244,7 @@ extension AtchMapViewController {
         else {
             lowerBanner()
         }
-        
+        println("banner height real: \(bannerView.frame.height)")
     }
     
     func lowerBanner() {
@@ -314,6 +319,12 @@ extension AtchMapViewController {
         })
         bannerUp = false
         bannerAtTop = false
+    }
+    
+    func bringUpMessagesScreen() {
+        putBannerUp()
+        bannerAtTop = false
+        bannerTapped()
     }
 
 }

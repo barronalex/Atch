@@ -60,9 +60,10 @@ class NotificationBanner: NSObject {
     private func setUpView(view: UIView, user: String?) {
         notifView = UIView(frame: CGRectMake(0, -notification_banner_height, view.frame.width, notification_banner_height))
         if user != nil {
-            let colour = _friendManager.userMap[user!]!.colour!
-            println("assign colour")
-            notifView.backgroundColor = colour
+            if let colour = _friendManager.userMap[user!]?.colour {
+                println("assign colour")
+                notifView.backgroundColor = colour
+            }
             
         }
         else {
@@ -108,6 +109,12 @@ class NotificationBanner: NSObject {
     
     func notificationTapped() {
         println("notification tapped")
+        UIView.animateWithDuration(0.2, animations: {
+            self.notifView.frame.origin.y = -notification_banner_height
+            }, completion: {
+                (finished) in
+                self.notifView.removeFromSuperview()
+        })
         if let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController) as? IntroViewController {
             notifView.backgroundColor = UIColor.redColor()
         }

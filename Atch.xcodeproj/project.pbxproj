@@ -85,6 +85,7 @@
 		D0B8E2EC1B90FE2000B74B2E /* lockcircle.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2EB1B90FE2000B74B2E /* lockcircle.png */; };
 		D0B8E2EE1B90FFC000B74B2E /* left_chat_bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */; };
 		D0B8E2F01B91031000B74B2E /* right_chat_bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2EF1B91031000B74B2E /* right_chat_bubble.png */; };
+		D0F9A15E1B91F62E008AC953 /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = D0F9A15D1B91F62E008AC953 /* circle.png */; };
 		D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */; };
 		D0FA22F61B83526E0055F7F1 /* LocationUpdaterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -186,6 +187,7 @@
 		D0B8E2EB1B90FE2000B74B2E /* lockcircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lockcircle.png; sourceTree = "<group>"; };
 		D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_chat_bubble.png; sourceTree = "<group>"; };
 		D0B8E2EF1B91031000B74B2E /* right_chat_bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_chat_bubble.png; sourceTree = "<group>"; };
+		D0F9A15D1B91F62E008AC953 /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
 		D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdater.swift; sourceTree = "<group>"; };
 		D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdaterDelegate.swift; sourceTree = "<group>"; };
 		D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CrossCountry.gpx; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 				D02F32271B906EC2002F9D20 /* Sent-100.png */,
 				D02F32251B906C5B002F9D20 /* Chat-100.png */,
 				D02F32321B90D017002F9D20 /* circlelist.png */,
+				D0F9A15D1B91F62E008AC953 /* circle.png */,
 				D02F32231B906AFB002F9D20 /* Ok-512.png */,
 				D02F32211B906A66002F9D20 /* Ok-25.png */,
 				D02F321F1B90689D002F9D20 /* Ok-50.png */,
@@ -518,6 +521,7 @@
 			files = (
 				D0B8E2F01B91031000B74B2E /* right_chat_bubble.png in Resources */,
 				D02F322E1B90CC7D002F9D20 /* External-100 copy.png in Resources */,
+				D0F9A15E1B91F62E008AC953 /* circle.png in Resources */,
 				D027886B1B8F60E4007B76D9 /* Hammersmith_Bridge_1,_London,_UK_-_April_2012.jpg in Resources */,
 				D02F32261B906C5B002F9D20 /* Chat-100.png in Resources */,
 				D02F321A1B906195002F9D20 /* circle-xxl.png in Resources */,

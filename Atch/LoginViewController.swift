@@ -83,25 +83,35 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         println("parse login failed")
     }
     
-    func moveKeyboardUp() {
+    func moveKeyboardUpBy(delta: CGFloat, animationTime: NSNumber) {
         
-        UIView.animateWithDuration(0.25, animations: {
+        UIView.animateWithDuration(NSTimeInterval(animationTime), animations: {
             
-            self.usernameInputConstraint.constant = 155
+            self.usernameInputConstraint.constant += delta
             self.view.layoutIfNeeded()
             
             }, completion: nil)
     }
     
-    func moveKeyboardDown() {
-        
-        UIView.animateWithDuration(0.25, animations: {
-            
-            self.usernameInputConstraint.constant = 0
-            self.view.layoutIfNeeded()
-            
-            }, completion: nil)
-
+    func keyboardWillShow(notification: NSNotification) {
+        let info = notification.userInfo
+        let value = info![UIKeyboardFrameEndUserInfoKey] as! NSValue
+        let kbRect = value.CGRectValue()
+        let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
+        let delta = kbRect.size.height - _currentKeyboardHeight
+        _currentKeyboardHeight = kbRect.size.height
+        moveKeyboardUpBy(delta, animationTime: animationTime)
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        let info = notification.userInfo
+        let value = info![UIKeyboardFrameEndUserInfoKey] as! NSValue
+        let kbRect = value.CGRectValue()
+        let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
+        let delta = -kbRect.height
+        _currentKeyboardHeight = 0
+        println("keyboard hiding: \(kbRect.height)")
+        moveKeyboardUpBy(delta, animationTime: animationTime)
     }
     
     func hideUsernameInput() {
@@ -128,7 +138,8 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         hideUsernameInput()
         var mapInsets = UIEdgeInsetsMake(0.0, 0.0, self.view.frame.height - 170, 0.0)
         self.backgroundMapView.padding = mapInsets
-        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
 //        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
 //        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
     }
@@ -140,6 +151,11 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     }
     
     func alreadySignedUp() {}
+    
+    override func viewDidDisappear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+    }
     
     
 }
