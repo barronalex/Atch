@@ -41,7 +41,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         //self.messageTextView.enabled = false
         self.sendButton.enabled = false
         self.sendButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
-        messenger.sendMessage(messageTextView.text)
+        messenger.sendMessage(messageTextView.text, decorationFlag: "n")
     }
     
     func showSend() {
@@ -207,6 +207,11 @@ extension MessagingViewController {
             return messageSpacing
         }
         let message = messages[indexPath.row]
+        if let dF = message.objectForKey("decorationFlag") as? String {
+            if dF == "h" || dF == "t" {
+                return 60
+            }
+        }
         var text = message.objectForKey(parse_message_text) as! String
         let textHeight = getHeightOfLabel(text) + messageSpacing * 2
         return textHeight
@@ -229,6 +234,16 @@ extension MessagingViewController {
             return cell
         }
         let message = messages[indexPath.row]
+        if let df = message.objectForKey("decorationFlag") as? String {
+            if df == "h" {
+                let cell = messageTable.dequeueReusableCellWithIdentifier("MeetHere") as! UITableViewCell
+                return cell
+            }
+            if df == "t" {
+                let cell = messageTable.dequeueReusableCellWithIdentifier("MeetThere") as! UITableViewCell
+                return cell
+            }
+        }
         let messageUser = message.objectForKey(parse_message_fromUser) as! PFUser
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell

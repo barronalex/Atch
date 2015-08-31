@@ -59,10 +59,11 @@ class FacebookManager {
                     let fullname = result.valueForKey("name") as! String
                     print("User Name is: \(fullname)")
                     let id = result.valueForKey("id") as! String
-                    print("ID: \(id)")
+                    let firstname = result.valueForKey("first_name") as! String
                     PFUser.currentUser()?.setObject(fullname, forKey: parse_user_fullname)
                     PFUser.currentUser()?.setObject(fullname.lowercaseString, forKey: parse_user_queryFullname)
                     PFUser.currentUser()?.setObject(id, forKey: parse_user_fbid)
+                    PFUser.currentUser()?.setObject(firstname, forKey: "firstName")
                     PFUser.currentUser()?.saveInBackground()
                     self.delegate?.parseLoginSucceeded()
                 }
@@ -78,7 +79,7 @@ class FacebookManager {
         println("token: \(token)")
         for user in users {
             if let fbid = user.objectForKey(parse_user_fbid) as? String {
-                let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=100&height=100")
+                let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=200&height=200")
                 let request = NSURLRequest(URL: url!)
                 urlRequests.append(request)
                 reqMap[request] = user.objectId!

@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/ImageProcessor.swift"
-            timestampString = "462512346.437358"
+            timestampString = "462672729.609489"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "50"
-            endingLineNumber = "50"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
             landmarkName = "makeImageColour(_:colour:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -154,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "462570866.564666"
+            timestampString = "462682823.09326"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "435"
-            endingLineNumber = "435"
+            startingLineNumber = "441"
+            endingLineNumber = "441"
             landmarkName = "friendLocationsUpdated(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -170,12 +170,44 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "462570866.564666"
+            timestampString = "462682823.09326"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "443"
-            endingLineNumber = "443"
+            startingLineNumber = "451"
+            endingLineNumber = "451"
             landmarkName = "friendLocationsUpdated(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Atch/ImageProcessor.swift"
+            timestampString = "462672729.609489"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "resizeImage(_:size:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Atch/ImageProcessor.swift"
+            timestampString = "462672729.609489"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "createCircle(_:borderColour:markerSize:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

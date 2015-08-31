@@ -19,10 +19,10 @@ class FriendManager {
     
     var delegate: FriendManagerDelegate?
     
-    var userMarkers = [String:GMSMarker]()
     var userMap = [String:User]()
     var friends = [PFUser]()
     var friendPics = [String:UIImage]()
+    var groups = [Group]()
     
     func sendRequest(targetUserID: String) {
         //gets user from id
@@ -184,6 +184,7 @@ class FriendManager {
                 //if user already exists, change their flag if necessary
                 if type.rawValue < user.type.rawValue {
                     user.type = type
+                    println("user id: \(object.objectId!)")
                     self.userMap[object.objectId!] = user
                 }
             }

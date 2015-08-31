@@ -86,8 +86,8 @@
 		D0B8E2EE1B90FFC000B74B2E /* left_chat_bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */; };
 		D0B8E2F01B91031000B74B2E /* right_chat_bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2EF1B91031000B74B2E /* right_chat_bubble.png */; };
 		D0F9A15E1B91F62E008AC953 /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = D0F9A15D1B91F62E008AC953 /* circle.png */; };
-		D0F9A1601B921FBE008AC953 /* MarkerUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F9A15F1B921FBE008AC953 /* MarkerUtils.swift */; };
 		D0F9A1621B922035008AC953 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F9A1611B922035008AC953 /* Group.swift */; };
+		D0F9A1641B935D88008AC953 /* GroupEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F9A1631B935D88008AC953 /* GroupEntry.swift */; };
 		D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */; };
 		D0FA22F61B83526E0055F7F1 /* LocationUpdaterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -190,8 +190,8 @@
 		D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_chat_bubble.png; sourceTree = "<group>"; };
 		D0B8E2EF1B91031000B74B2E /* right_chat_bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_chat_bubble.png; sourceTree = "<group>"; };
 		D0F9A15D1B91F62E008AC953 /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
-		D0F9A15F1B921FBE008AC953 /* MarkerUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerUtils.swift; sourceTree = "<group>"; };
 		D0F9A1611B922035008AC953 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		D0F9A1631B935D88008AC953 /* GroupEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupEntry.swift; sourceTree = "<group>"; };
 		D0FA22F31B82ADC00055F7F1 /* LocationUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdater.swift; sourceTree = "<group>"; };
 		D0FA22F51B83526E0055F7F1 /* LocationUpdaterDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdaterDelegate.swift; sourceTree = "<group>"; };
 		D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CrossCountry.gpx; sourceTree = "<group>"; };
@@ -251,6 +251,7 @@
 				D02788521B8A5403007B76D9 /* AddFriendsViewController.swift */,
 				D02E5B5B1B81D563007F7FDB /* PendingFriendEntry.swift */,
 				D02F321B1B906279002F9D20 /* FriendEntry.swift */,
+				D0F9A1631B935D88008AC953 /* GroupEntry.swift */,
 				D02E5B411B7DE6A2007F7FDB /* FriendManager.swift */,
 				D02E5B431B7E4FD7007F7FDB /* FriendManagerDelegate.swift */,
 			);
@@ -333,7 +334,6 @@
 				D02788621B8E1AC3007B76D9 /* ParseKeys.swift */,
 				D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */,
 				D02788661B8F2935007B76D9 /* Navigator.swift */,
-				D0F9A15F1B921FBE008AC953 /* MarkerUtils.swift */,
 				D0F9A1611B922035008AC953 /* Group.swift */,
 				D02F32371B90DC00002F9D20 /* ColourGenerator.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
@@ -634,7 +634,7 @@
 				D02E5B441B7E4FD7007F7FDB /* FriendManagerDelegate.swift in Sources */,
 				D02788651B8E2993007B76D9 /* NotificationBanner.swift in Sources */,
 				D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */,
-				D0F9A1601B921FBE008AC953 /* MarkerUtils.swift in Sources */,
+				D0F9A1641B935D88008AC953 /* GroupEntry.swift in Sources */,
 				D02E5B501B7F32BC007F7FDB /* UsernameManagerDelegate.swift in Sources */,
 				D0FA22F41B82ADC00055F7F1 /* LocationUpdater.swift in Sources */,
 				D02E5B4E1B7F32A9007F7FDB /* UsernameManager.swift in Sources */,

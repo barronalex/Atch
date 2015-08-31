@@ -113,7 +113,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         let childVCs = containerVC?.childVCs
         if let childVCs = childVCs {
             let messageVC = childVCs[0] as! MessagingViewController
-            messageVC.messenger.sendMessage("meet here")
+            messageVC.messenger.sendMessage("meet here", decorationFlag:"h")
         }
     }
     
@@ -121,7 +121,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         let childVCs = containerVC?.childVCs
         if let childVCs = childVCs {
             let messageVC = childVCs[0] as? MessagingViewController
-            messageVC?.messenger.sendMessage("meet there")
+            messageVC?.messenger.sendMessage("meet there", decorationFlag:"t")
         }
     }
 }
@@ -269,7 +269,7 @@ extension AtchMapViewController {
         //put up banner
         println("friend map count: \(_friendManager.friends.count)")
         println("tapped id: \(tappedUserId)")
-        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
+        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey("firstname") as? String
         println("BANNER TEXT: \(bannerLabel.text)")
         if bannerLabel.text == nil {
            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
@@ -368,8 +368,10 @@ extension AtchMapViewController {
 //            marker.icon = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: true)
 //            marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
 //        }
-        if let image = ImageProcessor.createImageFromGroup(marker.userData as! Group) {
+        
+        if let image = (marker.userData as? Group)?.image {
             marker.icon = image
+            marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         }
         
     }
@@ -378,7 +380,8 @@ extension AtchMapViewController {
         let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: group.position!.coordinate.latitude, longitude: group.position!.coordinate.longitude))
         marker.map = _mapView
         for user in group.toUsers {
-            _friendManager.userMarkers[user] = marker
+            _friendManager.userMap[user]?.marker = marker
+            _friendManager.userMap[user]?.group = group
         }
         marker.userData = group
         setMarkerImage(marker)
@@ -411,13 +414,11 @@ extension AtchMapViewController {
                 bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
             }
         }
+        _locationUpdater?.getFriendLocationsFromServer()
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
         println("pictures received")
-        for (userId, marker) in _friendManager.userMarkers {
-            setMarkerImage(marker)
-        }
         _locationUpdater?.getFriendLocationsFromServer()
     }
     
@@ -426,23 +427,31 @@ extension AtchMapViewController {
         print("friends location updated")
         //make array of markers if first time
         //display them
-        var locations = [CLLocation]()
+        if _friendManager.friends.count == 0 {
+            return
+        }
         var users = [String]()
         for data in friendData {
             if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
                 if let user = data.objectForKey(parse_frienddata_user) as? PFObject {
                     let clLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
-                    locations.append(clLocation)
-                    users.append(user.objectId!)
+                    if _friendManager.userMap[user.objectId!] != nil {
+                        _friendManager.userMap[user.objectId!]!.location = clLocation
+                        users.append(user.objectId!)
+                    }
                 }
             }
         }
-        let groups = MarkerUtils.findGroups(users, locations: locations)
+        let groups = Group.findGroups(users)
+        //once the groups are found send them to the friends vc
+        NSNotificationCenter.defaultCenter().postNotificationName(groupsFoundNotificationKey, object: nil)
+        _mapView!.clear()
         for group in groups {
             println("Group members: \(group.toUsers)")
             //create a new marker and remove all old ones
             createNewMarker(group)
         }
+        
 //            if location != nil {
 //                //make marker to display location
 //                

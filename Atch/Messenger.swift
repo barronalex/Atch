@@ -13,10 +13,10 @@ class Messenger {
     var delegate: MessengerDelegate?
     var messageHistory: PFObject?
     
-    func sendMessage(messageText: String) {
+    func sendMessage(messageText: String, decorationFlag: String) {
         if self.messageHistory != nil {
             println("sent message")
-            PFCloud.callFunctionInBackground("sendMessage", withParameters: ["messageHistoryId":messageHistory!.objectId!, "messageText":messageText]) {
+            PFCloud.callFunctionInBackground("sendMessage", withParameters: ["messageHistoryId":messageHistory!.objectId!, "messageText":messageText, "decorationFlag":decorationFlag]) {
                 (response: AnyObject?, error: NSError?) -> Void in
                 self.delegate?.sentMessage()
             }

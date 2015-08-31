@@ -9,6 +9,7 @@
 import Foundation
 import Parse
 import GoogleMaps
+import CoreLocation
 
 enum UserType: Int {
     case Friends = 1, PendingTo, PendingFrom, FacebookFriends, None
@@ -22,7 +23,11 @@ class User {
     
     var marker: GMSMarker?
     
+    var location: CLLocation?
+    
     var parseObject: PFObject?
+    
+    var group: Group?
     
     init(type: UserType, parseObject: PFObject) {
         self.type = type

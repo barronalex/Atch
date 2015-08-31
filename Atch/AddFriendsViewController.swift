@@ -14,11 +14,18 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
+        
+        table.delegate = self
+        table.dataSource = self
         println("LOADED")
         searchBar.delegate = self
         let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
         self.table.addGestureRecognizer(tapGesture)
+        _friendManager.delegate = self
+        sectionMap[0] = [PFObject]()
+        sectionMap[1] = [PFObject]()
+        setUpTable()
     }
     
     override func friendListFound(friends: [PFUser]) {
@@ -206,6 +213,11 @@ extension AddFriendsViewController {
         }
         return false
     }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return sectionMap[section]!.count
+    }
+    
 }
 
 //SearchBar methods

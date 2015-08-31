@@ -67,7 +67,7 @@ class Navigator {
             atchVC.tappedUserId = toUsers[1]
             atchVC.containerVC?.goToMessages(toUsers)
             atchVC.bringUpMessagesScreen()
-            if let friendLocation = _friendManager.userMarkers[toUsers[1]]?.position {
+            if let friendLocation = _friendManager.userMap[toUsers[1]]?.marker?.position {
                 println("animating")
                 _mapView?.animateToLocation(friendLocation)
             }
