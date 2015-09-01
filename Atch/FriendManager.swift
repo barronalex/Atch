@@ -295,6 +295,7 @@ class FriendManager {
     func getFriends() {
         let query = PFRole.query()!
         query.whereKey("name", equalTo: "friendsOf_" + PFUser.currentUser()!.objectId!)
+        query.orderByAscending("updatedAt")
         query.getFirstObjectInBackgroundWithBlock {
             (role: AnyObject?, error: NSError?) -> Void in
             if let role = role as? PFRole {

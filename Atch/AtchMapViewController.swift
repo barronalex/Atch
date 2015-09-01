@@ -42,7 +42,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     var containerVC: MapContainerViewController?
     var firstLocation = true
     var camera: GMSCameraPosition?
-    var tappedUserId: String?
+    var tappedUserIds = [String]()
     var bannerUp = false
     var bannerAtTop = false
     
@@ -77,7 +77,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         if segue.identifier == "maptochat" {
             let destVC = segue.destinationViewController as! MessagingViewController
             
-            destVC.toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
+            destVC.toUsers = tappedUserIds
         }
         if segue.identifier == "logoutfrommap" {
             putBannerDown()
@@ -173,6 +173,7 @@ extension AtchMapViewController {
 //        else {
         if _mapView == nil {
                 _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            _mapView!.settings.rotateGestures = false
         }
         self.view.addSubview(_mapView!)
         _mapView!.settings.myLocationButton = true
@@ -261,19 +262,43 @@ extension AtchMapViewController {
         self.view.endEditing(true)
     }
     
-    func putBannerUp() {
-        var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
-        containerVC?.goToMessages(toUsers)
-        let colour = _friendManager.userMap[tappedUserId!]?.colour
-        bannerView.backgroundColor = colour
-        //put up banner
-        println("friend map count: \(_friendManager.friends.count)")
-        println("tapped id: \(tappedUserId)")
-        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey("firstname") as? String
-        println("BANNER TEXT: \(bannerLabel.text)")
-        if bannerLabel.text == nil {
-           bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
+    func setBannerText() {
+        var bannerText = ""
+        for userId in tappedUserIds {
+            if let firstname = _friendManager.userMap[userId]?.parseObject?.objectForKey("firstname") as? String {
+                bannerText += (firstname + ", ")
+                
+            }
         }
+        if count(bannerText) > 1 {
+            bannerText = bannerText.substringToIndex(bannerText.endIndex.predecessor().predecessor())
+        }
+        bannerLabel.text = bannerText
+    }
+    
+    func setBannerColour() {
+        if tappedUserIds.count == 1 {
+            let colour = _friendManager.userMap[tappedUserIds[0]]?.colour
+            bannerView.backgroundColor = colour
+        }
+        else {
+            bannerView.backgroundColor = UIColor.blackColor()
+            
+        }
+    }
+    
+    func putBannerUp() {
+        var toUsers = tappedUserIds
+        containerVC?.goToMessages(toUsers)
+        setBannerColour()
+        setBannerText()
+        println("friend map count: \(_friendManager.friends.count)")
+        println("tapped id: \(tappedUserIds)")
+        
+        println("BANNER TEXT: \(bannerLabel.text)")
+//        if bannerLabel.text == nil {
+//           bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
+//        }
         self.view.bringSubviewToFront(bannerView)
         self.view.bringSubviewToFront(containerView)
         self.view.layoutIfNeeded()
@@ -288,18 +313,13 @@ extension AtchMapViewController {
     func switchBanners() {
         self.view.endEditing(true)
         self.containerVC?.removeChildren()
-        var toUsers = [tappedUserId!, PFUser.currentUser()!.objectId!]
+        var toUsers = tappedUserIds
         containerVC?.goToMessages(toUsers)
-        let colour = _friendManager.userMap[tappedUserId!]?.colour
-        bannerView.backgroundColor = colour
         //put up banner
         println("friend map count: \(_friendManager.friends.count)")
-        println("tapped id: \(tappedUserId)")
-        
-        bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
-        if bannerLabel.text == nil {
-            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
-        }
+        println("tapped id: \(tappedUserIds)")
+        setBannerColour()
+        setBannerText()
 
     }
     
@@ -334,8 +354,8 @@ extension AtchMapViewController {
     
     func mapView(mapView: GMSMapView!, didTapMarker marker: GMSMarker!) -> Bool {
         println("tapped marker")
-        tappedUserId = (marker.userData as! Group).toUsers[0]
-        println("marker user id: \(tappedUserId!)")
+        tappedUserIds = (marker.userData as! Group).toUsers
+        println("marker user id: \(tappedUserIds)")
         if bannerUp {
             switchBanners()
         }
@@ -407,12 +427,9 @@ extension AtchMapViewController {
     func friendListFound(friends: [PFUser]) {
         //map user ids to user objects
         FacebookManager.downloadProfilePictures(friends)
-        if self.tappedUserId != nil {
-            bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
-            println("BANNER TEXT POST FRIENDS: \(bannerLabel.text)")
-            if bannerLabel.text == nil {
-                bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
-            }
+        if tappedUserIds.count > 0 {
+            setBannerColour()
+            setBannerText()
         }
         _locationUpdater?.getFriendLocationsFromServer()
     }

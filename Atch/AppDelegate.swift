@@ -123,7 +123,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let curUser = PFUser.currentUser() {
             if let toUserId = userInfo["chatterParseId"] as? String {
                 println("working")
-                return [PFUser.currentUser()!.objectId!, toUserId]
+                return [toUserId]
             }
             else { return nil }
         }

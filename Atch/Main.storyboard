@@ -601,7 +601,7 @@
                                 <rect key="frame" x="0.0" y="550" width="600" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q88-9d-aEP">
-                                        <rect key="frame" x="550" y="10" width="40" height="30"/>
+                                        <rect key="frame" x="550" y="8" width="40" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="40" id="hd1-yh-uA7"/>
                                         </constraints>
@@ -620,7 +620,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="bHJ-EZ-CXL"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                 </subviews>
@@ -630,7 +630,7 @@
                                     <constraint firstAttribute="trailing" secondItem="Q88-9d-aEP" secondAttribute="trailing" constant="10" id="BFt-1L-9Ux"/>
                                     <constraint firstItem="zet-Ci-PoW" firstAttribute="leading" secondItem="LiH-iu-m2g" secondAttribute="leading" constant="10" id="CRm-aW-yeS"/>
                                     <constraint firstAttribute="height" constant="50" id="Dkc-6Z-K1R"/>
-                                    <constraint firstItem="zet-Ci-PoW" firstAttribute="bottom" secondItem="Q88-9d-aEP" secondAttribute="bottom" id="wpS-Nv-hbi"/>
+                                    <constraint firstItem="zet-Ci-PoW" firstAttribute="bottom" secondItem="Q88-9d-aEP" secondAttribute="bottom" constant="2" id="wpS-Nv-hbi"/>
                                     <constraint firstItem="zet-Ci-PoW" firstAttribute="top" secondItem="LiH-iu-m2g" secondAttribute="top" constant="10" id="y9D-up-gTN"/>
                                 </constraints>
                             </view>

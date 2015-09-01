@@ -52,7 +52,7 @@ class Navigator {
         if let atchVC = curVC as? AtchMapViewController {
             println("ATCH MAP CONTROLLER PRESENTED")
             atchVC.lowerBanner()
-            atchVC.tappedUserId = toUsers[1]
+            atchVC.tappedUserIds = toUsers
             atchVC.containerVC?.goToMessages(toUsers)
             atchVC.bannerAtTop = false
             atchVC.switchBanners()
@@ -64,7 +64,7 @@ class Navigator {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
             curVC.showViewController(atchVC, sender: nil)
-            atchVC.tappedUserId = toUsers[1]
+            atchVC.tappedUserIds = toUsers
             atchVC.containerVC?.goToMessages(toUsers)
             atchVC.bringUpMessagesScreen()
             if let friendLocation = _friendManager.userMap[toUsers[1]]?.marker?.position {

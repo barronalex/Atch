@@ -34,7 +34,8 @@ class Messenger {
     }
     
     
-    func getMessageHistoryFrom(userIds: [String]) {
+    func getMessageHistoryFrom(var userIds: [String]) {
+        userIds.append(PFUser.currentUser()!.objectId!)
         PFCloud.callFunctionInBackground("getOrCreateMessageHistory", withParameters: ["userIds":userIds]) {
             (response: AnyObject?, error: NSError?) -> Void in
             if error != nil {

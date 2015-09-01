@@ -79,8 +79,6 @@ class Group {
     }
     
     
-    
-    
     static func compareGroups(group1: Group, group2: Group) -> Bool {
         for var i = 0; i < group1.toUsers.count; i++ {
             for var j = 0; j < group2.toUsers.count; j++ {

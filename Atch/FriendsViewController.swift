@@ -101,6 +101,14 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
     }
     
+    func goToChatFromGroup(sender: AnyObject) {
+        println("here")
+        if let button = sender as? UIButton {
+            let row = button.tag
+            goToMapFromGroup(row, toMessages: true)
+        }
+    }
+    
     func goToMap(row: Int, toMessages: Bool) {
         //go to friends messaging screen
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -108,7 +116,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         self.showViewController(atchVC, sender: nil)
         atchVC.firstLocation = false
         let friendId = _friendManager.friends[row].objectId!
-        atchVC.tappedUserId = friendId
+        atchVC.tappedUserIds = [friendId]
         if !toMessages {
             atchVC.putBannerUp()
         }
@@ -126,9 +134,10 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
         self.showViewController(atchVC, sender: nil)
         atchVC.firstLocation = false
-        let group = _friendManager.groups[row]
-        let friendId = group.toUsers[0]
-        atchVC.tappedUserId = friendId
+        
+        let group = actualGroups[row]
+        println("toUsers: \(group.toUsers)")
+        atchVC.tappedUserIds = group.toUsers
         if !toMessages {
             atchVC.putBannerUp()
         }
@@ -136,9 +145,9 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             println("animating")
             _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 16, bearing: 0, viewingAngle: 0))
         }
-//        if toMessages {
-//            atchVC.bringUpMessagesScreen()
-//        }
+        if toMessages {
+            atchVC.bringUpMessagesScreen()
+        }
 
     }
 
@@ -188,6 +197,8 @@ extension FriendsViewController {
         cell.name.text = groupName
         cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(UIColor.blackColor()), forState: .Normal)
         cell.acceptButton.showsTouchWhenHighlighted = true
+        cell.acceptButton.tag = row
+        cell.acceptButton.addTarget(self, action: Selector("goToChatFromGroup:"), forControlEvents: .TouchUpInside)
 //        if let username = user.objectForKey(parse_user_username) as? String {
 //            print("table doin: \(username)")
 //            cell.username.text = username
