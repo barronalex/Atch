@@ -94,7 +94,7 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     }
 }
 
-//table view methods
+//#MARK: Table view methods
 extension AddFriendsViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -115,11 +115,12 @@ extension AddFriendsViewController {
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
             cell.name.text = fullname
         }
-        if let image = _friendManager.friendPics[user.objectId!] {
+        if let image = _friendManager.userMap[user.objectId!]?.image {
             let colour = _friendManager.userMap[user.objectId!]?.colour
             cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: false)
         }
         else {
+            //get the image from facebook
             cell.profileImage.image = nil
         }
         let fulluser = _friendManager.userMap[user.objectId!]!
@@ -150,8 +151,9 @@ extension AddFriendsViewController {
         let fulluser = _friendManager.userMap[user.objectId!]!
         if fulluser.type == UserType.PendingFrom {
             let cancel = UITableViewRowAction(style: .Normal, title: "cancel") { action, index in
-                println("request cancelled")
+                
                 if let friendRequest = self.userToRequestMap[user.objectId!] {
+                    println("request cancelled")
                     PFCloud.callFunctionInBackground("cancelFriendRequest", withParameters: ["friendRequestId":friendRequest.objectId!])
                     fulluser.type = UserType.None
                     _friendManager.userMap[user.objectId!] = fulluser
@@ -220,7 +222,7 @@ extension AddFriendsViewController {
     
 }
 
-//SearchBar methods
+//#MARK: SearchBar methods
 extension FriendsViewController {
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {

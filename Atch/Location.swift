@@ -8,6 +8,6 @@
 
 import GoogleMaps
 
-var _locationUpdater: LocationUpdater?
+var _locationUpdater = LocationUpdater()
 
 var _mapView: GMSMapView?

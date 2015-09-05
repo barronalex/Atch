@@ -19,9 +19,23 @@ class Group {
     var marker: GMSMarker?
     var image: UIImage?
     
+    
     init(toUsers: [String], position: CLLocation) {
         self.toUsers = toUsers
         self.position = position
+    }
+    
+    func getHashString() -> String {
+        //make string of toUser ids in lexographical order
+        println("toUsers: \(toUsers)")
+        let sortedUsers = toUsers.sorted( {$0 < $1} )
+        println("sortedUsers: \(sortedUsers)")
+        var hash = ""
+        for var i = 0; i < sortedUsers.count; i++ {
+            hash += sortedUsers[i]
+        }
+        println("hash: \(hash)")
+        return hash
     }
     
     
@@ -51,6 +65,8 @@ class Group {
         println("groups: \(groups.count)")
         let result = mergeGroups(groups)
         for group in result {
+            //only make the image if it doesn't already exist
+            
             group.image = ImageProcessor.createImageFromGroup(group)
         }
         _friendManager.groups = result

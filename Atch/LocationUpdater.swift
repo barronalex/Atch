@@ -93,6 +93,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         query.findObjectsInBackgroundWithBlock {
             (friends: [AnyObject]?, error: NSError?) -> Void in
             if let friends = friends as? [PFObject] {
+                _friendManager.lastFriendData = friends
                 self.delegate?.friendLocationsUpdated(friends)
             }
         }

@@ -32,9 +32,11 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         table.dataSource = self
         
         if _friendManager.groups.count > 0 {
-            sectionTitles[0] = "Groups"
             println("count: \(_friendManager.groups.count)")
             findActualGroups()
+            if actualGroups.count > 0 {
+                sectionTitles[0] = "Groups"
+            }
             table.reloadData()
         }
         if _friendManager.friends.count > 0 {
@@ -67,7 +69,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             if let fulluser = _friendManager.userMap[user.objectId!] {
                 _friendManager.changeUserColour(fulluser)
             }
-            _locationUpdater?.getFriendLocationsFromServer()
+            _locationUpdater.getFriendLocationsFromServer()
             if _friendManager.userMap[user.objectId!]?.group != nil {
                 _friendManager.userMap[user.objectId!]?.group?.image = ImageProcessor.createImageFromGroup(_friendManager.userMap[user.objectId!]!.group!)
             }
@@ -83,7 +85,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
         else {
             table.reloadData()
-            if _friendManager.friendPics.count == 0 {
+            if !_friendManager.downloadedPics {
                 FacebookManager.downloadProfilePictures(_friendManager.friends)
             }
         }
@@ -154,7 +156,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
 
 }
 
-//Table View Methods
+//#MARK: Table View Methods
 extension FriendsViewController {
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -199,21 +201,7 @@ extension FriendsViewController {
         cell.acceptButton.showsTouchWhenHighlighted = true
         cell.acceptButton.tag = row
         cell.acceptButton.addTarget(self, action: Selector("goToChatFromGroup:"), forControlEvents: .TouchUpInside)
-//        if let username = user.objectForKey(parse_user_username) as? String {
-//            print("table doin: \(username)")
-//            cell.username.text = username
-//        }
-//        cell.acceptButton.userInteractionEnabled = true
-//        let fulluser = _friendManager.userMap[user.objectId!]
-//        if let colour = fulluser?.colour {
-//            cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
-//            cell.acceptButton.showsTouchWhenHighlighted = true
-//        }
-//        cell.acceptButton.tag = row
-//        cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
-//        if let fullname = user.objectForKey(parse_user_fullname) as? String {
-//            cell.name.text = fullname
-//        }
+
         if let image = group.image {
             //let colour = _friendManager.userMap[group.toUsers[0]]?.colour
             cell.profileImage.image = image
@@ -250,8 +238,8 @@ extension FriendsViewController {
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
             cell.name.text = fullname
         }
-        if let image = _friendManager.friendPics[user.objectId!] {
-            let colour = _friendManager.userMap[user.objectId!]?.colour
+        if let image = fulluser?.image {
+            let colour = fulluser?.colour
             cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: false)
         }
         else {
@@ -300,7 +288,7 @@ extension FriendsViewController {
     }
 }
 
-//FriendManager methods
+//#MARK: FriendManager methods
 extension FriendsViewController {
     
     func friendProfilePicturesReceived(notification: NSNotification) {
@@ -314,7 +302,6 @@ extension FriendsViewController {
         sectionTitles[1] = "Friends"
         sectionMap[1] = friends
         table.reloadData()
-        FacebookManager.downloadProfilePictures(friends)
     }
     
     func facebookFriendsFound(facebookFriends: [PFUser]) {
@@ -322,7 +309,7 @@ extension FriendsViewController {
         if facebookFriends.count > 0 {
             sectionTitles[1] = "Facebook Friends"
             sectionMap[1] = facebookFriends
-            FacebookManager.downloadProfilePictures(facebookFriends)
+            
             table.reloadData()
         }
     }
@@ -336,7 +323,7 @@ extension FriendsViewController {
         if users.count > 0 {
             sectionTitles[0] = "Pending Requests"
             sectionMap[0] = users
-            FacebookManager.downloadProfilePictures(users)
+            
             table.reloadData()
         }
     }
@@ -354,8 +341,10 @@ extension FriendsViewController {
         println("groups received")
         findActualGroups()
         if self.actualGroups.count > 0 {
-            println("hereeeeee")
             sectionTitles[0] = "Groups"
+        }
+        else {
+            sectionTitles[0] = ""
         }
         table.reloadData()
     }

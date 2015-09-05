@@ -67,6 +67,7 @@
 		D02F323A1B90E218002F9D20 /* UserColour.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02F32391B90E218002F9D20 /* UserColour.swift */; };
 		D02F323C1B90F1BD002F9D20 /* External.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F323B1B90F1BD002F9D20 /* External.png */; };
 		D02F323E1B90F1CC002F9D20 /* Internal.png in Resources */ = {isa = PBXBuildFile; fileRef = D02F323D1B90F1CC002F9D20 /* Internal.png */; };
+		D03BF3101B973F96009EC238 /* BannerMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03BF30F1B973F96009EC238 /* BannerMethods.swift */; };
 		D0519E601B6E0AD500C473E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */; };
 		D0519E671B6E0AD500C473E3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0519E661B6E0AD500C473E3 /* Images.xcassets */; };
 		D0519E6A1B6E0AD500C473E3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0519E681B6E0AD500C473E3 /* LaunchScreen.xib */; };
@@ -167,6 +168,7 @@
 		D02F32391B90E218002F9D20 /* UserColour.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserColour.swift; sourceTree = "<group>"; };
 		D02F323B1B90F1BD002F9D20 /* External.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = External.png; sourceTree = "<group>"; };
 		D02F323D1B90F1CC002F9D20 /* Internal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Internal.png; sourceTree = "<group>"; };
+		D03BF30F1B973F96009EC238 /* BannerMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannerMethods.swift; sourceTree = "<group>"; };
 		D0519E5A1B6E0AD500C473E3 /* Atch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Atch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0519E5E1B6E0AD500C473E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				D02E5B581B80D72C007F7FDB /* Friend Management */,
 				D06611691B868E4300CFE73C /* Messaging */,
 				D0519E811B6E6CF700C473E3 /* AtchMapViewController.swift */,
+				D03BF30F1B973F96009EC238 /* BannerMethods.swift */,
 				D027885A1B8BDBD1007B76D9 /* MapContainerViewController.swift */,
 				D02788801B8FE311007B76D9 /* Main.storyboard */,
 				D0FA22F81B838F510055F7F1 /* CrossCountry.gpx */,
@@ -632,6 +635,7 @@
 				D027885B1B8BDBD1007B76D9 /* MapContainerViewController.swift in Sources */,
 				D02F32361B90DBD7002F9D20 /* UserColourDataModel.xcdatamodeld in Sources */,
 				D02E5B441B7E4FD7007F7FDB /* FriendManagerDelegate.swift in Sources */,
+				D03BF3101B973F96009EC238 /* BannerMethods.swift in Sources */,
 				D02788651B8E2993007B76D9 /* NotificationBanner.swift in Sources */,
 				D02788511B8A2E80007B76D9 /* NotificationKeys.swift in Sources */,
 				D0F9A1641B935D88008AC953 /* GroupEntry.swift in Sources */,
@@ -772,6 +776,7 @@
 					/Users/admb/Documents/FacebookSDK,
 					"$(PROJECT_DIR)/parse-library-1.7.5",
 				);
+				GCC_OPTIMIZATION_LEVEL = 3;
 				INFOPLIST_FILE = Atch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.uk.barron.$(PRODUCT_NAME:rfc1034identifier)";

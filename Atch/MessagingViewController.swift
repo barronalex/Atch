@@ -16,13 +16,14 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     var toUsers = [String]()
     var messages = [PFObject]()
     var messenger = Messenger()
-    //have a map of messageids to height
-    var messageHeights = [String:CGFloat]()
+    var rowsWithTimeStamps = [Int]()
     
     let messageSpacing: CGFloat = 4
+    let timeStampHeight: CGFloat = 14
     let labelWidth: CGFloat = 115
     let textViewSpacingInitial: CGFloat = 10
     let textViewSpacingSend: CGFloat = 60
+    
     
     @IBOutlet weak var messageTable: UITableView!
     
@@ -122,6 +123,16 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.messageTextView.endEditing(true)
     }
     
+    func trimSpaces(text: String?) -> String? {
+        if text == nil {
+            return text
+        }
+        var nsText: NSString = text!
+        var trimmedText = nsText.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        println("Trimmed text: \(trimmedText)")
+        return trimmedText
+    }
+    
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
     override func viewDidDisappear(animated: Bool) {
@@ -174,35 +185,36 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         let expectedSize = sizeGettingLabel.sizeThatFits(maxSize)
         return expectedSize.height
     }
+    
+    func messageTapped(sender: AnyObject) {
+        println("messageTapped")
+        let bubble = sender as! UIButton
+        let row = bubble.tag
+        
+        if let index = find(rowsWithTimeStamps, row) {
+            println("reducing size")
+            rowsWithTimeStamps.removeAtIndex(index)
+        }
+        else {
+            println("increasing size")
+            rowsWithTimeStamps.append(row)
+        }
+        messageTable.reloadData()
+        if row == messages.count - 2 {
+            println("Scrolling")
+            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Bottom, animated: false)
+
+        }
+        
+    }
 
 }
 
 //Table View Methods
 extension MessagingViewController {
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
-        if indexPath.row == 0 || indexPath.row == messages.count - 1 {
-            return nil
-        }
-        let message = messages[indexPath.row]
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "h:mm a"
-        let time = message.createdAt!
-        
-        let timeString = formatter.stringFromDate(time)
-        println("time: \(timeString)")
-        let timeStamp = UITableViewRowAction(style: .Normal, title: timeString) { action, index in
-        }
-        timeStamp.backgroundColor = UIColor.whiteColor()
-        UIButton.appearance().setTitleColor(UIColor.blackColor(), forState: .Normal)
-        return [timeStamp]
-    }
-    
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        
-    }
-    
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        //println("rowsWithTimes: \(rowsWithTimeStamps)")
         if indexPath.row == 0 || indexPath.row == messages.count - 1 {
             return messageSpacing
         }
@@ -213,7 +225,11 @@ extension MessagingViewController {
             }
         }
         var text = message.objectForKey(parse_message_text) as! String
-        let textHeight = getHeightOfLabel(text) + messageSpacing * 2
+        var textHeight = getHeightOfLabel(text) + messageSpacing * 2
+        if contains(rowsWithTimeStamps, indexPath.row) {
+            println("increasing height at row: \(indexPath.row)")
+            textHeight += 14
+        }
         return textHeight
         
     }
@@ -244,32 +260,62 @@ extension MessagingViewController {
                 return cell
             }
         }
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "h:mm a"
         let messageUser = message.objectForKey(parse_message_fromUser) as! PFUser
         if messageUser.objectId == PFUser.currentUser()!.objectId {
-            let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
-            cell.messageText.text = message.objectForKey(parse_message_text) as? String
-            cell.contentView.bringSubviewToFront(cell.messageText)
-            if messageHeights[message.objectId!] == nil {
-                messageHeights[message.objectId!] = cell.messageText.frame.height
-            }
-            println("CELL HEIGHT: \(cell.frame.height)")
-            return cell
+            return setUpMessageCell(indexPath, message: message, formatter: formatter)
         }
         else {
-            let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
-            cell.messageText.text = message.objectForKey(parse_message_text) as? String
-            cell.contentView.bringSubviewToFront(cell.messageText)
-            if let colour = _friendManager.userMap[messageUser.objectId!]?.colour {
-                let newcolour = ColourGenerator.getAssociatedColour(colour)
-                cell.messageView.backgroundColor = newcolour
-                cell.messageText.backgroundColor = newcolour
-            }
-            if messageHeights[message.objectId!] == nil {
-                messageHeights[message.objectId!] = cell.messageText.frame.height
-            }
-            println("CELL HEIGHT: \(cell.frame.height)")
-            return cell
+            return setUpIncomingMessageCell(indexPath, message: message, formatter: formatter, messageUser: messageUser)
         }
+    }
+    
+    func setUpMessageCell(indexPath: NSIndexPath, message: PFObject, formatter: NSDateFormatter) -> MessageCell {
+        let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
+        let parseText = message.objectForKey(parse_message_text) as? String
+        cell.messageText.text = trimSpaces(parseText)
+        cell.contentView.bringSubviewToFront(cell.messageText)
+        cell.messageView.tag = indexPath.row
+        cell.messageView.addTarget(self, action: Selector("messageTapped:"), forControlEvents: .TouchUpInside)
+        cell.timeStamp.text = formatter.stringFromDate(message.createdAt!)
+        if contains(rowsWithTimeStamps, indexPath.row) {
+            cell.messageTextBottomConstraint.constant = timeStampHeight + messageSpacing
+            cell.messageViewBottomConstraint.constant = timeStampHeight + messageSpacing
+            cell.timeStamp.hidden = false
+        }
+        else {
+            cell.messageTextBottomConstraint.constant = messageSpacing
+            cell.messageViewBottomConstraint.constant = messageSpacing
+            cell.timeStamp.hidden = true
+        }
+        return cell
+    }
+    
+    func setUpIncomingMessageCell(indexPath: NSIndexPath, message: PFObject, formatter: NSDateFormatter, messageUser: PFObject) -> MessageCell {
+        let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
+        let parseText = message.objectForKey(parse_message_text) as? String
+        cell.messageText.text = trimSpaces(parseText)
+        cell.contentView.bringSubviewToFront(cell.messageText)
+        cell.messageView.tag = indexPath.row
+        cell.messageView.addTarget(self, action: Selector("messageTapped:"), forControlEvents: .TouchUpInside)
+        cell.timeStamp.text = formatter.stringFromDate(message.createdAt!)
+        if let colour = _friendManager.userMap[messageUser.objectId!]?.colour {
+            let newcolour = ColourGenerator.getAssociatedColour(colour)
+            cell.messageView.backgroundColor = newcolour
+            cell.messageText.backgroundColor = newcolour
+        }
+        if contains(rowsWithTimeStamps, indexPath.row) {
+            cell.messageTextBottomConstraint.constant = timeStampHeight + messageSpacing
+            cell.messageViewBottomConstraint.constant = timeStampHeight + messageSpacing
+            cell.timeStamp.hidden = false
+        }
+        else {
+            cell.messageTextBottomConstraint.constant = messageSpacing
+            cell.messageViewBottomConstraint.constant = messageSpacing
+            cell.timeStamp.hidden = true
+        }
+        return cell
     }
 }
 
@@ -299,6 +345,7 @@ extension MessagingViewController {
     func gotPreviousMessages(messages: [PFObject]) {
         //display messages
         println("got messages")
+        rowsWithTimeStamps.removeAll(keepCapacity: true)
         println("message count: \(messages.count)")
         self.messages = messages
         if messages.count > 0 {

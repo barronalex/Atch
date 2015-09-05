@@ -34,7 +34,7 @@ class ColourGenerator {
         var b = CGFloat()
         var a = CGFloat()
         if colour.getHue(&h, saturation: &s, brightness: &b, alpha: &a) {
-            return UIColor(hue: h, saturation: s, brightness: b * 3, alpha: a)
+            return UIColor(hue: h, saturation: s/2, brightness: b * 2, alpha: a)
         }
         return colour
     }

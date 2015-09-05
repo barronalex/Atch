@@ -21,8 +21,13 @@ class FriendManager {
     
     var userMap = [String:User]()
     var friends = [PFUser]()
-    var friendPics = [String:UIImage]()
     var groups = [Group]()
+    var groupMap = [String:Group]()
+    var downloadedPics = false
+    
+    var lastFriendData = [PFObject]()
+    
+    var readyForAtch = false
     
     func sendRequest(targetUserID: String) {
         //gets user from id
@@ -164,6 +169,7 @@ class FriendManager {
                         self.addUsersToMap(pendingFriends, type: UserType.PendingFrom)
                     }
                     else {
+                        FacebookManager.downloadProfilePictures(pendingFriends)
                         self.delegate?.pendingToRequestsFound(requests, users: pendingFriends)
                         self.addUsersToMap(pendingFriends, type: UserType.PendingTo)
                     }
@@ -257,6 +263,7 @@ class FriendManager {
             (fbFriends: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {
                 if let fbFriends = fbFriends as? [PFUser] {
+                    FacebookManager.downloadProfilePictures(fbFriends)
                     self.addUsersToMap(fbFriends, type: UserType.FacebookFriends)
                     self.delegate?.facebookFriendsFound(fbFriends)
                 }
@@ -306,6 +313,8 @@ class FriendManager {
                     if error == nil {
                         if let friends = friends as? [PFUser] {
                             self.friends = friends
+                            FacebookManager.downloadProfilePictures(friends)
+                            _locationUpdater.getFriendLocationsFromServer()
                             self.addUsersToMap(friends, type: UserType.Friends)
                             self.delegate?.friendListFound(friends)
                         }
@@ -338,6 +347,7 @@ class FriendManager {
             (searchResults: [AnyObject]?, error: NSError?) -> Void in
             if error == nil {
                 if let searchResults = searchResults as? [PFUser] {
+                    println("adding search users")
                     self.addUsersToMap(searchResults, type: UserType.None)
                     self.delegate?.searchFinished(searchResults)
                 }

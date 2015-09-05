@@ -15,6 +15,7 @@ class FacebookManager {
     
     var delegate: FacebookManagerDelegate?
     var manager = FBSDKLoginManager()
+   
     
     func login() {
         let permissions = ["public_profile", "user_friends"]
@@ -77,35 +78,30 @@ class FacebookManager {
         var reqMap = [NSURLRequest:String]()
         var token = FBSDKAccessToken.currentAccessToken().tokenString
         println("token: \(token)")
-        for user in users {
-            if let fbid = user.objectForKey(parse_user_fbid) as? String {
-                let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=200&height=200")
-                let request = NSURLRequest(URL: url!)
-                urlRequests.append(request)
-                reqMap[request] = user.objectId!
-            }
-        }
-        var outstandingRequests = urlRequests.count
-        
-        
-        
         var callerQueue = dispatch_get_main_queue()
         var downloadQueue = dispatch_queue_create("requests", nil)
         dispatch_async(downloadQueue) {
-            for request in urlRequests {
-                if let data = NSURLConnection.sendSynchronousRequest(request, returningResponse: nil, error: nil) {
-                    println("here")
-                    var image = UIImage(data: data)
-                    println("image: \(image)")
-                    pics[reqMap[request]!] = image
+            for user in users {
+                if let fbid = user.objectForKey(parse_user_fbid) as? String {
+                    let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=200&height=200")
+                    let request = NSURLRequest(URL: url!)
+                    if let data = NSURLConnection.sendSynchronousRequest(request, returningResponse: nil, error: nil) {
+                        println("here")
+                        var image = UIImage(data: data)
+                        println("image: \(image)")
+                        _friendManager.userMap[user.objectId!]?.image = image
+                    }
+                    else {
+                        println("ERROR DOWNLOADING")
+                    }
+                    
                 }
             }
             dispatch_async(callerQueue) {
                 println("done")
-                _friendManager.friendPics += pics
+                _friendManager.downloadedPics = true
                 NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: nil)
             }
-            
         }
     }
     

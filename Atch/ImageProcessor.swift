@@ -143,12 +143,16 @@ class ImageProcessor {
     }
     
     static func createImageFromGroup(group: Group) -> UIImage? {
-        println("friendPics: \(_friendManager.friendPics)")
         let users = group.toUsers
         var userImages = [UIImage]()
         for user in users {
-            if let image = _friendManager.friendPics[user] {
+            if let image = _friendManager.userMap[user]?.image {
                 userImages.append(ImageProcessor.createCircle(image, borderColour: _friendManager.userMap[user]!.colour!, markerSize: true))
+            }
+            else {
+                if _friendManager.downloadedPics {
+                    FacebookManager.downloadProfilePictures([_friendManager.userMap[user]!.parseObject!])
+                }
             }
         }
         if userImages.count == 0 {

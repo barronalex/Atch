@@ -29,6 +29,8 @@ class User {
     
     var group: Group?
     
+    var image: UIImage?
+    
     init(type: UserType, parseObject: PFObject) {
         self.type = type
         self.parseObject = parseObject
