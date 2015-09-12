@@ -13,11 +13,15 @@ import Bolts
 import CoreLocation
 import CoreData
 
+let closeZoomLevel: Float = 16
+
 class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendManagerDelegate, GMSMapViewDelegate {
     
     @IBOutlet var bannerGesture: UIPanGestureRecognizer!
     
     @IBOutlet weak var bannerLabel: UILabel!
+    
+    @IBOutlet weak var bannerImage: UIImageView!
     
     @IBOutlet weak var bannerView: UIView!
     
@@ -55,7 +59,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     let bannerHeightAtTop: CGFloat = 100
     let bannerHeightAtBottom: CGFloat = 110
     
-    let closeZoomLevel: Float = 16
+    
     
     override func viewDidLoad() {
         
@@ -114,7 +118,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         let childVCs = containerVC?.childVCs
         if let childVCs = childVCs {
             let messageVC = childVCs[0] as! MessagingViewController
-            messageVC.messenger.sendMessage("meet here", decorationFlag:"h")
+            messageVC.messenger.sendMessage("meet here", decorationFlag:"h", goToBottom: true)
         }
     }
     
@@ -122,7 +126,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         let childVCs = containerVC?.childVCs
         if let childVCs = childVCs {
             let messageVC = childVCs[0] as? MessagingViewController
-            messageVC?.messenger.sendMessage("meet there", decorationFlag:"t")
+            messageVC?.messenger.sendMessage("meet there", decorationFlag:"t", goToBottom: true)
         }
     }
 }
@@ -167,6 +171,7 @@ extension AtchMapViewController {
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
         _mapView?.delegate = self
+        _locationUpdater.getFriendLocationsFromServer()
         //addMarkers()
     }
 }
@@ -268,16 +273,24 @@ extension AtchMapViewController {
             return
         }
         var users = [String]()
+        println("Num friends: \(_friendManager.friends.count)")
+        println("Num friend data: \(friendData.count)")
         for data in friendData {
-            if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
-                if let user = data.objectForKey(parse_frienddata_user) as? PFObject {
+            if let user = data.objectForKey(parse_frienddata_user) as? PFObject {
+                if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
+                    println("location: \(location)")
                     let clLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
                     if _friendManager.userMap[user.objectId!] != nil {
                         _friendManager.userMap[user.objectId!]!.location = clLocation
                         users.append(user.objectId!)
                     }
                 }
+                else {
+                    println("OFFLINE")
+                    _friendManager.userMap[user.objectId!]?.online = false
+                }
             }
+            
         }
         let groups = Group.findGroups(users)
         //once the groups are found send them to the friends vc

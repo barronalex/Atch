@@ -11,6 +11,7 @@ import Foundation
 //#MARK: Banner Methods
 extension AtchMapViewController {
     
+    
     @IBAction func handlePan(recognizer:UIPanGestureRecognizer) {
         if recognizer.state == UIGestureRecognizerState.Ended {
             bannerTapped()
@@ -94,10 +95,13 @@ extension AtchMapViewController {
         if tappedUserIds.count == 1 {
             let colour = _friendManager.userMap[tappedUserIds[0]]?.colour
             bannerView.backgroundColor = colour
+            self.bannerImage.image = ImageProcessor.createCircle(_friendManager.userMap[tappedUserIds[0]]!.image!)
         }
         else {
             bannerView.backgroundColor = UIColor.blackColor()
-            
+            if let group = _friendManager.groupMap[Group.generateHashStringFromArray(tappedUserIds)] {
+                self.bannerImage.image = group.image
+            }
         }
     }
     
@@ -106,6 +110,7 @@ extension AtchMapViewController {
         containerVC?.goToMessages(toUsers)
         setBannerColour()
         setBannerText()
+        
         println("friend map count: \(_friendManager.friends.count)")
         println("tapped id: \(tappedUserIds)")
         

@@ -31,6 +31,8 @@ class User {
     
     var image: UIImage?
     
+    var online = true
+    
     init(type: UserType, parseObject: PFObject) {
         self.type = type
         self.parseObject = parseObject

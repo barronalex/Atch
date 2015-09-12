@@ -24,7 +24,7 @@ class MessageCell: UITableViewCell {
         super.awakeFromNib()
         //timeStamp.hidden = true
         // Initialization code
-        messageView.layer.cornerRadius = 5
+        messageView.layer.cornerRadius = 10
         messageView.layer.masksToBounds = true
     }
 

@@ -63,16 +63,6 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if _mapView == nil {
-            _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-            _mapView!.settings.rotateGestures = false
-        }
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
-        _locationUpdater.delegate = self
-        self.view.sendSubviewToBack(image)
-        _friendManager.getFriends()
-        let text = trimSpaces("   igoeinrg    ")
-        println("TEST: \(text)")
         
     }
     
@@ -100,8 +90,16 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
 
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
             self.performSegueWithIdentifier("login", sender: nil)
+            return
         }
-        //self.performSegueWithIdentifier("testmessenger", sender: nil)
+        if _mapView == nil {
+            _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            _mapView!.settings.rotateGestures = false
+        }
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
+        _locationUpdater.delegate = self
+        self.view.sendSubviewToBack(image)
+        _friendManager.getFriends()
     }
     
     override func viewDidDisappear(animated: Bool) {

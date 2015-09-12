@@ -86,9 +86,8 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     func getFriendLocationsFromServer() {
         let query = PFQuery(className: "FriendData")
         query.whereKey(parse_frienddata_user, notEqualTo: PFUser.currentUser()!)
-        query.whereKeyExists(parse_frienddata_location)
         
-        var date = NSDate(timeIntervalSinceNow: 0)
+        //var date = NSDate(timeIntervalSinceNow: 0)
        // query.whereKey("updatedAt", greaterThan: date - NSTimeInterval.
         query.findObjectsInBackgroundWithBlock {
             (friends: [AnyObject]?, error: NSError?) -> Void in

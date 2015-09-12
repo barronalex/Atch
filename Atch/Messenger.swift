@@ -13,16 +13,23 @@ class Messenger {
     var delegate: MessengerDelegate?
     var messageHistory: PFObject?
     
-    func sendMessage(messageText: String, decorationFlag: String) {
+    func trimSpaces(text: String) -> String {
+        var nsText: NSString = text
+        var trimmedText = nsText.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        println("Trimmed text: \(trimmedText)")
+        return trimmedText
+    }
+    
+    func sendMessage(messageText: String, decorationFlag: String, goToBottom: Bool) {
         if self.messageHistory != nil {
             println("sent message")
-            PFCloud.callFunctionInBackground("sendMessage", withParameters: ["messageHistoryId":messageHistory!.objectId!, "messageText":messageText, "decorationFlag":decorationFlag]) {
+            PFCloud.callFunctionInBackground("sendMessage", withParameters: ["messageHistoryId":messageHistory!.objectId!, "messageText":trimSpaces(messageText), "decorationFlag":decorationFlag]) {
                 (response: AnyObject?, error: NSError?) -> Void in
-                self.delegate?.sentMessage()
+                self.delegate?.sentMessage(goToBottom)
             }
         }
         else {
-            self.delegate?.sentMessage()
+            self.delegate?.sentMessage(goToBottom)
         }
         
         

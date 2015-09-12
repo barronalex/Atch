@@ -19,10 +19,12 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     var rowsWithTimeStamps = [Int]()
     
     let messageSpacing: CGFloat = 4
+    let bubbleBorder: CGFloat = 2
     let timeStampHeight: CGFloat = 14
-    let labelWidth: CGFloat = 115
+    let labelWidth: CGFloat = 120
     let textViewSpacingInitial: CGFloat = 10
     let textViewSpacingSend: CGFloat = 60
+    let responseHeight = 52
     
     
     @IBOutlet weak var messageTable: UITableView!
@@ -42,7 +44,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         //self.messageTextView.enabled = false
         self.sendButton.enabled = false
         self.sendButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
-        messenger.sendMessage(messageTextView.text, decorationFlag: "n")
+        messenger.sendMessage(messageTextView.text, decorationFlag: "n", goToBottom: true)
     }
     
     func showSend() {
@@ -123,16 +125,6 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.messageTextView.endEditing(true)
     }
     
-    func trimSpaces(text: String?) -> String? {
-        if text == nil {
-            return text
-        }
-        var nsText: NSString = text!
-        var trimmedText = nsText.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-        println("Trimmed text: \(trimmedText)")
-        return trimmedText
-    }
-    
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
     override func viewDidDisappear(animated: Bool) {
@@ -155,6 +147,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.messageTable.dataSource = self
         self.messageTextView.delegate = self
         let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
+        tapGesture.cancelsTouchesInView = false
         self.messageTable.addGestureRecognizer(tapGesture)
         self.messenger.delegate = self
         self.messenger.getMessageHistoryFrom(toUsers)
@@ -221,14 +214,26 @@ extension MessagingViewController {
         let message = messages[indexPath.row]
         if let dF = message.objectForKey("decorationFlag") as? String {
             if dF == "h" || dF == "t" {
-                return 60
+                let result = MeetHereCell.getResponsesFromMessages(self.messages, row: indexPath.row)
+                var height = responseHeight + 8
+                height += (result.0.count * (responseHeight - 8))
+                if !result.1 {
+                    height += 2 * (responseHeight - 8)
+                }
+                println("HEIGHT: \(height)")
+                return CGFloat(height)
+            }
+            if dF == "r" {
+                return 0
             }
         }
         var text = message.objectForKey(parse_message_text) as! String
-        var textHeight = getHeightOfLabel(text) + messageSpacing * 2
+        var textHeight = getHeightOfLabel(text) + messageSpacing * 2 + bubbleBorder * 2
+        
+        //println("TEXT HEIGHT: \(textHeight)")
         if contains(rowsWithTimeStamps, indexPath.row) {
             println("increasing height at row: \(indexPath.row)")
-            textHeight += 14
+            textHeight += timeStampHeight
         }
         return textHeight
         
@@ -240,7 +245,6 @@ extension MessagingViewController {
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
-        // Most of the time my data source is an array of something...  will replace with the actual name of the data source
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -249,20 +253,16 @@ extension MessagingViewController {
             cell.textLabel?.text = ""
             return cell
         }
-        let message = messages[indexPath.row]
-        if let df = message.objectForKey("decorationFlag") as? String {
-            if df == "h" {
-                let cell = messageTable.dequeueReusableCellWithIdentifier("MeetHere") as! UITableViewCell
-                return cell
-            }
-            if df == "t" {
-                let cell = messageTable.dequeueReusableCellWithIdentifier("MeetThere") as! UITableViewCell
-                return cell
-            }
-        }
         let formatter = NSDateFormatter()
         formatter.dateFormat = "h:mm a"
+        let message = messages[indexPath.row]
         let messageUser = message.objectForKey(parse_message_fromUser) as! PFUser
+        if let df = message.objectForKey("decorationFlag") as? String {
+            if df != "n" {
+                return setUpDecoratedMessage(indexPath, message: message, messageUser: messageUser, formatter: formatter, decorationFlag: df)
+            }
+        }
+        
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             return setUpMessageCell(indexPath, message: message, formatter: formatter)
         }
@@ -271,31 +271,68 @@ extension MessagingViewController {
         }
     }
     
+}
+
+//Cell Methods
+extension MessagingViewController {
     func setUpMessageCell(indexPath: NSIndexPath, message: PFObject, formatter: NSDateFormatter) -> MessageCell {
         let cell = messageTable.dequeueReusableCellWithIdentifier("MessageCell") as! MessageCell
         let parseText = message.objectForKey(parse_message_text) as? String
-        cell.messageText.text = trimSpaces(parseText)
+        cell.messageText.text = parseText
         cell.contentView.bringSubviewToFront(cell.messageText)
         cell.messageView.tag = indexPath.row
         cell.messageView.addTarget(self, action: Selector("messageTapped:"), forControlEvents: .TouchUpInside)
         cell.timeStamp.text = formatter.stringFromDate(message.createdAt!)
         if contains(rowsWithTimeStamps, indexPath.row) {
-            cell.messageTextBottomConstraint.constant = timeStampHeight + messageSpacing
             cell.messageViewBottomConstraint.constant = timeStampHeight + messageSpacing
             cell.timeStamp.hidden = false
         }
         else {
-            cell.messageTextBottomConstraint.constant = messageSpacing
             cell.messageViewBottomConstraint.constant = messageSpacing
             cell.timeStamp.hidden = true
         }
         return cell
     }
     
+    func setUpDecoratedMessage(indexPath: NSIndexPath, message: PFObject, messageUser: PFUser, formatter: NSDateFormatter, decorationFlag: String) -> UITableViewCell {
+        if decorationFlag == "r" {
+            return messageTable.dequeueReusableCellWithIdentifier("Blank") as! UITableViewCell
+        }
+        if messageUser.objectId == PFUser.currentUser()!.objectId {
+            let cell = messageTable.dequeueReusableCellWithIdentifier("MeetHere") as! MeetHereCell
+            //cell.meetHereLabel.text = "FROM"
+            let result = MeetHereCell.getResponsesFromMessages(self.messages, row: indexPath.row)
+            cell.responses = result.0
+            cell.responded = true
+            cell.df = decorationFlag
+            cell.messageUser = messageUser.objectId!
+            cell.messenger = messenger
+            cell.message = message.objectId!
+            cell.responseTable?.reloadData()
+            println("FROM")
+            return cell
+        }
+        else {
+            let cell = messageTable.dequeueReusableCellWithIdentifier("MeetHere") as! MeetHereCell
+            //cell.meetHereLabel.text = "TO"
+            let result = MeetHereCell.getResponsesFromMessages(self.messages, row: indexPath.row)
+            cell.responses = result.0
+            cell.responded = result.1
+            cell.df = decorationFlag
+            cell.messageUser = messageUser.objectId!
+            cell.messenger = messenger
+            cell.message = message.objectId!
+            cell.responseTable?.reloadData()
+            println("TO")
+            return cell
+        }
+        //return UITableViewCell()
+    }
+    
     func setUpIncomingMessageCell(indexPath: NSIndexPath, message: PFObject, formatter: NSDateFormatter, messageUser: PFObject) -> MessageCell {
         let cell = messageTable.dequeueReusableCellWithIdentifier("IncomingMessageCell") as! MessageCell
         let parseText = message.objectForKey(parse_message_text) as? String
-        cell.messageText.text = trimSpaces(parseText)
+        cell.messageText.text = parseText
         cell.contentView.bringSubviewToFront(cell.messageText)
         cell.messageView.tag = indexPath.row
         cell.messageView.addTarget(self, action: Selector("messageTapped:"), forControlEvents: .TouchUpInside)
@@ -306,26 +343,25 @@ extension MessagingViewController {
             cell.messageText.backgroundColor = newcolour
         }
         if contains(rowsWithTimeStamps, indexPath.row) {
-            cell.messageTextBottomConstraint.constant = timeStampHeight + messageSpacing
             cell.messageViewBottomConstraint.constant = timeStampHeight + messageSpacing
             cell.timeStamp.hidden = false
         }
         else {
-            cell.messageTextBottomConstraint.constant = messageSpacing
             cell.messageViewBottomConstraint.constant = messageSpacing
             cell.timeStamp.hidden = true
         }
         return cell
     }
+
 }
 
 //Messenger Methods
 extension MessagingViewController {
     
-    func sentMessage() {
+    func sentMessage(goToBottom: Bool) {
         println("method finished")
         messenger.getMessageHistoryFrom(toUsers)
-        if self.messages.count > 0 {
+        if self.messages.count > 0 && goToBottom {
             self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
         }
         dispatch_async(dispatch_get_main_queue()) {

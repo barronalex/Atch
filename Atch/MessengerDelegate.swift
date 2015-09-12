@@ -10,7 +10,7 @@ import Parse
 
 protocol MessengerDelegate {
     
-    func sentMessage()
+    func sentMessage(goToBottom: Bool)
     
     func gotPreviousMessages(messages: [PFObject])
     

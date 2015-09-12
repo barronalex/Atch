@@ -25,6 +25,18 @@ class Group {
         self.position = position
     }
     
+    static func generateHashStringFromArray(toUsers: [String]) -> String {
+        let sortedUsers = toUsers.sorted( {$0 < $1} )
+        println("sortedUsers: \(sortedUsers)")
+        var hash = ""
+        for var i = 0; i < sortedUsers.count; i++ {
+            hash += sortedUsers[i]
+        }
+        println("hash: \(hash)")
+        return hash
+
+    }
+    
     func getHashString() -> String {
         //make string of toUser ids in lexographical order
         println("toUsers: \(toUsers)")
@@ -68,8 +80,10 @@ class Group {
             //only make the image if it doesn't already exist
             
             group.image = ImageProcessor.createImageFromGroup(group)
+            _friendManager.groupMap[group.getHashString()] = group
         }
         _friendManager.groups = result
+        //add groups to map
         return result
     }
     

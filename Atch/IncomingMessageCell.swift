@@ -22,7 +22,7 @@ class IncomingMessageCell: MessageCell {
         super.awakeFromNib()
         timeStampLeft.hidden = true
         // Initialization code
-        messageView.layer.cornerRadius = 5
+        messageView.layer.cornerRadius = 10
         messageView.layer.masksToBounds = true
     }
 

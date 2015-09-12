@@ -124,7 +124,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
         if let friendLocation = _friendManager.userMap[friendId]?.marker?.position {
             println("animating")
-            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 16, bearing: 0, viewingAngle: 0))
+            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: closeZoomLevel, bearing: 0, viewingAngle: 0))
         }
         if toMessages {
             atchVC.bringUpMessagesScreen()
@@ -145,7 +145,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
         if let friendLocation = group.position?.coordinate {
             println("animating")
-            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: 16, bearing: 0, viewingAngle: 0))
+            _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: closeZoomLevel, bearing: 0, viewingAngle: 0))
         }
         if toMessages {
             atchVC.bringUpMessagesScreen()
@@ -161,7 +161,10 @@ extension FriendsViewController {
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 1 {
-            goToMap(indexPath.row, toMessages: false)
+            let friend = _friendManager.friends[indexPath.row].objectId!
+            if _friendManager.userMap[friend]!.online {
+                goToMap(indexPath.row, toMessages: false)
+            }
         }
         else {
             goToMapFromGroup(indexPath.row, toMessages: false)
@@ -214,7 +217,7 @@ extension FriendsViewController {
     
     func setUpFriendCell(tableView: UITableView, indexPath: NSIndexPath) -> FriendEntry {
         print("row: \(indexPath.row)")
-        let cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! FriendEntry
+        var cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! FriendEntry
         cell.userInteractionEnabled = true
         var sectionArr = _friendManager.friends
         let row = indexPath.row
@@ -223,29 +226,40 @@ extension FriendsViewController {
             print("table doin: \(username)")
             cell.username.text = username
         }
-        cell.acceptButton.userInteractionEnabled = true
+        if let fullname = user.objectForKey(parse_user_fullname) as? String {
+            cell.name.text = fullname
+        }
         let fulluser = _friendManager.userMap[user.objectId!]
+        if !fulluser!.online {
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
+            cell.name.textColor = UIColor.redColor()
+        }
+        setUpFriendProfileImage(fulluser, cell: &cell, row: row)
         if let colour = fulluser?.colour {
             cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
             cell.acceptButton.showsTouchWhenHighlighted = true
+        }
+        cell.acceptButton.tag = row
+        cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
+        
+        
+        return cell
+    }
+    
+    func setUpFriendProfileImage(fulluser: User?, inout cell: FriendEntry, row: Int) {
+        if let image = fulluser?.image {
+            if let colour = fulluser?.colour {
+                cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour, markerSize: false)
+            }
+        }
+        else {
+            cell.profileImage.image = nil
         }
         let tapGesture = UITapGestureRecognizer(target: self, action: Selector("imageTapped:"))
         cell.profileImage.tag = row
         cell.profileImage.addGestureRecognizer(tapGesture)
         cell.profileImage.userInteractionEnabled = true
-        cell.acceptButton.tag = row
-        cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
-        if let fullname = user.objectForKey(parse_user_fullname) as? String {
-            cell.name.text = fullname
-        }
-        if let image = fulluser?.image {
-            let colour = fulluser?.colour
-            cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour!, markerSize: false)
-        }
-        else {
-            cell.profileImage.image = nil
-        }
-        return cell
+        cell.acceptButton.userInteractionEnabled = true
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

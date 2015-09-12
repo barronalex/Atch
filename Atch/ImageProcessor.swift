@@ -34,6 +34,16 @@ class ImageProcessor {
         return finalImage
     }
     
+    static func createCircle(image: UIImage) -> UIImage {
+        let imageSize = CGSizeMake(image.size.width, image.size.height)
+        UIGraphicsBeginImageContextWithOptions(imageSize, false,0.0)
+        
+        UIBezierPath(roundedRect: CGRect(origin: CGPoint(x: 0, y: 0), size: imageSize), cornerRadius: 100).addClip()
+        image.drawInRect(CGRect(origin: CGPointZero, size: image.size))
+        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
+        return finalImage
+    }
+    
     static func resizeImage(image: UIImage, size: CGSize) -> UIImage {
         UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
         image.drawInRect(CGRectMake(0, 0, size.width, size.height))
