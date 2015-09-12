@@ -69,6 +69,9 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     
     func facebookLoginFailed(reason: String) {
         println("login failed")
+        login.setTitle("LOG IN", forState: .Normal)
+        login.enabled = true
+        signup.enabled = true
     }
     
     func parseLoginSucceeded() {
@@ -80,6 +83,9 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     }
     
     func parseLoginFailed() {
+        login.setTitle("LOG IN", forState: .Normal)
+        login.enabled = true
+        signup.enabled = true
         println("parse login failed")
     }
     

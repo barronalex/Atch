@@ -41,7 +41,7 @@ class Messenger {
     }
     
     
-    func getMessageHistoryFrom(var userIds: [String]) {
+    func getMessageHistoryFrom(var userIds: [String], toBottom: Bool) {
         userIds.append(PFUser.currentUser()!.objectId!)
         PFCloud.callFunctionInBackground("getOrCreateMessageHistory", withParameters: ["userIds":userIds]) {
             (response: AnyObject?, error: NSError?) -> Void in
@@ -51,14 +51,14 @@ class Messenger {
             println("made it")
             if let messageHistory = response as? PFObject {
                 self.messageHistory = messageHistory
-                self.getMessagesFromHistory()
+                self.getMessagesFromHistory(toBottom)
                 let name = messageHistory.objectForKey("name") as! String
                 println("mh name: \(name)")
             }
         }
     }
     
-    func getMessagesFromHistory() {
+    func getMessagesFromHistory(toBottom: Bool) {
         if self.messageHistory != nil {
             //if there are messages
             if let messageList = messageHistory!.objectForKey(parse_messageHistory_list) as? [String] {
@@ -71,7 +71,7 @@ class Messenger {
                     if error == nil {
                         if let messages = messages as? [PFObject] {
                             var revMessages = reverse(messages)
-                            self.delegate?.gotPreviousMessages(revMessages)
+                            self.delegate?.gotPreviousMessages(revMessages, toBottom: toBottom)
                         }
                     } else {
                         print("error in messages request")
@@ -81,11 +81,11 @@ class Messenger {
                 
             }
             else {
-                self.delegate?.gotPreviousMessages([PFObject]())
+                self.delegate?.gotPreviousMessages([PFObject](), toBottom: false)
             }
         }
         else {
-            self.delegate?.gotPreviousMessages([PFObject]())
+            self.delegate?.gotPreviousMessages([PFObject](), toBottom: false)
         }
     }
     

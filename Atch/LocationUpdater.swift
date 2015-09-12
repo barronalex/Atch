@@ -16,6 +16,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     var deferringUpdates = false
     var updating = false
     var curLocation: CLLocation?
+    var lastLocation: CLLocation?
     var friendData: PFObject?
     var delegate: LocationUpdaterDelegate?
     var sendTimer: NSTimer?
@@ -37,6 +38,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
+            _mapView?.myLocationEnabled = true
             updating = true
         }
         NSTimer.scheduledTimerWithTimeInterval(1200, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
@@ -51,6 +53,8 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         locationTimer?.invalidate()
         locationManager.stopUpdatingLocation()
         updating = false
+        _mapView?.myLocationEnabled = false
+        Navigator.goToLogin()
     }
     
     func getLocation() -> CLLocation? {
@@ -59,7 +63,6 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {
-        print("location updated")
         curLocation = manager.location
         if !self.deferringUpdates && CLLocationManager.deferredLocationUpdatesAvailable() {
             print("started deferred updates")
@@ -76,10 +79,18 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func sendLocationToServer() {
-        print("sending location to server")
         if friendData != nil {
+            PFUser.currentUser()!.incrementKey("checkinCount")
+            PFUser.currentUser()!.saveInBackground()
+            if lastLocation != nil && curLocation != nil {
+                if lastLocation!.distanceFromLocation(curLocation) < 10 { return }
+            }
+            print("sending location to server")
+            lastLocation = curLocation
             friendData!.setObject(PFGeoPoint(location: curLocation), forKey: parse_frienddata_location)
+            
             friendData!.saveInBackground()
+            
         }
     }
     

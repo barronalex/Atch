@@ -63,7 +63,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.view.sendSubviewToBack(image)
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {
@@ -87,8 +87,9 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
 
     
     override func viewDidAppear(animated: Bool) {
-
+        
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
+            println("PFUSER: \(PFUser.currentUser())")
             self.performSegueWithIdentifier("login", sender: nil)
             return
         }
@@ -98,7 +99,6 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
         }
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         _locationUpdater.delegate = self
-        self.view.sendSubviewToBack(image)
         _friendManager.getFriends()
     }
     

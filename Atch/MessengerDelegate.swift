@@ -12,6 +12,6 @@ protocol MessengerDelegate {
     
     func sentMessage(goToBottom: Bool)
     
-    func gotPreviousMessages(messages: [PFObject])
+    func gotPreviousMessages(messages: [PFObject], toBottom: Bool)
     
 }

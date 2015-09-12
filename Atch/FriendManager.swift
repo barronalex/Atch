@@ -338,9 +338,9 @@ class FriendManager {
     func search(search: String) {
         //search for Full Name or username
         let fbQuery = PFUser.query()!
-        fbQuery.whereKey(parse_user_username, containsString: search)
+        fbQuery.whereKey("queryUsername", containsString: search)
         let uQuery = PFUser.query()!
-        uQuery.whereKey(parse_user_fullname, containsString: search)
+        uQuery.whereKey("queryFullname", containsString: search)
         let query = PFQuery.orQueryWithSubqueries([fbQuery, uQuery])
         query.whereKey("objectId", notEqualTo: PFUser.currentUser()!.objectId!)
         query.findObjectsInBackgroundWithBlock {

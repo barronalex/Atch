@@ -24,6 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
+        if let currentUser = PFUser.currentUser() {
+            PFInstallation.currentInstallation().setObject(currentUser.objectId!, forKey: "userId")
+            PFInstallation.currentInstallation().saveInBackground()
+        }
+        
         //add googlemaps SDK
         GMSServices.provideAPIKey("AIzaSyANU3A5FMQqMjgdWEYb1uZhXym68Cppc_o")
         

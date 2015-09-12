@@ -17,8 +17,10 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     @IBOutlet weak var table: UITableView!
     
     var actualGroups = [Group]()
+    var onlineFriends = [PFObject]()
+    var offlineFriends = [PFObject]()
     var sectionMap = [Int:[PFObject]]()
-    var sectionTitles = ["", ""]
+    var sectionTitles = ["", "", ""]
     var userToRequestMap = [String:PFObject]()
     
     override func viewDidLoad() {
@@ -40,11 +42,33 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             table.reloadData()
         }
         if _friendManager.friends.count > 0 {
-            sectionTitles[1] = "Friends"
+            
+            //split friends into online and offline
+            separateOfflineFriends()
+            if onlineFriends.count > 0 {
+                sectionTitles[1] = "Online Friends"
+            }
+            if offlineFriends.count > 0 {
+                sectionTitles[2] = "Offline Friends"
+            }
+            
         }
         
         _friendManager.delegate = self
         setUpTable()
+    }
+    
+    func separateOfflineFriends() {
+        for friend in _friendManager.friends {
+            if let online = _friendManager.userMap[friend.objectId!]?.online {
+                if online {
+                    onlineFriends.append(friend)
+                }
+                else {
+                    offlineFriends.append(friend)
+                }
+            }
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -63,9 +87,17 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         if let recognizer = sender as? UIGestureRecognizer {
             println("down a level")
             let row = recognizer.view!.tag
-            let user = _friendManager.friends[row]
+            var user: PFObject
+            if row < 0 {
+                println("doing an offline friend")
+                user = offlineFriends[-row - 1]
+            }
+            else {
+                user = onlineFriends[row]
+            }
                 println("down another level")
                 //change colour of given user
+            println("userIdOfClickedFriend: \(user.objectId!)")
             if let fulluser = _friendManager.userMap[user.objectId!] {
                 _friendManager.changeUserColour(fulluser)
             }
@@ -99,7 +131,13 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     func goToChat(sender: AnyObject) {
         if let button = sender as? UIButton {
             let row = button.tag
-            goToMap(row, toMessages: true)
+            if row < 0 {
+                goToMap(offlineFriends[-row - 1].objectId!, toMessages: true)
+            }
+            else {
+                goToMap(onlineFriends[row].objectId!, toMessages: true)
+            }
+            
         }
     }
     
@@ -111,13 +149,12 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
     }
     
-    func goToMap(row: Int, toMessages: Bool) {
+    func goToMap(friendId: String, toMessages: Bool) {
         //go to friends messaging screen
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
         self.showViewController(atchVC, sender: nil)
         atchVC.firstLocation = false
-        let friendId = _friendManager.friends[row].objectId!
         atchVC.tappedUserIds = [friendId]
         if !toMessages {
             atchVC.putBannerUp()
@@ -160,14 +197,12 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
 extension FriendsViewController {
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 1 {
-            let friend = _friendManager.friends[indexPath.row].objectId!
-            if _friendManager.userMap[friend]!.online {
-                goToMap(indexPath.row, toMessages: false)
-            }
+        if indexPath.section == 0 {
+             goToMapFromGroup(indexPath.row, toMessages: false)
         }
-        else {
-            goToMapFromGroup(indexPath.row, toMessages: false)
+        else if indexPath.section == 1 {
+            let friend = onlineFriends[indexPath.row].objectId!
+            goToMap(friend, toMessages: false)
         }
     }
     
@@ -179,7 +214,12 @@ extension FriendsViewController {
         if indexPath.section == 0 {
             return setUpGroupCell(tableView, indexPath: indexPath)
         }
-        return setUpFriendCell(tableView, indexPath: indexPath)
+        else if indexPath.section == 1{
+            return setUpFriendCell(tableView, indexPath: indexPath, online: true)
+        }
+        else {
+            return setUpFriendCell(tableView, indexPath: indexPath, online: false)
+        }
     }
     
     func setUpGroupCell(tableView: UITableView, indexPath: NSIndexPath) -> FriendEntry {
@@ -215,11 +255,17 @@ extension FriendsViewController {
         return cell
     }
     
-    func setUpFriendCell(tableView: UITableView, indexPath: NSIndexPath) -> FriendEntry {
+    func setUpFriendCell(tableView: UITableView, indexPath: NSIndexPath, online: Bool) -> FriendEntry {
         print("row: \(indexPath.row)")
         var cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! FriendEntry
         cell.userInteractionEnabled = true
-        var sectionArr = _friendManager.friends
+        var sectionArr = [PFObject]()
+        if online {
+            sectionArr = onlineFriends
+        }
+        else {
+            sectionArr = offlineFriends
+        }
         let row = indexPath.row
         let user = sectionArr[row]
         if let username = user.objectForKey(parse_user_username) as? String {
@@ -234,19 +280,24 @@ extension FriendsViewController {
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             cell.name.textColor = UIColor.redColor()
         }
-        setUpFriendProfileImage(fulluser, cell: &cell, row: row)
+        setUpFriendProfileImage(fulluser, cell: &cell, row: row, online: online)
         if let colour = fulluser?.colour {
             cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
             cell.acceptButton.showsTouchWhenHighlighted = true
         }
-        cell.acceptButton.tag = row
+        if online {
+            cell.acceptButton.tag = row
+        }
+        else {
+            cell.acceptButton.tag = -row - 1
+        }
         cell.acceptButton.addTarget(self, action: Selector("goToChat:"), forControlEvents: .TouchUpInside)
         
         
         return cell
     }
     
-    func setUpFriendProfileImage(fulluser: User?, inout cell: FriendEntry, row: Int) {
+    func setUpFriendProfileImage(fulluser: User?, inout cell: FriendEntry, row: Int, online: Bool) {
         if let image = fulluser?.image {
             if let colour = fulluser?.colour {
                 cell.profileImage.image = ImageProcessor.createCircle(image, borderColour: colour, markerSize: false)
@@ -256,7 +307,12 @@ extension FriendsViewController {
             cell.profileImage.image = nil
         }
         let tapGesture = UITapGestureRecognizer(target: self, action: Selector("imageTapped:"))
-        cell.profileImage.tag = row
+        if online {
+            cell.profileImage.tag = row
+        }
+        else {
+            cell.profileImage.tag = -row - 1
+        }
         cell.profileImage.addGestureRecognizer(tapGesture)
         cell.profileImage.userInteractionEnabled = true
         cell.acceptButton.userInteractionEnabled = true
@@ -266,11 +322,16 @@ extension FriendsViewController {
         if section == 0 {
             return self.actualGroups.count
         }
-        return _friendManager.friends.count
+        else if section == 1 {
+            return self.onlineFriends.count
+        }
+        else {
+            return self.offlineFriends.count
+        }
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
@@ -315,6 +376,7 @@ extension FriendsViewController {
         print("friends found")
         sectionTitles[1] = "Friends"
         sectionMap[1] = friends
+        separateOfflineFriends()
         table.reloadData()
     }
     

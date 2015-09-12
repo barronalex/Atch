@@ -233,9 +233,10 @@ extension AtchMapViewController {
     }
     
     func locationUpdated(location: CLLocationCoordinate2D) {
-        //print("location updated")
+        print("location updated")
         if firstLocation {
             println("first location")
+            PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
             _locationUpdater.sendLocationToServer()
             friendLocationsUpdated(_friendManager.lastFriendData)
             camera = GMSCameraPosition.cameraWithTarget(location, zoom: 6)
@@ -284,6 +285,7 @@ extension AtchMapViewController {
                         _friendManager.userMap[user.objectId!]!.location = clLocation
                         users.append(user.objectId!)
                     }
+                    //add last updated field to friends
                 }
                 else {
                     println("OFFLINE")

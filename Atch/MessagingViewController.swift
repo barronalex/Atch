@@ -150,7 +150,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         tapGesture.cancelsTouchesInView = false
         self.messageTable.addGestureRecognizer(tapGesture)
         self.messenger.delegate = self
-        self.messenger.getMessageHistoryFrom(toUsers)
+        self.messenger.getMessageHistoryFrom(toUsers, toBottom: true)
         
     }
     
@@ -360,7 +360,7 @@ extension MessagingViewController {
     
     func sentMessage(goToBottom: Bool) {
         println("method finished")
-        messenger.getMessageHistoryFrom(toUsers)
+        messenger.getMessageHistoryFrom(toUsers, toBottom: goToBottom)
         if self.messages.count > 0 && goToBottom {
             self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
         }
@@ -374,11 +374,11 @@ extension MessagingViewController {
     }
     
     func refreshMessages() {
-        messenger.getMessageHistoryFrom(toUsers)
+        messenger.getMessageHistoryFrom(toUsers, toBottom: true)
         println("refreshing")
     }
     
-    func gotPreviousMessages(messages: [PFObject]) {
+    func gotPreviousMessages(messages: [PFObject], toBottom: Bool) {
         //display messages
         println("got messages")
         rowsWithTimeStamps.removeAll(keepCapacity: true)
@@ -392,7 +392,7 @@ extension MessagingViewController {
         println("message count: \(self.messages.count)")
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
-            if messages.count > 0 {
+            if messages.count > 0 && toBottom {
                 self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
                 println("to bottom")
             }
