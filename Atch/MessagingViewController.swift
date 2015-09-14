@@ -42,9 +42,41 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBAction func sendButtonTapped() {
         //self.messageTextView.endEditing(true)
         //self.messageTextView.enabled = false
-        self.sendButton.enabled = false
-        self.sendButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
-        messenger.sendMessage(messageTextView.text, decorationFlag: "n", goToBottom: true)
+        println("sendButtonTapped")
+        //self.sendButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
+        let messageText = trimSpaces(messageTextView.text)
+        if messageText == "" { return }
+        addTemporaryMessage(messageText)
+        self.messageTextView.text = ""
+        self.hideSend()
+        self.resizeTextView()
+        messenger.sendMessage(messageText, decorationFlag: "n", goToBottom: true)
+        
+        
+    }
+    
+    func trimSpaces(text: String) -> String {
+        var nsText: NSString = text
+        var trimmedText = nsText.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        println("Trimmed text: \(trimmedText)")
+        return trimmedText
+    }
+    
+    func addTemporaryMessage(text: String) {
+        let tempMessage = PFObject(className: "Message")
+        tempMessage.setObject(text, forKey: "messageText")
+        tempMessage.setObject(PFUser.currentUser()!, forKey: "fromUser")
+        tempMessage.setObject("y", forKey: "pending")
+        if messages.count > 0 {
+            messages.removeLast()
+
+        }
+        messages.append(tempMessage)
+        messages.append(tempMessage)
+        messageTable.reloadData()
+        self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+        println("to bottom")
+        println("temporary message added")
     }
     
     func showSend() {
@@ -271,6 +303,12 @@ extension MessagingViewController {
         }
     }
     
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        UIView.performWithoutAnimation( {
+            cell.layoutIfNeeded()
+        })
+    }
+    
 }
 
 //Cell Methods
@@ -282,7 +320,18 @@ extension MessagingViewController {
         cell.contentView.bringSubviewToFront(cell.messageText)
         cell.messageView.tag = indexPath.row
         cell.messageView.addTarget(self, action: Selector("messageTapped:"), forControlEvents: .TouchUpInside)
-        cell.timeStamp.text = formatter.stringFromDate(message.createdAt!)
+        if let time = message.createdAt {
+            cell.timeStamp.text = formatter.stringFromDate(time)
+        }
+        if (message.objectForKey("pending") as? String != nil) {
+            println("changing alpha")
+            cell.messageView.alpha = 0.5
+            cell.messageText.alpha = 0.5
+        }
+        else {
+            cell.messageView.alpha = 1
+            cell.messageText.alpha = 1
+        }
         if contains(rowsWithTimeStamps, indexPath.row) {
             cell.messageViewBottomConstraint.constant = timeStampHeight + messageSpacing
             cell.timeStamp.hidden = false
@@ -361,16 +410,9 @@ extension MessagingViewController {
     func sentMessage(goToBottom: Bool) {
         println("method finished")
         messenger.getMessageHistoryFrom(toUsers, toBottom: goToBottom)
-        if self.messages.count > 0 && goToBottom {
-            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
-        }
-        dispatch_async(dispatch_get_main_queue()) {
-            self.messageTextView.text = ""
-            self.hideSend()
-            self.resizeTextView()
-            //self.messageTextField.enabled = true
-            self.sendButton.enabled = true
-        }
+//        if self.messages.count > 0 && goToBottom {
+//            self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+//        }
     }
     
     func refreshMessages() {

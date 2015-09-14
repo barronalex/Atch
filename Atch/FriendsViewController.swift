@@ -29,7 +29,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("groupsReceived"), name: groupsFoundNotificationKey, object: nil)
-        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendDataUpdated"), name: friendDataReceivedNotificationKey, object: nil)
         table.delegate = self
         table.dataSource = self
         
@@ -58,7 +58,17 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         setUpTable()
     }
     
+    override func viewDidAppear(animated: Bool) {
+        table.reloadData()
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
     func separateOfflineFriends() {
+        onlineFriends.removeAll(keepCapacity: true)
+        offlineFriends.removeAll(keepCapacity: true)
         for friend in _friendManager.friends {
             if let online = _friendManager.userMap[friend.objectId!]?.online {
                 if online {
@@ -110,6 +120,8 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         }
         
     }
+    
+    
     
     func setUpTable() {
         if _friendManager.friends.count == 0 {
@@ -280,6 +292,10 @@ extension FriendsViewController {
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             cell.name.textColor = UIColor.redColor()
         }
+        else {
+            cell.selectionStyle = UITableViewCellSelectionStyle.Default
+            cell.name.textColor = UIColor.blackColor()
+        }
         setUpFriendProfileImage(fulluser, cell: &cell, row: row, online: online)
         if let colour = fulluser?.colour {
             cell.acceptButton.setImage(ImageProcessor.getColourMessageBubble(colour), forState: .Normal)
@@ -365,6 +381,11 @@ extension FriendsViewController {
 
 //#MARK: FriendManager methods
 extension FriendsViewController {
+    
+    func friendDataUpdated() {
+        separateOfflineFriends()
+        table.reloadData()
+    }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
         println("triggered in Friends")

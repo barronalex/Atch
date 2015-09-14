@@ -205,6 +205,10 @@ extension AddFriendsViewController {
         return [delete]
     }
     
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
+    }
+    
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row

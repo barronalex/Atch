@@ -85,6 +85,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             destVC.toUsers = tappedUserIds
         }
         if segue.identifier == "logoutfrommap" {
+            println("logging out from map")
             putBannerDown()
             _mapView?.myLocationEnabled = false
             _mapView?.settings.myLocationButton = false
@@ -285,7 +286,7 @@ extension AtchMapViewController {
                         _friendManager.userMap[user.objectId!]!.location = clLocation
                         users.append(user.objectId!)
                     }
-                    //add last updated field to friends
+                    _friendManager.userMap[user.objectId!]?.online = true
                 }
                 else {
                     println("OFFLINE")
@@ -294,6 +295,7 @@ extension AtchMapViewController {
             }
             
         }
+        NSNotificationCenter.defaultCenter().postNotificationName(friendDataReceivedNotificationKey, object: nil)
         let groups = Group.findGroups(users)
         //once the groups are found send them to the friends vc
         NSNotificationCenter.defaultCenter().postNotificationName(groupsFoundNotificationKey, object: nil)

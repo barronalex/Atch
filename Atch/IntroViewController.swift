@@ -16,9 +16,11 @@ import GoogleMaps
 
 class IntroViewController: UIViewController, LocationUpdaterDelegate {
     
-    @IBOutlet weak var image: UIImageView!
+    var bannerHeight: CGFloat = 0
     
     @IBOutlet weak var loadingScreen: UIView!
+    
+    @IBOutlet weak var logOutTopConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var logOut: UIButton!
     
@@ -61,9 +63,26 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
         return trimmedText
     }
     
+    func createColourBanners() {
+        bannerHeight = (self.view.frame.height) / 12
+        println("banner height: \(bannerHeight)")
+        //let's say 12 banners
+        let colour = ColourGenerator.generateRandomColour()
+        for var i: CGFloat = 0; i < 12; i++ {
+            let banner = UIView(frame: CGRectMake(0, i * bannerHeight, self.view.frame.width, bannerHeight))
+            banner.backgroundColor = colour
+            banner.alpha = 1 - (i * 0.05)
+           // banner.backgroundColor =
+            self.view.addSubview(banner)
+            self.view.sendSubviewToBack(banner)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.sendSubviewToBack(image)
+        createColourBanners()
+        logOutTopConstraint.constant = bannerHeight - logOut.frame.height/2
+        self.view.setNeedsDisplay()
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {

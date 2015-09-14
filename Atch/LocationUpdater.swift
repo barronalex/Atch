@@ -54,7 +54,6 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         locationManager.stopUpdatingLocation()
         updating = false
         _mapView?.myLocationEnabled = false
-        Navigator.goToLogin()
     }
     
     func getLocation() -> CLLocation? {

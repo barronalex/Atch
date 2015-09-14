@@ -9,3 +9,4 @@
 let profilePictureNotificationKey = "profilePictureNotificationKey"
 let messageNotificationReceivedKey = "messageNotificationReceivedKey"
 let groupsFoundNotificationKey = "groupsFoundNotificationKey"
+let friendDataReceivedNotificationKey = "friendDataReceivedNotificationKey"
