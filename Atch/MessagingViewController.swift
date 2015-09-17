@@ -17,6 +17,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     var messages = [PFObject]()
     var messenger = Messenger()
     var rowsWithTimeStamps = [Int]()
+    var currentMessageCount = 0
     
     let messageSpacing: CGFloat = 4
     let bubbleBorder: CGFloat = 2
@@ -159,6 +160,8 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @IBOutlet weak var dockViewHeightConstraint: NSLayoutConstraint!
     
+    // #MARK: View Controller Methods
+    
     override func viewDidDisappear(animated: Bool) {
         println("removing observers")
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
@@ -182,7 +185,12 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         tapGesture.cancelsTouchesInView = false
         self.messageTable.addGestureRecognizer(tapGesture)
         self.messenger.delegate = self
+        println("getting cache")
+        self.messages = self.messenger.getCachedMessages(toUsers)
+        gotPreviousMessages(self.messages, toBottom: true)
+        println("after cache")
         self.messenger.getMessageHistoryFrom(toUsers, toBottom: true)
+        
         
     }
     
@@ -385,7 +393,9 @@ extension MessagingViewController {
         cell.contentView.bringSubviewToFront(cell.messageText)
         cell.messageView.tag = indexPath.row
         cell.messageView.addTarget(self, action: Selector("messageTapped:"), forControlEvents: .TouchUpInside)
-        cell.timeStamp.text = formatter.stringFromDate(message.createdAt!)
+        if let time = message.createdAt {
+            cell.timeStamp.text = formatter.stringFromDate(time)
+        }
         if let colour = _friendManager.userMap[messageUser.objectId!]?.colour {
             let newcolour = ColourGenerator.getAssociatedColour(colour)
             cell.messageView.backgroundColor = newcolour
@@ -434,10 +444,11 @@ extension MessagingViewController {
         println("message count: \(self.messages.count)")
         dispatch_async(dispatch_get_main_queue()) {
             self.messageTable.reloadData()
-            if messages.count > 0 && toBottom {
+            if messages.count > 0 && toBottom && messages.count > self.currentMessageCount {
                 self.messageTable.scrollToRowAtIndexPath(NSIndexPath(forRow: messages.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
                 println("to bottom")
             }
+            self.currentMessageCount = self.messages.count
         }
     }
     

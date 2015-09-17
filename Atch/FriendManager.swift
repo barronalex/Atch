@@ -222,6 +222,7 @@ class FriendManager {
                 newUserColour.userId = user.parseObject!.objectId!
                 newUserColour.colour = colour
             }
+            managedObjectContext?.save(nil)
             user.colour = colour
             self.userMap[user.parseObject!.objectId!] = user
         }
@@ -250,6 +251,7 @@ class FriendManager {
                 newUserColour.colour = colour
                 user.colour = colour
             }
+            managedObjectContext?.save(nil)
         }
         return user
         
