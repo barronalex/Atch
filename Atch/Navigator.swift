@@ -17,6 +17,16 @@ class Navigator {
         return getVisibleViewController(rootVC!.presentedViewController)
     }
     
+    static func goToIntro() {
+        let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
+        if curVC is IntroViewController {
+            return
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewControllerWithIdentifier("IntroViewController") as! IntroViewController
+        curVC.showViewController(loginVC, sender: nil)
+    }
+    
     static func goToFriends() {
         let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
         if curVC is LoginViewController {

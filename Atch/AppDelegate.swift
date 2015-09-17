@@ -117,6 +117,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
+        if userInfo["type"] as? String == "login" {
+            if application.applicationState == UIApplicationState.Active {
+                let aps = userInfo["aps"] as! [NSObject : AnyObject]
+                if let text = aps["alert"] as? String {
+                    _notificationBanner.displayNotification(text, type: "login", toUsers: [String]())
+                }
+            }
+        }
     }
     
     private func getToUsersFromNotification(userInfo: [NSObject : AnyObject]) -> [String]? {

@@ -165,10 +165,10 @@ extension AtchMapViewController {
         if _mapView == nil {
             _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
             _mapView!.settings.rotateGestures = false
+            _mapView!.camera = stanfordCam
         }
         self.view.addSubview(_mapView!)
         _mapView!.settings.myLocationButton = true
-        //self.view.bringSubviewToFront(circleImageLeft)
         self.view.bringSubviewToFront(friendsButton)
         self.view.bringSubviewToFront(logout)
         _mapView?.delegate = self

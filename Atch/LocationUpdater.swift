@@ -41,7 +41,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             _mapView?.myLocationEnabled = true
             updating = true
         }
-        NSTimer.scheduledTimerWithTimeInterval(1200, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
+        NSTimer.scheduledTimerWithTimeInterval(2000, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
         sendTimer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("sendLocationToServer"), userInfo: nil, repeats: true)
         getTimer = NSTimer.scheduledTimerWithTimeInterval(40, target: self, selector: Selector("getFriendLocationsFromServer"), userInfo: nil, repeats: true)
     }
@@ -54,6 +54,9 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         locationManager.stopUpdatingLocation()
         updating = false
         _mapView?.myLocationEnabled = false
+        curLocation = nil
+        sendLocationToServer()
+        Navigator.goToIntro()
     }
     
     func getLocation() -> CLLocation? {
@@ -86,7 +89,13 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             }
             print("sending location to server")
             lastLocation = curLocation
-            friendData!.setObject(PFGeoPoint(location: curLocation), forKey: parse_frienddata_location)
+            if curLocation == nil {
+                friendData!.removeObjectForKey(parse_frienddata_location)
+            }
+            else {
+                friendData!.setObject(PFGeoPoint(location: curLocation), forKey: parse_frienddata_location)
+            }
+            
             
             friendData!.saveInBackground()
             

@@ -144,10 +144,9 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         hideUsernameInput()
         var mapInsets = UIEdgeInsetsMake(0.0, 0.0, self.view.frame.height - 170, 0.0)
         self.backgroundMapView.padding = mapInsets
+        self.backgroundMapView.camera = stanfordCam
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
-//        let camera = GMSCameraPosition.cameraWithTarget(CLLocationCoordinate2DMake(51, 0), zoom: 8)
-//        let mapView = GMSMapView.mapWithFrame(CGRectZero, camera: camera!)
     }
     
     override func viewDidAppear(animated: Bool) {

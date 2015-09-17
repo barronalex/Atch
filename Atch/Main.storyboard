@@ -38,6 +38,7 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W9t-ZF-HEZ">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                        <color key="backgroundColor" red="0.3065629121253205" green="1" blue="0.4864523830615739" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <state key="normal" title="SIGN UP">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -62,6 +63,7 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ROw-8P-EM5">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                        <color key="backgroundColor" red="0.58848932815852451" green="0.32564718745704146" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <state key="normal" title="LOG IN">
                                             <color key="titleColor" red="0.98943256580000005" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -121,7 +123,7 @@
         <!--Intro View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="IntroViewController" customModule="Atch" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="IntroViewController" id="BYZ-38-t0r" customClass="IntroViewController" customModule="Atch" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -1058,9 +1060,9 @@
         <image name="lockcircle.png" width="256" height="256"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="xMe-qL-fjT"/>
+        <segue reference="1e5-Ch-0QY"/>
+        <segue reference="NlR-YZ-plh"/>
         <segue reference="ukW-1b-7fO"/>
         <segue reference="Ruv-oh-yYO"/>
-        <segue reference="NlR-YZ-plh"/>
     </inferredMetricsTieBreakers>
 </document>

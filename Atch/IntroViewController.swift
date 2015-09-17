@@ -114,6 +114,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
         }
         if _mapView == nil {
             _mapView = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            _mapView!.camera = stanfordCam
             _mapView!.settings.rotateGestures = false
         }
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)

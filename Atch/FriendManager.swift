@@ -337,9 +337,10 @@ class FriendManager {
         
     }
     
-    func search(search: String) {
+    func search(var search: String) {
         //search for Full Name or username
         let fbQuery = PFUser.query()!
+        search = search.lowercaseString
         fbQuery.whereKey("queryUsername", containsString: search)
         let uQuery = PFUser.query()!
         uQuery.whereKey("queryFullname", containsString: search)
