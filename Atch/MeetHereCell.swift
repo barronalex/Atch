@@ -38,15 +38,15 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
             }
         }
         //look through messages to find responses to original message
-        let originalMessage = messages[row]
         for var i = row + 1; i < messages.count; i++ {
             if let df = messages[i].objectForKey("decorationFlag") as? String {
                 if df == "r" {
                     //check if object id matches
                     let messageText = messages[i].objectForKey("messageText") as! String
-                    let messageId = split(messageText, maxSplit: 1, allowEmptySlices: true, isSeparator: { $0 == "_" })[0]
+                    //let messageId = split(messageText, maxSplit: 1, allowEmptySlices: true, isSeparator: { $0 == "_" })[0]
+                    let messageId = messageText.componentsSeparatedByString("_")[0]
                     if messageId == messages[row].objectId {
-                        println("Separated messageId: \(messageId)")
+                        print("Separated messageId: \(messageId)")
                         responses.append(messages[i])
                         if let fromUser = messages[i].objectForKey("fromUser") as? PFUser {
                             if fromUser.objectId! == PFUser.currentUser()!.objectId! {
@@ -58,21 +58,23 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
                 }
             }
         }
-        println("responses: \(responses)")
+        print("responses: \(responses)")
+        
         return (responses,responded)
+        
     }
     
     func setUpTitleCell() -> UITableViewCell {
-        let cell = responseTable.dequeueReusableCellWithIdentifier("Title") as! UITableViewCell
+        let cell = responseTable.dequeueReusableCellWithIdentifier("Title")!
         if df == "h" {
             if messageUser == PFUser.currentUser()?.objectId {
-                println("YOU WANT TO MEET HERE")
+                print("YOU WANT TO MEET HERE")
                 cell.textLabel?.text = "You want to meet here"
                 cell.backgroundColor = UIColor.whiteColor()
                 cell.textLabel?.textColor = UIColor.blackColor()
             }
             else {
-                println("OTHER WANT TO MEET HERE")
+                print("OTHER WANT TO MEET HERE")
                 if let name = _friendManager.userMap[messageUser]?.parseObject?.objectForKey("firstname") as? String {
                     cell.textLabel?.text = name + " wants to meet here"
                 }
@@ -84,13 +86,13 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
         }
         else {
             if messageUser == PFUser.currentUser()?.objectId {
-                println("YOU WANT TO MEET THERE")
+                print("YOU WANT TO MEET THERE")
                 cell.textLabel?.text = "You want to meet there"
                 cell.backgroundColor = UIColor.whiteColor()
                 cell.textLabel?.textColor = UIColor.blackColor()
             }
             else {
-                println("OTHER WANT TO MEET THERE")
+                print("OTHER WANT TO MEET THERE")
                 if let name = _friendManager.userMap[messageUser]?.parseObject?.objectForKey("firstname") as? String {
                     cell.textLabel?.text = name + " wants to meet there"
                 }
@@ -100,23 +102,23 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
                 }
             }
         }
-        println("dequeuing title")
+        print("dequeuing title")
         return cell
     }
     
     func setUpResponseCell(indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = responseTable.dequeueReusableCellWithIdentifier("Response") as! UITableViewCell
+        let cell = responseTable.dequeueReusableCellWithIdentifier("Response")!
         let fromUser = (responses[indexPath.row].objectForKey("fromUser") as! PFUser).objectId!
-        println("fromUser: \(fromUser)")
+        print("fromUser: \(fromUser)")
         if let colour = _friendManager.userMap[fromUser]?.colour {
             cell.backgroundColor = colour
             cell.textLabel?.textColor = UIColor.whiteColor()
         }
         if let response = responses[indexPath.row].objectForKey("messageText") as? String {
-            let reply = split(response, maxSplit: 1, allowEmptySlices: true, isSeparator: { $0 == "_" } )[1]
+            let reply = response.componentsSeparatedByString("_")[1]
             if reply == "atch" {
                 if let name = _friendManager.userMap[fromUser]?.parseObject?.objectForKey("firstname") as? String {
-                    println("Atch")
+                    print("Atch")
                     cell.textLabel?.text = name + " is atch"
                 }
                 if fromUser == PFUser.currentUser()!.objectId! {
@@ -127,7 +129,7 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
             }
             else {
                 if let name = _friendManager.userMap[fromUser]?.parseObject?.objectForKey("firstname") as? String {
-                    println("Busy")
+                    print("Busy")
                     cell.textLabel?.text = name + " is busy"
                 }
                 if fromUser == PFUser.currentUser()!.objectId! {
@@ -137,7 +139,7 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
                 }
             }
         }
-        println("dequeuing response")
+        print("dequeuing response")
         return cell
     }
     
@@ -149,14 +151,14 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
             return setUpResponseCell(indexPath)
         }
         else if indexPath.row == 1 {
-            let cell = responseTable.dequeueReusableCellWithIdentifier("Response") as! UITableViewCell
+            let cell = responseTable.dequeueReusableCellWithIdentifier("Response")!
             cell.backgroundColor = UIColor.blackColor()
             cell.textLabel?.textColor = UIColor.whiteColor()
             cell.textLabel?.text = "ATCH"
             return cell
         }
         else {
-            let cell = responseTable.dequeueReusableCellWithIdentifier("Response") as! UITableViewCell
+            let cell = responseTable.dequeueReusableCellWithIdentifier("Response")!
             cell.backgroundColor = UIColor.blackColor()
             cell.textLabel?.textColor = UIColor.whiteColor()
             cell.textLabel?.text = "busy"
@@ -172,13 +174,13 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
             return numberOfOptions + 1
         }
         if responses.count > 0 {
-            println("There are responses: \(responses.count)")
+            print("There are responses: \(responses.count)")
         }
         return responses.count
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        println("selected")
+        print("selected")
         if indexPath.section == 0 && indexPath.row == 1 {
             let messageText = message + "_atch"
             messenger.sendMessage(messageText, decorationFlag: "r", goToBottom: false)

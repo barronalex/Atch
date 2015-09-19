@@ -30,7 +30,7 @@ class NotificationBanner: NSObject {
         self.view = curVC.view
         for user in toUsers {
             if user != PFUser.currentUser()!.objectId! {
-                println("user: \(user)")
+                print("user: \(user)")
                 setUpView(self.view!, user: user)
             }
         }
@@ -61,7 +61,7 @@ class NotificationBanner: NSObject {
         notifView = UIView(frame: CGRectMake(0, -notification_banner_height, view.frame.width, notification_banner_height))
         if user != nil {
             if let colour = _friendManager.userMap[user!]?.colour {
-                println("assign colour")
+                print("assign colour")
                 notifView.backgroundColor = colour
             }
             
@@ -108,14 +108,14 @@ class NotificationBanner: NSObject {
     }
     
     func notificationTapped() {
-        println("notification tapped")
+        print("notification tapped")
         UIView.animateWithDuration(0.2, animations: {
             self.notifView.frame.origin.y = -notification_banner_height
             }, completion: {
                 (finished) in
                 self.notifView.removeFromSuperview()
         })
-        if let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController) as? IntroViewController {
+        if let _ = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController) as? IntroViewController {
             notifView.backgroundColor = UIColor.redColor()
         }
         else {

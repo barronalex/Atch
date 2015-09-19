@@ -22,16 +22,13 @@ class MessageCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        //timeStamp.hidden = true
-        // Initialization code
-        messageView.layer.cornerRadius = 10
-        messageView.layer.masksToBounds = true
-    }
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        //timeStamp.hidden = true
-        // Configure the view for the selected state
+        timeStamp.hidden = true
+        //messageView.layer.backgroundColor = UIColor.blackColor().CGColor
+        messageView.layer.cornerRadius = 12
+       // messageView.layer.borderColor = UIColor.blackColor().CGColor
+     //   messageView.layer.borderWidth = 1
+        messageView.layer.masksToBounds = false
+        //messageView.layer.shouldRasterize = true
     }
 
 }

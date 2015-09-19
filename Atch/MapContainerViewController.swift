@@ -32,7 +32,7 @@ class MapContainerViewController: UIViewController {
         let messageVC = storyboard.instantiateViewControllerWithIdentifier("MessagingViewController") as! MessagingViewController
         messageVC.toUsers = toUsers
         self.addChildViewController(messageVC)
-        println("width in container: \(self.view.frame.width)")
+        print("width in container: \(self.view.frame.width)")
         messageVC.view.frame = self.view.frame
         self.view.addSubview(messageVC.view)
         messageVC.didMoveToParentViewController(self)
@@ -45,7 +45,7 @@ class MapContainerViewController: UIViewController {
             childVC.willMoveToParentViewController(nil)
             childVC.view.removeFromSuperview()
             childVC.removeFromParentViewController()
-            println("disappearing VC")
+            print("disappearing VC")
             childVC.viewDidDisappear(false)
         }
         childVCs.removeAll(keepCapacity: true)

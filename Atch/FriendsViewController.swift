@@ -34,7 +34,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         table.dataSource = self
         
         if _friendManager.groups.count > 0 {
-            println("count: \(_friendManager.groups.count)")
+            print("count: \(_friendManager.groups.count)")
             findActualGroups()
             if actualGroups.count > 0 {
                 sectionTitles[0] = "Groups"
@@ -93,21 +93,21 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     }
     
     func imageTapped(sender: AnyObject) {
-        println("imageTapped")
+        print("imageTapped")
         if let recognizer = sender as? UIGestureRecognizer {
-            println("down a level")
+            print("down a level")
             let row = recognizer.view!.tag
             var user: PFObject
             if row < 0 {
-                println("doing an offline friend")
+                print("doing an offline friend")
                 user = offlineFriends[-row - 1]
             }
             else {
                 user = onlineFriends[row]
             }
-                println("down another level")
+                print("down another level")
                 //change colour of given user
-            println("userIdOfClickedFriend: \(user.objectId!)")
+            print("userIdOfClickedFriend: \(user.objectId!)")
             if let fulluser = _friendManager.userMap[user.objectId!] {
                 _friendManager.changeUserColour(fulluser)
             }
@@ -154,7 +154,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     }
     
     func goToChatFromGroup(sender: AnyObject) {
-        println("here")
+        print("here")
         if let button = sender as? UIButton {
             let row = button.tag
             goToMapFromGroup(row, toMessages: true)
@@ -172,7 +172,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             atchVC.putBannerUp()
         }
         if let friendLocation = _friendManager.userMap[friendId]?.marker?.position {
-            println("animating")
+            print("animating")
             _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: closeZoomLevel, bearing: 0, viewingAngle: 0))
         }
         if toMessages {
@@ -187,13 +187,13 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         atchVC.firstLocation = false
         
         let group = actualGroups[row]
-        println("toUsers: \(group.toUsers)")
+        print("toUsers: \(group.toUsers)")
         atchVC.tappedUserIds = group.toUsers
         if !toMessages {
             atchVC.putBannerUp()
         }
         if let friendLocation = group.position?.coordinate {
-            println("animating")
+            print("animating")
             _mapView?.animateToCameraPosition(GMSCameraPosition(target: friendLocation, zoom: closeZoomLevel, bearing: 0, viewingAngle: 0))
         }
         if toMessages {
@@ -247,7 +247,7 @@ extension FriendsViewController {
                 groupName = groupName + name + ", "
             }
         }
-        if count(groupName) > 1 {
+        if groupName.characters.count > 1 {
             groupName = groupName.substringToIndex(groupName.endIndex.predecessor().predecessor())
 
         }
@@ -350,14 +350,14 @@ extension FriendsViewController {
         return 3
     }
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         if indexPath.section == 0 {
             return nil
         }
         let row = indexPath.row
         let user = _friendManager.friends[row]
         let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
-            println("delete friend")
+            print("delete friend")
             PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
             self.table.editing = false
             _friendManager.friends.removeAtIndex(row)
@@ -368,6 +368,7 @@ extension FriendsViewController {
         delete.backgroundColor = UIColor.redColor()
         
         return [delete]
+
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -388,7 +389,7 @@ extension FriendsViewController {
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
-        println("triggered in Friends")
+        print("triggered in Friends")
         table.reloadData()
         
     }
@@ -435,7 +436,7 @@ extension FriendsViewController {
     }
     
     func groupsReceived() {
-        println("groups received")
+        print("groups received")
         findActualGroups()
         if self.actualGroups.count > 0 {
             sectionTitles[0] = "Groups"
@@ -449,7 +450,7 @@ extension FriendsViewController {
     func findActualGroups() {
         var groups = [Group]()
         for var i = 0; i < _friendManager.groups.count; i++ {
-            println("group members: \(_friendManager.groups[i].toUsers)")
+            print("group members: \(_friendManager.groups[i].toUsers)")
             if _friendManager.groups[i].toUsers.count > 1 {
                 groups.append(_friendManager.groups[i])            }
         }
@@ -457,7 +458,7 @@ extension FriendsViewController {
     }
     
     func friendRequestSent(req: PFObject, userId: String) {
-        println("friend request sent")
+        print("friend request sent")
         self.userToRequestMap[userId] = req
     }
     

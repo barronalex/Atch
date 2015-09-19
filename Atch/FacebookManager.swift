@@ -26,20 +26,20 @@ class FacebookManager {
         manager.logInWithReadPermissions(permissions) {
             (result, error) in
             if error != nil {
-                println("facebook login error: \(error)")
+                print("facebook login error: \(error)")
                 self.delegate?.facebookLoginFailed("error")
 
             }
             else if result.isCancelled {
-                println("Login was cancelled")
+                print("Login was cancelled")
                 self.delegate?.facebookLoginFailed("Login was cancelled")
             }
             else if (result.grantedPermissions.contains("public_profile") && result.grantedPermissions.contains("user_friends")) {
-                println("user granted permissions")
+                print("user granted permissions")
                 self.delegate?.facebookLoginSucceeded()
             }
             else {
-                println("not enough permissions were granted")
+                print("not enough permissions were granted")
                 self.delegate?.facebookLoginFailed("not enough permissions were granted")
             }
         }
@@ -73,37 +73,38 @@ class FacebookManager {
     }
     
     static func downloadProfilePictures(users: [PFObject]) {
-        var urlRequests = [NSURLRequest]()
-        var pics = [String:UIImage]()
-        var reqMap = [NSURLRequest:String]()
-        var token = FBSDKAccessToken.currentAccessToken().tokenString
-        println("token: \(token)")
-        var callerQueue = dispatch_get_main_queue()
-        var downloadQueue = dispatch_queue_create("requests", nil)
-        dispatch_async(downloadQueue) {
-            for user in users {
-                if let fbid = user.objectForKey(parse_user_fbid) as? String {
-                    let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=200&height=200")
-                    let request = NSURLRequest(URL: url!)
-                    if let data = NSURLConnection.sendSynchronousRequest(request, returningResponse: nil, error: nil) {
-                        println("here")
-                        var image = UIImage(data: data)
-                        println("image: \(image)")
-                        _friendManager.userMap[user.objectId!]?.image = image
+        let session = NSURLSession.sharedSession()
+        for user in users {
+            print("looping through users")
+            if let fbid = user.objectForKey(parse_user_fbid) as? String {
+                print("inside iflet")
+                let url = NSURL(string: "https://graph.facebook.com/\(fbid)/picture?width=200&height=200")
+                let request = NSURLRequest(URL: url!)
+                session.dataTaskWithRequest(request, completionHandler: {
+                    (data, response, error) -> Void in
+                    if error == nil {
+                        if let data = data {
+                            print("here")
+                            let image = UIImage(data: data)
+                            print("image: \(image)")
+                            _friendManager.userMap[user.objectId!]?.image = image
+                        }
                     }
                     else {
-                        println("ERROR DOWNLOADING")
+                        print("PICTURE ERROR")
                     }
-                    
-                }
-            }
-            dispatch_async(callerQueue) {
-                println("done")
-                _friendManager.downloadedPics = true
-                NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: nil)
+
+                }).resume()
+                
             }
         }
+       
+        print("done")
+        //_friendManager.downloadedPics = true
+        NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: nil)
+        
     }
+    
     
     func loginUserToParseWithoutToken() {
         let permissions = ["public_profile", "user_friends"]
@@ -134,15 +135,15 @@ class FacebookManager {
         PFFacebookUtils.logInInBackgroundWithAccessToken(FBSDKAccessToken.currentAccessToken()) {
             (user, error) in
             if user == nil || error != nil {
-                println("parse login failed - this should never happen")
+                print("parse login failed - this should never happen")
                 self.delegate?.parseLoginFailed()
             }
             else if user!.isNew {
-                println("login succeeded")
+                print("login succeeded")
                 self.delegate?.parseLoginSucceeded()
             }
             else {
-                println("user has already signed up")
+                print("user has already signed up")
                 self.delegate?.parseLoginSucceeded()
             }
         }
@@ -167,10 +168,10 @@ class FacebookManager {
                     query.getFirstObjectInBackgroundWithBlock() {
                         (user, error) in
                         if error != nil {
-                            println("error in fbid parse query: \(error)")
+                            print("error in fbid parse query: \(error)")
                         }
                         else {
-                            if let user = user {
+                            if let _ = user {
                                 //if user already has a parse account
                                 self.loginUserToParseWithToken()
                             }

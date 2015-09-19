@@ -47,7 +47,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func stopUpdates() {
-        println("stop updating")
+        print("stop updating")
         sendTimer?.invalidate()
         getTimer?.invalidate()
         locationTimer?.invalidate()
@@ -60,11 +60,11 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func getLocation() -> CLLocation? {
-        println("\(locationManager.location)")
+        print("\(locationManager.location)")
         return locationManager.location
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         curLocation = manager.location
         if !self.deferringUpdates && CLLocationManager.deferredLocationUpdatesAvailable() {
             print("started deferred updates")
@@ -85,7 +85,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             PFUser.currentUser()!.incrementKey("checkinCount")
             PFUser.currentUser()!.saveInBackground()
             if lastLocation != nil && curLocation != nil {
-                if lastLocation!.distanceFromLocation(curLocation) < 10 { return }
+                if lastLocation!.distanceFromLocation(curLocation!) < 10 { return }
             }
             print("sending location to server")
             lastLocation = curLocation

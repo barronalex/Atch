@@ -64,8 +64,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        println("loading Atch")
-        //friendsButton.setImage(UIImage(named: "circle.png"), forState: .Highlighted)
+        print("loading Atch")
         setShadows()
         self.containerHeightConstraint.constant = self.view.frame.height - self.bannerHeightAtBottom
         self.view.layoutIfNeeded()
@@ -76,6 +75,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         setUpLocationManager()
         setUpMap()
         setUpFriendManager()
+        friendLocationsUpdated(_friendManager.lastFriendData)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -85,7 +85,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
             destVC.toUsers = tappedUserIds
         }
         if segue.identifier == "logoutfrommap" {
-            println("logging out from map")
+            print("logging out from map")
             putBannerDown()
             _mapView?.myLocationEnabled = false
             _mapView?.settings.myLocationButton = false
@@ -141,7 +141,7 @@ extension AtchMapViewController {
             _friendManager.getFriends()
         }
         if !_friendManager.downloadedPics {
-            println("downloading shit")
+            print("downloading shit")
             FacebookManager.downloadProfilePictures(_friendManager.friends)
         }
     }
@@ -182,14 +182,14 @@ extension AtchMapViewController {
 extension AtchMapViewController {
     
     func mapView(mapView: GMSMapView!, didTapMarker marker: GMSMarker!) -> Bool {
-        println("tapped marker")
+        print("tapped marker")
         if tappedUserIds == (marker.userData as! Group).toUsers {
             //zoom in
             _mapView!.animateToCameraPosition(GMSCameraPosition.cameraWithTarget(marker.position, zoom: closeZoomLevel))
             return true
         }
         tappedUserIds = (marker.userData as! Group).toUsers
-        println("marker user id: \(tappedUserIds)")
+        print("marker user id: \(tappedUserIds)")
         if bannerUp {
             switchBanners()
         }
@@ -236,7 +236,7 @@ extension AtchMapViewController {
     func locationUpdated(location: CLLocationCoordinate2D) {
         print("location updated")
         if firstLocation {
-            println("first location")
+            print("first location")
             PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
             _locationUpdater.sendLocationToServer()
             friendLocationsUpdated(_friendManager.lastFriendData)
@@ -261,7 +261,7 @@ extension AtchMapViewController {
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
-        println("pictures received")
+        print("pictures received")
         _locationUpdater.getFriendLocationsFromServer()
         _friendManager.downloadedPics = true
     }
@@ -275,12 +275,12 @@ extension AtchMapViewController {
             return
         }
         var users = [String]()
-        println("Num friends: \(_friendManager.friends.count)")
-        println("Num friend data: \(friendData.count)")
+        print("Num friends: \(_friendManager.friends.count)")
+        print("Num friend data: \(friendData.count)")
         for data in friendData {
             if let user = data.objectForKey(parse_frienddata_user) as? PFObject {
                 if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
-                    println("location: \(location)")
+                    print("location: \(location)")
                     let clLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
                     if _friendManager.userMap[user.objectId!] != nil {
                         _friendManager.userMap[user.objectId!]!.location = clLocation
@@ -289,7 +289,7 @@ extension AtchMapViewController {
                     _friendManager.userMap[user.objectId!]?.online = true
                 }
                 else {
-                    println("OFFLINE")
+                    print("OFFLINE")
                     _friendManager.userMap[user.objectId!]?.online = false
                 }
             }
@@ -301,7 +301,7 @@ extension AtchMapViewController {
         NSNotificationCenter.defaultCenter().postNotificationName(groupsFoundNotificationKey, object: nil)
         _mapView!.clear()
         for group in groups {
-            println("Group members: \(group.toUsers)")
+            print("Group members: \(group.toUsers)")
             //create a new marker and remove all old ones
             createNewMarker(group)
         }

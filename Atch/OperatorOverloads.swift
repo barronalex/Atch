@@ -21,10 +21,10 @@ public func == (left: (PFObject), right: (PFObject)) -> Bool {
     return false
 }
 
-func == (var left: [String], var right: [String]) -> Bool {
+func == (let left: [String], let right: [String]) -> Bool {
     if left.count != right.count { return false }
-    let leftSort = left.sorted({ $0 < $1 })
-    let rightSort = right.sorted({ $0 < $1 })
+    let leftSort = left.sort({ $0 < $1 })
+    let rightSort = right.sort({ $0 < $1 })
     for var i = 0; i < left.count; i++ {
         if leftSort[i] != rightSort[i] {
             return false
@@ -32,7 +32,3 @@ func == (var left: [String], var right: [String]) -> Bool {
     }
     return true
 }
-
-
-
-extension PFObject: Equatable {}

@@ -55,7 +55,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     }
     
     func friendRequestAccepted() {
-        println("request accepted")
+        print("request accepted")
     }
     
     func facebookLoginSucceeded() {
@@ -68,14 +68,14 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     }
     
     func facebookLoginFailed(reason: String) {
-        println("login failed")
+        print("login failed")
         login.setTitle("LOG IN", forState: .Normal)
         login.enabled = true
         signup.enabled = true
     }
     
     func parseLoginSucceeded() {
-        println("login completed")
+        print("login completed")
         let installation = PFInstallation.currentInstallation()
         installation.setObject(PFUser.currentUser()!.objectId!, forKey: parse_installation_userId)
         installation.saveInBackground()
@@ -86,7 +86,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         login.setTitle("LOG IN", forState: .Normal)
         login.enabled = true
         signup.enabled = true
-        println("parse login failed")
+        print("parse login failed")
     }
     
     func moveKeyboardUpBy(delta: CGFloat, animationTime: NSNumber) {
@@ -116,7 +116,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         let animationTime = info![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
         let delta = -kbRect.height
         _currentKeyboardHeight = 0
-        println("keyboard hiding: \(kbRect.height)")
+        print("keyboard hiding: \(kbRect.height)")
         moveKeyboardUpBy(delta, animationTime: animationTime)
     }
     
@@ -133,7 +133,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "usernameinput" {
-            println("segueing")
+            print("segueing")
             let destVC = segue.destinationViewController as! UsernameViewController
             destVC.loginVC = self
         }
@@ -142,7 +142,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         hideUsernameInput()
-        var mapInsets = UIEdgeInsetsMake(0.0, 0.0, self.view.frame.height - 170, 0.0)
+        let mapInsets = UIEdgeInsetsMake(0.0, 0.0, self.view.frame.height - 170, 0.0)
         self.backgroundMapView.padding = mapInsets
         self.backgroundMapView.camera = stanfordCam
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)

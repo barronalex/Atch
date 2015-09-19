@@ -18,7 +18,7 @@ class Messenger {
     
     func sendMessage(messageText: String, decorationFlag: String, goToBottom: Bool) {
         if self.messageHistory != nil {
-            println("sent message")
+            print("sent message")
             PFCloud.callFunctionInBackground("sendMessage", withParameters: ["messageHistoryId":messageHistory!.objectId!, "messageText":messageText, "decorationFlag":decorationFlag]) {
                 (response: AnyObject?, error: NSError?) -> Void in
                 self.delegate?.sentMessage(goToBottom)
@@ -39,9 +39,9 @@ class Messenger {
         let fetchRequest = NSFetchRequest(entityName: "Message")
         let predicate = NSPredicate(format: "userIds == %@", hashUserIds)
         fetchRequest.predicate = predicate
-        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Message] {
-            println("found messages")
-            let sortedResults = fetchResults.sorted {
+        if let fetchResults = try! managedObjectContext.executeFetchRequest(fetchRequest) as? [Message] {
+            print("found messages")
+            let sortedResults = fetchResults.sort {
                return $0.0.createdAt.compare($0.1.createdAt) == NSComparisonResult.OrderedAscending
             }
             for result in sortedResults {
@@ -57,42 +57,58 @@ class Messenger {
         PFCloud.callFunctionInBackground("getOrCreateMessageHistory", withParameters: ["userIds":userIds]) {
             (response: AnyObject?, error: NSError?) -> Void in
             if error != nil {
-                println("\(error)")
+                print("\(error)")
             }
-            println("made it")
+            print("made it")
             if let messageHistory = response as? PFObject {
                 self.messageHistory = messageHistory
                 self.getMessagesFromHistory(toBottom, userIds: userIds)
                 let name = messageHistory.objectForKey("name") as! String
-                println("mh name: \(name)")
+                print("mh name: \(name)")
             }
         }
     }
     
     func storeMessages(messages: [PFObject], userIds: [String]) {
-        println("store messages")
+        print("store messages")
         let hashUserIds = Group.generateHashStringFromArray(userIds)
         let fetchRequest = NSFetchRequest(entityName: "Message")
         let predicate = NSPredicate(format: "userIds == %@", hashUserIds)
         fetchRequest.predicate = predicate
-        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Message] {
-            println("found messages")
+        if let fetchResults = try! managedObjectContext.executeFetchRequest(fetchRequest) as? [Message] {
+            print("found messages")
             for result in fetchResults {
-                managedObjectContext?.deleteObject(result)
+                managedObjectContext.deleteObject(result)
             }
             for message in messages {
-                let newMessage = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: self.managedObjectContext!) as! Message
+                let newMessage = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: self.managedObjectContext) as! Message
                 newMessage.initialise(message, userIds: hashUserIds)
             }
-            managedObjectContext?.save(nil)
+            try! managedObjectContext.save()
         }
+    }
+    
+    func reverseArray(var arr: [AnyObject]) -> [AnyObject] {
+        var firstIndex = 0
+        var lastIndex = arr.count - 1
+        while firstIndex < lastIndex {
+            // swap
+            let tmp = arr[firstIndex]
+            arr[firstIndex] = arr[lastIndex]
+            arr[lastIndex] = tmp
+            
+            // go to next pair
+            firstIndex++
+            lastIndex--
+        }
+        return arr
     }
     
     func getMessagesFromHistory(toBottom: Bool, userIds: [String]) {
         if self.messageHistory != nil {
             //if there are messages
             if let messageList = messageHistory!.objectForKey(parse_messageHistory_list) as? [String] {
-                var messageQuery = PFQuery(className: "Message")
+                let messageQuery = PFQuery(className: "Message")
                 messageQuery.whereKey("objectId", containedIn: messageList)
                 messageQuery.orderByDescending("createdAt")
                 messageQuery.findObjectsInBackgroundWithBlock {
@@ -100,7 +116,7 @@ class Messenger {
                     
                     if error == nil {
                         if let messages = messages as? [PFObject] {
-                            var revMessages = reverse(messages)
+                            let revMessages = self.reverseArray(messages) as! [PFObject]
                             self.storeMessages(revMessages, userIds: userIds)
                             self.delegate?.gotPreviousMessages(revMessages, toBottom: toBottom)
                         }

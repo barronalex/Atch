@@ -58,10 +58,10 @@ class ImageProcessor {
         UIGraphicsBeginImageContextWithOptions(image!.size, false, image!.scale)
         colour.setFill()
         
-        let context = UIGraphicsGetCurrentContext() as CGContextRef
+        let context = UIGraphicsGetCurrentContext()
         CGContextTranslateCTM(context, 0, image!.size.height)
         CGContextScaleCTM(context, 1.0, -1.0);
-        CGContextSetBlendMode(context, kCGBlendModeNormal)
+        CGContextSetBlendMode(context, CGBlendMode.Normal)
         
         let rect = CGRectMake(0, 0, image!.size.width, image!.size.height) as CGRect
         CGContextClipToMask(context, rect, image!.CGImage)
@@ -76,12 +76,12 @@ class ImageProcessor {
     static func maskImage(image: UIImage, withMask maskImage: UIImage) -> UIImage {
         
         let newSize = image.size
-        println("size: \(newSize)")
+        print("size: \(newSize)")
         UIGraphicsBeginImageContext(newSize)
         
         // Use existing opacity as is
         image.drawInRect(CGRectMake(0, 0, newSize.width, newSize.height))
-        maskImage.drawInRect(CGRectMake(0, 0, newSize.width, newSize.height), blendMode: kCGBlendModeNormal, alpha: 1)
+        maskImage.drawInRect(CGRectMake(0, 0, newSize.width, newSize.height), blendMode: CGBlendMode.Normal, alpha: 1)
         //[image drawInRect:CGRectMake(0,0,newSize.width,newSize.height) blendMode:kCGBlendModeNormal alpha:1];
         
         // Apply supplied opacity if applicable
@@ -107,7 +107,7 @@ class ImageProcessor {
             clearRadius = CGFloat(sqrt((internalRadius * internalRadius) - (bubbleRadius * bubbleRadius)))
         }
         
-        println("clear radius: \(clearRadius)")
+        print("clear radius: \(clearRadius)")
 
         let k = CGFloat(users.count)
         for var i = 0; i < users.count; i++ {
@@ -119,16 +119,16 @@ class ImageProcessor {
             }
             let centrexfromOrigin: CGFloat = externalRadius * sin(startAngle + CGFloat(M_PI)/2)
             let centreyfromOrigin: CGFloat = externalRadius * cos(startAngle + CGFloat(M_PI)/2)
-            println("centrex: \(centrexfromOrigin) centrey: \(centreyfromOrigin)")
+            print("centrex: \(centrexfromOrigin) centrey: \(centreyfromOrigin)")
             let realx: CGFloat = externalRadius + centrexfromOrigin
             let realy: CGFloat = externalRadius - centreyfromOrigin
             let startPoint = CGPointMake(realx, realy)
-            println("start angle: \(startAngle)")
-            println("end angle: \(endAngle)")
+            print("start angle: \(startAngle)")
+            print("end angle: \(endAngle)")
             _friendManager.userMap[users[i]]!.colour!.setFill()
             let path = UIBezierPath()
             path.moveToPoint(startPoint)
-            println("start point: \(startPoint)")
+            print("start point: \(startPoint)")
             path.lineWidth = 0
             path.addArcWithCenter(centre,
                 radius: externalRadius,
@@ -172,9 +172,8 @@ class ImageProcessor {
         if userImages.count == 1 {
             return userImages[0]
         }
-        let testImage = userImages[0]
         //userImages.append(testImage)
-        println("userImages.count: \(userImages.count)")
+        print("userImages.count: \(userImages.count)")
         let k = CGFloat(userImages.count)
         let d = CGFloat(60)
         let pi = CGFloat(M_PI)
@@ -184,22 +183,22 @@ class ImageProcessor {
             internalRadius = d/2
             externalRadius = d
         }
-        println("external radius \(externalRadius)")
+        print("external radius \(externalRadius)")
         UIGraphicsBeginImageContextWithOptions(CGSizeMake(externalRadius * 2, externalRadius * 2), false, 0.0)
-        let test = createBackground(users, externalRadius: externalRadius, internalRadius: internalRadius, bubbleRadius: d/2)
+        createBackground(users, externalRadius: externalRadius, internalRadius: internalRadius, bubbleRadius: d/2)
         for var i = 0; i < Int(k); i++ {
             
             var theta = (2 * CGFloat(M_PI) * CGFloat(i)) / k
             if users.count == 2 {
                 theta += CGFloat(M_PI)/8
             }
-            println("theta: \(theta)")
+            print("theta: \(theta)")
             let centrexfromOrigin = internalRadius * CGFloat(sin(theta))
             let centreyfromOrigin = internalRadius * CGFloat(cos(theta))
-            println("centrex: \(centrexfromOrigin) centrey: \(centreyfromOrigin)")
+            print("centrex: \(centrexfromOrigin) centrey: \(centreyfromOrigin)")
             let realx: CGFloat = externalRadius + centrexfromOrigin
             let realy: CGFloat = externalRadius - centreyfromOrigin
-            println("realx: \(realx) realy \(realy)")
+            print("realx: \(realx) realy \(realy)")
             let outsideCircleRect = CGRectMake(realx - d/2, realy - d/2, d, d)
             userImages[i].drawInRect(outsideCircleRect)
         }

@@ -19,9 +19,9 @@ class ColourGenerator {
             if (r + g + b < 100) { continue }
             if (r + g + b > 550) { continue }
             if (r + g > 430 && b < 120) { continue }
-            println("redvalue: \(CGFloat(r))")
-            println("blueValue: \(CGFloat(b))")
-            println("greenValue: \(CGFloat(g))")
+            print("redvalue: \(CGFloat(r))")
+            print("blueValue: \(CGFloat(b))")
+            print("greenValue: \(CGFloat(g))")
             let colour = UIColor(red: CGFloat(r)/255, green: CGFloat(b)/255, blue: CGFloat(g)/255, alpha: 255)
             return colour
 
@@ -38,9 +38,9 @@ class ColourGenerator {
 //            if (r + g + b < 100) { continue }
 //            if (r + g + b > 550) { continue }
 //            if (r + g > 430 && b < 120) { continue }
-            println("redvalue: \(CGFloat(r))")
-            println("blueValue: \(CGFloat(b))")
-            println("greenValue: \(CGFloat(g))")
+            print("redvalue: \(CGFloat(r))")
+            print("blueValue: \(CGFloat(b))")
+            print("greenValue: \(CGFloat(g))")
             let colour = UIColor(red: CGFloat(r)/255, green: CGFloat(b)/255, blue: CGFloat(g)/255, alpha: 255)
             return colour
             

@@ -50,7 +50,7 @@ class UsernameManager {
     
     func checkIfValid(name: String) -> Bool {
         let characterSet = NSCharacterSet.alphanumericCharacterSet()
-        if name.rangeOfCharacterFromSet(characterSet.invertedSet, options: .CaseInsensitiveSearch) == nil && count(name) < 20 {
+        if name.rangeOfCharacterFromSet(characterSet.invertedSet, options: .CaseInsensitiveSearch) == nil && name.characters.count < 20 {
             return true
         }
         return false

@@ -26,27 +26,27 @@ class Group {
     }
     
     static func generateHashStringFromArray(toUsers: [String]) -> String {
-        let sortedUsers = toUsers.sorted( {$0 < $1} )
-        println("sortedUsers: \(sortedUsers)")
+        let sortedUsers = toUsers.sort( {$0 < $1} )
+        print("sortedUsers: \(sortedUsers)")
         var hash = ""
         for var i = 0; i < sortedUsers.count; i++ {
             hash += sortedUsers[i]
         }
-        println("hash: \(hash)")
+        print("hash: \(hash)")
         return hash
 
     }
     
     func getHashString() -> String {
         //make string of toUser ids in lexographical order
-        println("toUsers: \(toUsers)")
-        let sortedUsers = toUsers.sorted( {$0 < $1} )
-        println("sortedUsers: \(sortedUsers)")
+        print("toUsers: \(toUsers)")
+        let sortedUsers = toUsers.sort( {$0 < $1} )
+        print("sortedUsers: \(sortedUsers)")
         var hash = ""
         for var i = 0; i < sortedUsers.count; i++ {
             hash += sortedUsers[i]
         }
-        println("hash: \(hash)")
+        print("hash: \(hash)")
         return hash
     }
     
@@ -74,7 +74,7 @@ class Group {
             let group = Group(toUsers: [users[i]], position: _friendManager.userMap[users[i]]!.location!)
             groups.append(group)
         }
-        println("groups: \(groups.count)")
+        print("groups: \(groups.count)")
         let result = mergeGroups(groups)
         for group in result {
             //only make the image if it doesn't already exist
@@ -99,12 +99,12 @@ class Group {
     static func findGroupOfUserIndex(groups: [Group], user: String) -> Int {
         
         for var i = 0; i < groups.count; i++ {
-            if contains(groups[i].toUsers, user) {
+            if groups[i].toUsers.contains(user) {
                 return i
             }
         }
         //should never happen
-        println("Houston, we have a problem")
+        print("Houston, we have a problem")
         return -1
     }
     

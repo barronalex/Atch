@@ -61,14 +61,14 @@ class UsernameViewController: UIViewController, UsernameManagerDelegate, Faceboo
     }
     
     func usernameChosen() {
-        println("her")
+        print("her")
         if usernameField.text == "" {
             usernameLabel.text = "Choose a Username"
             usernameLabel.textColor = UIColor.whiteColor()
             return
         }
         if doneEditing == false {
-            println("username free")
+            print("username free")
             usernameLabel.text = "Username Free"
             usernameLabel.textColor = UIColor.greenColor()
             return
@@ -89,11 +89,11 @@ class UsernameViewController: UIViewController, UsernameManagerDelegate, Faceboo
     }
     
     func parseLoginSucceeded() {
-        println("signed up to parse with facebook")
+        print("signed up to parse with facebook")
         usernameManager.setUsername(usernameField.text!)
     }
     func alreadySignedUp() {
-        println("log user in and tell them that they've already signed up with facebook")
+        print("log user in and tell them that they've already signed up with facebook")
         self.performSegueWithIdentifier("postusername", sender: nil)
     }
     

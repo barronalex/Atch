@@ -22,7 +22,7 @@ extension AtchMapViewController {
             self.view.endEditing(true)
         }
         let yTranslation = recognizer.translationInView(self.view).y
-        if let view = recognizer.view {
+        if let _ = recognizer.view {
             if (self.bannerConstraint.constant - yTranslation) > (self.view.frame.height - bannerView.frame.height) {
                 self.bannerConstraint.constant = self.view.frame.height - bannerView.frame.height
                 self.topContainerConstraint.constant = self.bannerView.frame.height - topMargin
@@ -41,15 +41,15 @@ extension AtchMapViewController {
     }
     
     func bannerTapped() {
-        println("banner tapped")
+        print("banner tapped")
         if !bannerAtTop {
             UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
                 _mapView?.padding = self.bannerMapInsets
                 self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin - (self.bannerHeightAtBottom - self.bannerHeightAtTop)
                 
                 self.bannerConstraint.constant = self.view.frame.height - self.bannerView.frame.height + (self.bannerHeightAtBottom - self.bannerHeightAtTop)
-                println("bannerConstraint: \(self.bannerConstraint.constant)")
-                println("banner height: \(self.bannerHeightAtTop)")
+                print("bannerConstraint: \(self.bannerConstraint.constant)")
+                print("banner height: \(self.bannerHeightAtTop)")
                 self.bannerHeightConstraint.constant = self.bannerHeightAtTop
                 self.containerHeightConstraint.constant = self.view.frame.height - self.bannerHeightAtTop
                 self.view.layoutIfNeeded()
@@ -59,7 +59,7 @@ extension AtchMapViewController {
         else {
             lowerBanner()
         }
-        println("banner height real: \(bannerView.frame.height)")
+        print("banner height real: \(bannerView.frame.height)")
     }
     
     func lowerBanner() {
@@ -85,7 +85,7 @@ extension AtchMapViewController {
                 
             }
         }
-        if count(bannerText) > 1 {
+        if bannerText.characters.count > 1 {
             bannerText = bannerText.substringToIndex(bannerText.endIndex.predecessor().predecessor())
         }
         bannerLabel.text = bannerText
@@ -95,7 +95,10 @@ extension AtchMapViewController {
         if tappedUserIds.count == 1 {
             let colour = _friendManager.userMap[tappedUserIds[0]]?.colour
             bannerView.backgroundColor = colour
-            self.bannerImage.image = ImageProcessor.createCircle(_friendManager.userMap[tappedUserIds[0]]!.image!)
+            if let image = _friendManager.userMap[tappedUserIds[0]]?.image {
+                self.bannerImage.image = ImageProcessor.createCircle(image)
+            }
+            
         }
         else {
             bannerView.backgroundColor = UIColor.blackColor()
@@ -106,15 +109,15 @@ extension AtchMapViewController {
     }
     
     func putBannerUp() {
-        var toUsers = tappedUserIds
+        let toUsers = tappedUserIds
         containerVC?.goToMessages(toUsers)
         setBannerColour()
         setBannerText()
         
-        println("friend map count: \(_friendManager.friends.count)")
-        println("tapped id: \(tappedUserIds)")
+        print("friend map count: \(_friendManager.friends.count)")
+        print("tapped id: \(tappedUserIds)")
         
-        println("BANNER TEXT: \(bannerLabel.text)")
+        print("BANNER TEXT: \(bannerLabel.text)")
         //        if bannerLabel.text == nil {
         //           bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
         //        }
@@ -132,11 +135,11 @@ extension AtchMapViewController {
     func switchBanners() {
         self.view.endEditing(true)
         self.containerVC?.removeChildren()
-        var toUsers = tappedUserIds
+        let toUsers = tappedUserIds
         containerVC?.goToMessages(toUsers)
         //put up banner
-        println("friend map count: \(_friendManager.friends.count)")
-        println("tapped id: \(tappedUserIds)")
+        print("friend map count: \(_friendManager.friends.count)")
+        print("tapped id: \(tappedUserIds)")
         setBannerColour()
         setBannerText()
         

@@ -18,12 +18,6 @@ class IncomingMessageCell: MessageCell {
         // Configure the view for the selected state
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        timeStampLeft.hidden = true
-        // Initialization code
-        messageView.layer.cornerRadius = 10
-        messageView.layer.masksToBounds = true
-    }
+    
 
 }

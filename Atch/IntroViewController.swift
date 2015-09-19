@@ -34,7 +34,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
                 self.performSegueWithIdentifier("fullylogout", sender: nil)
             }
             else {
-                println("\(error)")
+                print("\(error)")
             }
         }
         
@@ -58,14 +58,14 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
         if text == nil {
             return text
         }
-        var nsText: NSString = text!
-        var trimmedText = nsText.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        let nsText: NSString = text!
+        let trimmedText = nsText.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
         return trimmedText
     }
     
     func createColourBanners() {
         bannerHeight = (self.view.frame.height) / 12
-        println("banner height: \(bannerHeight)")
+        print("banner height: \(bannerHeight)")
         //let's say 12 banners
         let colour = ColourGenerator.generateRandomColour()
         for var i: CGFloat = 0; i < 12; i++ {
@@ -86,7 +86,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {
-        println("LOCATIONS FOUND")
+        print("LOCATIONS FOUND")
         locationsFound = true
         if loadingScreen.hidden == false && picturesFound {
             self.performSegueWithIdentifier("atchtomap", sender: nil)
@@ -94,7 +94,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
-        println("PICTURES FOUND")
+        print("PICTURES FOUND")
         NSNotificationCenter.defaultCenter().removeObserver(self, name: profilePictureNotificationKey, object: nil)
         picturesFound = true
         if loadingScreen.hidden == false && locationsFound {
@@ -108,7 +108,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     override func viewDidAppear(animated: Bool) {
         
         if (PFUser.currentUser() == nil || !PFFacebookUtils.isLinkedWithUser(PFUser.currentUser()!)) {
-            println("PFUSER: \(PFUser.currentUser())")
+            print("PFUSER: \(PFUser.currentUser())")
             self.performSegueWithIdentifier("login", sender: nil)
             return
         }
