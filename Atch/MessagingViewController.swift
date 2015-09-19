@@ -252,9 +252,39 @@ extension MessagingViewController {
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         //print("rowsWithTimes: \(rowsWithTimeStamps)")
-        if indexPath.row < heights.count {
-            return heights[indexPath.row]
+        let row = indexPath.row
+        if row == 0 || row == messages.count - 1 {
+            return messageSpacing
         }
+        let message = messages[row]
+        if let dF = message.objectForKey("decorationFlag") as? String {
+            if dF == "h" || dF == "t" {
+                let result = MeetHereCell.getResponsesFromMessages(self.messages, row: row)
+                messageResponses[row] = result.1
+                responsesMap[row] = result.0
+                var height = responseHeight + 8
+                height += (result.0.count * (responseHeight - 8))
+                if !result.1 {
+                    height += 2 * (responseHeight - 8)
+                }
+                print("HEIGHT: \(height)")
+                return CGFloat(height)
+                
+            }
+            if dF == "r" {
+                return 0
+            }
+        }
+        let text = message.objectForKey(parse_message_text) as! String
+        var textHeight = getHeightOfLabel(text) + messageSpacing * 2 + bubbleBorder * 2
+        
+        //print("TEXT HEIGHT: \(textHeight)")
+        if rowsWithTimeStamps.contains(row) {
+            //print("increasing height at row: \(indexPath.row)")
+            textHeight += timeStampHeight
+        }
+        
+        return textHeight
         return 0
     }
     
@@ -397,7 +427,6 @@ extension MessagingViewController {
 extension MessagingViewController {
     
     func sentMessage(goToBottom: Bool) {
-        calculateHeights()
         print("method finished")
         messenger.getMessageHistoryFrom(toUsers, toBottom: goToBottom)
 //        if self.messages.count > 0 && goToBottom {
@@ -412,41 +441,7 @@ extension MessagingViewController {
     
     func calculateHeights() {
         for var row = 0; row < messages.count; row++ {
-            if row == 0 || row == messages.count - 1 {
-                heights.append(messageSpacing)
-                continue
-            }
-            let message = messages[row]
-            if let dF = message.objectForKey("decorationFlag") as? String {
-                if dF == "h" || dF == "t" {
-                    let result = MeetHereCell.getResponsesFromMessages(self.messages, row: row)
-                    messageResponses[row] = result.1
-                    responsesMap[row] = result.0
-                    var height = responseHeight + 8
-                    height += (result.0.count * (responseHeight - 8))
-                    if !result.1 {
-                        height += 2 * (responseHeight - 8)
-                    }
-                    print("HEIGHT: \(height)")
-                    heights.append(CGFloat(height))
-                    continue
-
-                }
-                if dF == "r" {
-                    heights.append(CGFloat(0))
-                    continue
-                }
-            }
-            let text = message.objectForKey(parse_message_text) as! String
-            var textHeight = getHeightOfLabel(text) + messageSpacing * 2 + bubbleBorder * 2
-    
-            //print("TEXT HEIGHT: \(textHeight)")
-            if rowsWithTimeStamps.contains(row) {
-                //print("increasing height at row: \(indexPath.row)")
-                textHeight += timeStampHeight
-            }
-            
-            heights.append(textHeight)
+           
         }
     }
     
@@ -461,7 +456,7 @@ extension MessagingViewController {
             let dummyObject = messages[0]
             //before setting messages change heights
             self.messages = [dummyObject] + self.messages + [dummyObject]
-            calculateHeights()
+            //calculateHeights()
         }
         print("message count: \(self.messages.count)")
         dispatch_async(dispatch_get_main_queue()) {
