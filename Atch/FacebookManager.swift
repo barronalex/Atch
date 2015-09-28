@@ -49,25 +49,41 @@ class FacebookManager {
     
     private func storeUserInfo() {
         if FBSDKAccessToken.currentAccessToken() != nil {
-            let graphRequest = FBSDKGraphRequest(graphPath: "me", parameters: nil)
-            graphRequest.startWithCompletionHandler({ (connection, result, error) -> Void in
+            let graphRequestMe = FBSDKGraphRequest(graphPath: "/me?fields=id,name,first_name", parameters: nil)
+            graphRequestMe.startWithCompletionHandler({
+                (connection, result, error) -> Void in
                 if (error != nil) {
                     // Process error
                     print("Error: \(error)")
                 }
                 else {
                     print("fetched user: \(result)")
-                    let fullname = result.valueForKey("name") as! String
-                    print("User Name is: \(fullname)")
-                    let id = result.valueForKey("id") as! String
-                    let firstname = result.valueForKey("first_name") as! String
-                    PFUser.currentUser()?.setObject(fullname, forKey: parse_user_fullname)
-                    PFUser.currentUser()?.setObject(fullname.lowercaseString, forKey: parse_user_queryFullname)
-                    PFUser.currentUser()?.setObject(id, forKey: parse_user_fbid)
-                    PFUser.currentUser()?.setObject(firstname, forKey: "firstName")
+                    if let fullname = result.valueForKey("name") as? String {
+                        PFUser.currentUser()?.setObject(fullname, forKey: parse_user_fullname)
+                        PFUser.currentUser()?.setObject(fullname.lowercaseString, forKey: parse_user_queryFullname)
+                    }
+                    else {
+                        self.delegate?.parseLoginFailed()
+                        return
+                    }
+                    if let id = result.valueForKey("id") as? String {
+                        PFUser.currentUser()?.setObject(id, forKey: parse_user_fbid)
+                    }
+                    else {
+                        self.delegate?.parseLoginFailed()
+                        return
+                    }
+                    if let firstname = result.valueForKey("first_name") as? String {
+                        PFUser.currentUser()?.setObject(firstname, forKey: "firstname")
+                    }
+                    else {
+                        self.delegate?.parseLoginFailed()
+                        return
+                    }
                     PFUser.currentUser()?.saveInBackground()
                     self.delegate?.parseLoginSucceeded()
                 }
+                
             })
         }
     }
@@ -88,6 +104,7 @@ class FacebookManager {
                             let image = UIImage(data: data)
                             print("image: \(image)")
                             _friendManager.userMap[user.objectId!]?.image = image
+                            NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: nil)
                         }
                     }
                     else {
@@ -100,8 +117,9 @@ class FacebookManager {
         }
        
         print("done")
-        //_friendManager.downloadedPics = true
         NSNotificationCenter.defaultCenter().postNotificationName(profilePictureNotificationKey, object: nil, userInfo: nil)
+        //_friendManager.downloadedPics = true
+        
         
     }
     

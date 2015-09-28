@@ -70,6 +70,7 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
         self.view.layoutIfNeeded()
         self.topContainerConstraint.constant = self.view.frame.height - 20
         self.view.layoutIfNeeded()
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: "bannerTapped")
         self.bannerView.addGestureRecognizer(tapGesture)
         setUpLocationManager()
@@ -173,7 +174,6 @@ extension AtchMapViewController {
         self.view.bringSubviewToFront(logout)
         _mapView?.delegate = self
         _locationUpdater.getFriendLocationsFromServer()
-        //addMarkers()
     }
 }
 
@@ -182,20 +182,23 @@ extension AtchMapViewController {
 extension AtchMapViewController {
     
     func mapView(mapView: GMSMapView!, didTapMarker marker: GMSMarker!) -> Bool {
-        print("tapped marker")
-        if tappedUserIds == (marker.userData as! Group).toUsers {
-            //zoom in
-            _mapView!.animateToCameraPosition(GMSCameraPosition.cameraWithTarget(marker.position, zoom: closeZoomLevel))
-            return true
-        }
+        let lastIds = tappedUserIds
         tappedUserIds = (marker.userData as! Group).toUsers
-        print("marker user id: \(tappedUserIds)")
         if bannerUp {
             switchBanners()
         }
         else {
             putBannerUp()
         }
+        print("tapped marker")
+        if lastIds == (marker.userData as! Group).toUsers {
+            //zoom in
+            _mapView!.animateToCameraPosition(GMSCameraPosition.cameraWithTarget(marker.position, zoom: closeZoomLevel))
+            return true
+        }
+        
+        print("marker user id: \(tappedUserIds)")
+        
         correctMarkerPosition(marker)
         return true
     }
@@ -240,7 +243,7 @@ extension AtchMapViewController {
             PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
             _locationUpdater.sendLocationToServer()
             friendLocationsUpdated(_friendManager.lastFriendData)
-            camera = GMSCameraPosition.cameraWithTarget(location, zoom: 6)
+            camera = GMSCameraPosition.cameraWithTarget(location, zoom: 14)
             _mapView!.animateToCameraPosition(camera)
             _mapView!.myLocationEnabled = true
             firstLocation = false

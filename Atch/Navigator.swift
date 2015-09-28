@@ -54,34 +54,36 @@ class Navigator {
     }
     
     static func goToMessages(toUsers: [String]) {
-        let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
-        if curVC is LoginViewController {
-            return
-        }
-        print("past clauses")
-        if let atchVC = curVC as? AtchMapViewController {
-            print("ATCH MAP CONTROLLER PRESENTED")
-            atchVC.lowerBanner()
-            atchVC.tappedUserIds = toUsers
-            atchVC.containerVC?.goToMessages(toUsers)
-            atchVC.bannerAtTop = false
-            atchVC.switchBanners()
-            atchVC.bannerTapped()
-        }
-        else if let _ = curVC as? IntroViewController { }
-        else if let _ = curVC as? FriendsViewController {
-            print("FRIEND VIEWCONTROLLER PRESENTED")
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
-            curVC.showViewController(atchVC, sender: nil)
-            atchVC.tappedUserIds = toUsers
-            atchVC.containerVC?.goToMessages(toUsers)
-            atchVC.bringUpMessagesScreen()
-            if let friendLocation = _friendManager.userMap[toUsers[1]]?.marker?.position {
-                print("animating")
-                _mapView?.animateToLocation(friendLocation)
+        dispatch_async(dispatch_get_main_queue(), {
+            let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
+            if curVC is LoginViewController {
+                return
             }
-        }
+            print("past clauses")
+            if let atchVC = curVC as? AtchMapViewController {
+                print("ATCH MAP CONTROLLER PRESENTED")
+                atchVC.tappedUserIds = toUsers
+                atchVC.containerVC?.goToMessages(toUsers)
+                atchVC.bannerAtTop = false
+                atchVC.putBannerUp()
+                print("the banner is about to be tapped")
+                atchVC.bannerTapped()
+            }
+            else if let _ = curVC as? IntroViewController { }
+            else if let _ = curVC as? FriendsViewController {
+                print("FRIEND VIEWCONTROLLER PRESENTED")
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let atchVC = storyboard.instantiateViewControllerWithIdentifier("AtchMapViewController") as! AtchMapViewController
+                curVC.showViewController(atchVC, sender: nil)
+                atchVC.tappedUserIds = toUsers
+                atchVC.containerVC?.goToMessages(toUsers)
+                atchVC.bringUpMessagesScreen()
+                if let friendLocation = _friendManager.userMap[toUsers[0]]?.marker?.position {
+                    print("animating")
+                    _mapView?.animateToLocation(friendLocation)
+                }
+            }
+        })
     }
     
     static func goToLogin() {

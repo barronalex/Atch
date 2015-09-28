@@ -21,9 +21,10 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     var messageResponses = [Int:Bool]()
     var rowsWithTimeStamps = [Int]()
     var currentMessageCount = 0
+    var dummyMessages = [PFObject]()
     
     let messageSpacing: CGFloat = 4
-    let bubbleBorder: CGFloat = 2
+    let bubbleBorder: CGFloat = 4
     let timeStampHeight: CGFloat = 14
     let labelWidth: CGFloat = 120
     let textViewSpacingInitial: CGFloat = 10
@@ -44,10 +45,7 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var sendButton: UIButton!
     
     @IBAction func sendButtonTapped() {
-        //self.messageTextView.endEditing(true)
-        //self.messageTextView.enabled = false
         print("sendButtonTapped")
-        //self.sendButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
         let messageText = trimSpaces(messageTextView.text)
         if messageText == "" { return }
         addTemporaryMessage(messageText)
@@ -84,31 +82,32 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func showSend() {
-        UIView.animateWithDuration(0.2, animations: {
-            self.textViewLeftConstraint.constant = self.textViewSpacingSend
-            self.view.layoutIfNeeded()
-        })
+            UIView.animateWithDuration(0.2, animations: {
+                self.textViewLeftConstraint.constant = self.textViewSpacingSend
+                self.view.layoutIfNeeded()
+            })
+        
     }
     
     func hideSend() {
-        UIView.animateWithDuration(0.2, animations: {
-            self.textViewLeftConstraint.constant = self.textViewSpacingInitial
-            self.view.layoutIfNeeded()
-            }, completion: {
-                (finished) in
-                 self.sendButton.setTitleColor(defaultBlueColour, forState: .Normal)
-        })
+            UIView.animateWithDuration(0.2, animations: {
+                self.textViewLeftConstraint.constant = self.textViewSpacingInitial
+                self.view.layoutIfNeeded()
+                }, completion: {
+                    (finished) in
+                     self.sendButton.setTitleColor(defaultBlueColour, forState: .Normal)
+            })
     }
     
     func resizeTextView() {
-        let prevHeight = messageTextView.frame.height
-        let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
-        textViewConstraint.constant = sizeThatFitsContent.height
-        dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
-        print("change: \(sizeThatFitsContent.height - prevHeight)")
-        let offset = sizeThatFitsContent.height - prevHeight
-        print("offset: \(offset)")
-        self.messageTable.contentOffset.y += offset
+            let prevHeight = self.messageTextView.frame.height
+            let sizeThatFitsContent = self.messageTextView.sizeThatFits(self.messageTextView.frame.size)
+            self.textViewConstraint.constant = sizeThatFitsContent.height
+            self.dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
+            print("change: \(sizeThatFitsContent.height - prevHeight)")
+            let offset = sizeThatFitsContent.height - prevHeight
+            print("offset: \(offset)")
+            self.messageTable.contentOffset.y += offset
     }
     
     func textViewDidChange(textView: UITextView) {
@@ -154,7 +153,6 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
             self.dockViewHeightConstraint.constant += delta
             self.messageTable.contentOffset.y += delta
             self.view.layoutIfNeeded()
-            
         }, completion: nil)
     }
     
@@ -208,8 +206,9 @@ class MessagingViewController: UIViewController, UITableViewDelegate, UITableVie
         messageTextView.layer.masksToBounds = true
         let prevHeight = messageTextView.frame.height
         let sizeThatFitsContent = messageTextView.sizeThatFits(messageTextView.frame.size)
-        textViewConstraint.constant = sizeThatFitsContent.height
-        dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
+        self.textViewConstraint.constant = sizeThatFitsContent.height
+        self.dockViewHeightConstraint.constant += (sizeThatFitsContent.height - prevHeight)
+        
     }
     
     func getHeightOfLabel(text: String) -> CGFloat {
@@ -285,7 +284,6 @@ extension MessagingViewController {
         }
         
         return textHeight
-        return 0
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -350,14 +348,15 @@ extension MessagingViewController {
             cell.messageView.alpha = 1
             cell.messageText.alpha = 1
         }
-        if rowsWithTimeStamps.contains(indexPath.row) {
-            cell.messageViewBottomConstraint.constant = timeStampHeight + messageSpacing
+        if self.rowsWithTimeStamps.contains(indexPath.row) {
+            cell.messageViewBottomConstraint.constant = self.timeStampHeight + self.messageSpacing
             cell.timeStamp.hidden = false
         }
         else {
-            cell.messageViewBottomConstraint.constant = messageSpacing
+            cell.messageViewBottomConstraint.constant = self.messageSpacing
             cell.timeStamp.hidden = true
         }
+        
         return cell
     }
     
@@ -368,8 +367,15 @@ extension MessagingViewController {
         if messageUser.objectId == PFUser.currentUser()!.objectId {
             let cell = messageTable.dequeueReusableCellWithIdentifier("MeetHere") as! MeetHereCell
             //cell.meetHereLabel.text = "FROM"
-            cell.responses = responsesMap[indexPath.row]!
-            cell.responded = messageResponses[indexPath.row]!
+            if let responses = responsesMap[indexPath.row] {
+                cell.responses =  responses
+                cell.responded = messageResponses[indexPath.row]!
+            }
+            else{
+                let result =  MeetHereCell.getResponsesFromMessages(self.messages, row: indexPath.row)
+                cell.responses = result.0
+                cell.responded = result.1
+            }
             cell.df = decorationFlag
             cell.messageUser = messageUser.objectId!
             cell.messenger = messenger

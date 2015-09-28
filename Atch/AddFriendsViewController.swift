@@ -30,7 +30,9 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     
     override func friendListFound(friends: [PFUser]) {
         print("friend list found")
-        table.reloadData()
+        dispatch_async(dispatch_get_main_queue(), {
+            self.table.reloadData()
+        })
     }
     
     override func tableViewTapped() {
@@ -92,6 +94,36 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
         print("Requested: \(friend.objectId)")
         _friendManager.sendRequest(friend.objectId!)
     }
+    
+    func addButtonRequest(sender: AnyObject) {
+        let button = sender as! UIButton
+        let friend: PFObject
+        if sectionTitles[1] == "Search Results" {
+            friend = sectionMap[1]![button.tag]
+        }
+        else {
+            friend = sectionMap[0]![button.tag]
+        }
+        print("request add")
+        button.hidden = true
+        button.userInteractionEnabled = false
+        if let cell = table.cellForRowAtIndexPath(NSIndexPath(forRow: button.tag, inSection: 1)) as? PendingFriendEntry {
+            print("row: \(button.tag)")
+            print("here")
+            cell.acceptButton.hidden = false
+            cell.acceptButton.setImage(UIImage(named: "Ok-512.png"), forState: .Normal)
+            //set flag in map to pending from user
+            let user = _friendManager.userMap[friend.objectId!]!
+            user.type = UserType.Friends
+            _friendManager.userMap[friend.objectId!] = user
+            
+            table.reloadData()
+        }
+        print("Requested: \(friend.objectId)")
+        _friendManager.acceptRequest(friend.objectId!)
+    }
+    
+    
 }
 
 //#MARK: Table view methods
@@ -123,25 +155,36 @@ extension AddFriendsViewController {
             //get the image from facebook
             cell.profileImage.image = nil
         }
-        let fulluser = _friendManager.userMap[user.objectId!]!
-        //show tick if already friends
-        if fulluser.type == UserType.Friends {
-            cell.acceptButton.setImage(UIImage(named: "Ok-512.png"), forState: .Normal)
-            cell.acceptButton.setTitle("", forState: .Normal)
-            cell.acceptButton.userInteractionEnabled = false
+        if let fulluser = _friendManager.userMap[user.objectId!] {
+            //show tick if already friends
+            if fulluser.type == UserType.Friends {
+                cell.acceptButton.setImage(UIImage(named: "Ok-512.png"), forState: .Normal)
+                cell.acceptButton.setTitle("", forState: .Normal)
+                cell.acceptButton.userInteractionEnabled = false
+            }
+            else if fulluser.type == UserType.PendingFrom {
+                cell.acceptButton.setImage(UIImage(named: "Sent-100.png"), forState: .Normal)
+                cell.acceptButton.userInteractionEnabled = false
+            }
+            else if fulluser.type == UserType.PendingTo {
+                print("pending to!")
+                cell.addButton.hidden = false
+                cell.addButton.userInteractionEnabled = true
+                cell.acceptButton.hidden = true
+                cell.addButton.tag = row
+                cell.addButton.addTarget(self, action: "addButtonRequest:", forControlEvents: .TouchUpInside)
+            }
+            else {
+                cell.addButton.hidden = false
+                cell.addButton.userInteractionEnabled = true
+                cell.acceptButton.hidden = true
+                cell.addButton.tag = row
+                cell.addButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
+            }
+            return cell
         }
-        else if fulluser.type == UserType.PendingFrom {
-            cell.acceptButton.setImage(UIImage(named: "Sent-100.png"), forState: .Normal)
-            cell.acceptButton.userInteractionEnabled = false
-        }
-        else {
-            cell.addButton.hidden = false
-            cell.addButton.userInteractionEnabled = true
-            cell.acceptButton.hidden = true
-            cell.addButton.tag = row
-            cell.addButton.addTarget(self, action: "addButton:", forControlEvents: .TouchUpInside)
-        }
-        return cell
+        return UITableViewCell()
+        
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
@@ -190,12 +233,14 @@ extension AddFriendsViewController {
         }
         
         let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
-            print("delete friend")
+            
             PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!]) {
                 (response) in
+                print("deleting friend")
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! PendingFriendEntry
                 cell.acceptButton.setImage(UIImage(named: "Cancel 2-100.png"), forState: .Normal)
                 cell.acceptButton.userInteractionEnabled = false
+                _friendManager.userMap.removeValueForKey(user.objectId!)
                 _friendManager.getFriends()
             }
             self.table.editing = false
@@ -214,9 +259,10 @@ extension AddFriendsViewController {
         var sectionArr = sectionMap[indexPath.section]!
         let row = indexPath.row
         let user = sectionArr[row]
-        let fulluser = _friendManager.userMap[user.objectId!]!
-        if fulluser.type == UserType.PendingFrom || fulluser.type == UserType.PendingTo || fulluser.type == UserType.Friends {
-            return true
+        if let fulluser = _friendManager.userMap[user.objectId!] {
+            if fulluser.type == UserType.PendingFrom || fulluser.type == UserType.PendingTo || fulluser.type == UserType.Friends {
+                return true
+            }
         }
         return false
     }

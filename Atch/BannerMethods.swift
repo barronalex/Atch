@@ -17,33 +17,38 @@ extension AtchMapViewController {
             bannerTapped()
             return
         }
-        if recognizer.state == UIGestureRecognizerState.Began && bannerAtTop {
-            self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
-            self.view.endEditing(true)
-        }
-        let yTranslation = recognizer.translationInView(self.view).y
-        if let _ = recognizer.view {
-            if (self.bannerConstraint.constant - yTranslation) > (self.view.frame.height - bannerView.frame.height) {
-                self.bannerConstraint.constant = self.view.frame.height - bannerView.frame.height
-                self.topContainerConstraint.constant = self.bannerView.frame.height - topMargin
+        print("here")
+            if recognizer.state == UIGestureRecognizerState.Began && self.bannerAtTop {
+                self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
+                self.view.endEditing(true)
+                
             }
-            else if (self.bannerConstraint.constant - yTranslation) < 0 {
-                self.bannerConstraint.constant = 0
-                self.topContainerConstraint.constant = self.view.frame.height - topMargin
+            let yTranslation = recognizer.translationInView(self.view).y
+            if let _ = recognizer.view {
+                if (self.bannerConstraint.constant - yTranslation) > (self.view.frame.height - self.bannerView.frame.height) {
+                    self.bannerConstraint.constant = self.view.frame.height - self.bannerView.frame.height
+                    self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin
+                }
+                else if (self.bannerConstraint.constant - yTranslation) < 0 {
+                    self.bannerConstraint.constant = 0
+                    self.topContainerConstraint.constant = self.view.frame.height - self.topMargin
+                }
+                else {
+                    self.bannerConstraint.constant -= yTranslation
+                    self.topContainerConstraint.constant += yTranslation
+                }
+                
             }
-            else {
-                self.bannerConstraint.constant -= yTranslation
-                self.topContainerConstraint.constant += yTranslation
-            }
-            
-        }
+        
+        
         recognizer.setTranslation(CGPointZero, inView: self.view)
     }
     
     func bannerTapped() {
         print("banner tapped")
-        if !bannerAtTop {
-            UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+        
+        if !self.bannerAtTop {
+            UIView.animateWithDuration(NSTimeInterval(0.3), animations: {
                 _mapView?.padding = self.bannerMapInsets
                 self.topContainerConstraint.constant = self.bannerView.frame.height - self.topMargin - (self.bannerHeightAtBottom - self.bannerHeightAtTop)
                 
@@ -54,31 +59,36 @@ extension AtchMapViewController {
                 self.containerHeightConstraint.constant = self.view.frame.height - self.bannerHeightAtTop
                 self.view.layoutIfNeeded()
             })
-            bannerAtTop = true
+            self.bannerAtTop = true
         }
         else {
-            lowerBanner()
+            self.lowerBanner()
         }
+
         print("banner height real: \(bannerView.frame.height)")
     }
     
     func lowerBanner() {
-        self.view.layoutIfNeeded()
-        UIView.animateWithDuration(NSTimeInterval(bannerAppearAnimationTime), animations: {
-            self.bannerConstraint.constant = 0
-            self.topContainerConstraint.constant = self.view.frame.height - 20
-            _mapView?.padding = self.bannerMapInsets
-            self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
-            self.containerHeightConstraint.constant -= (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+//        dispatch_async(dispatch_get_main_queue(), {
             self.view.layoutIfNeeded()
-        })
-        bannerAtTop = false
-        tappedUserIds = []
-        self.view.endEditing(true)
+            UIView.animateWithDuration(NSTimeInterval(self.bannerAppearAnimationTime), animations: {
+                self.bannerConstraint.constant = 0
+                self.topContainerConstraint.constant = self.view.frame.height - 20
+                _mapView?.padding = self.bannerMapInsets
+                self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
+                self.containerHeightConstraint.constant -= (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+                self.view.layoutIfNeeded()
+            })
+            self.bannerAtTop = false
+            self.tappedUserIds = []
+            self.view.endEditing(true)
+//        })
+        
     }
     
     func setBannerText() {
         var bannerText = ""
+        bannerLabel.adjustsFontSizeToFitWidth = true
         for userId in tappedUserIds {
             if let firstname = _friendManager.userMap[userId]?.parseObject?.objectForKey("firstname") as? String {
                 bannerText += (firstname + ", ")
@@ -109,27 +119,31 @@ extension AtchMapViewController {
     }
     
     func putBannerUp() {
-        let toUsers = tappedUserIds
-        containerVC?.goToMessages(toUsers)
+        
         setBannerColour()
         setBannerText()
+        self.view.bringSubviewToFront(bannerView)
+        self.view.bringSubviewToFront(containerView)
+        self.view.layoutIfNeeded()
+        UIView.animateWithDuration(NSTimeInterval(self.bannerAppearAnimationTime), animations: {
+            self.bannerConstraint.constant = 0
+            _mapView?.padding = self.bannerMapInsets
+            self.view.layoutIfNeeded()
+        })
+        
+        self.bannerUp = true
+        let toUsers = tappedUserIds
+        containerVC?.goToMessages(toUsers)
         
         print("friend map count: \(_friendManager.friends.count)")
         print("tapped id: \(tappedUserIds)")
         
         print("BANNER TEXT: \(bannerLabel.text)")
-        //        if bannerLabel.text == nil {
-        //           bannerLabel.text = _friendManager.userMap[self.tappedUserId!]?.parseObject?.objectForKey(parse_user_username) as? String
-        //        }
-        self.view.bringSubviewToFront(bannerView)
-        self.view.bringSubviewToFront(containerView)
-        self.view.layoutIfNeeded()
-        UIView.animateWithDuration(NSTimeInterval(bannerAppearAnimationTime), animations: {
-            self.bannerConstraint.constant = 0
-            _mapView?.padding = self.bannerMapInsets
-            self.view.layoutIfNeeded()
-        })
-        bannerUp = true
+        
+        //dispatch_async(dispatch_get_main_queue(), {
+        
+        //})
+        
     }
     
     func switchBanners() {
@@ -147,21 +161,23 @@ extension AtchMapViewController {
     
     func putBannerDown() {
         self.view.endEditing(true)
+//        dispatch_async(dispatch_get_main_queue(), {
+            UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+                self.topContainerConstraint.constant = self.view.frame.height - 20
+                self.bannerConstraint.constant = -self.bannerView.frame.height
+                _mapView?.padding = self.zeroMapInsets
+                self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
+                self.containerHeightConstraint.constant -= (self.bannerHeightAtBottom - self.bannerHeightAtTop)
+                self.view.layoutIfNeeded()
+                }, completion: {
+                    (finished) in
+                    self.containerVC?.removeChildren()
+            })
+            self.bannerUp = false
+            self.bannerAtTop = false
+            self.tappedUserIds = []
+//        })
         
-        UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
-            self.topContainerConstraint.constant = self.view.frame.height - 20
-            self.bannerConstraint.constant = -self.bannerView.frame.height
-            _mapView?.padding = self.zeroMapInsets
-            self.bannerHeightConstraint.constant = self.bannerHeightAtBottom
-            self.containerHeightConstraint.constant -= (self.bannerHeightAtBottom - self.bannerHeightAtTop)
-            self.view.layoutIfNeeded()
-            }, completion: {
-                (finished) in
-                self.containerVC?.removeChildren()
-        })
-        bannerUp = false
-        bannerAtTop = false
-        tappedUserIds = []
     }
     
     func bringUpMessagesScreen() {

@@ -76,11 +76,13 @@ class FriendManager {
         query.whereKey(parse_friendRequest_fromUser, equalTo: friend)
         query.findObjectsInBackgroundWithBlock {
             (objects: [AnyObject]?, error: NSError?) -> Void in
-            
+            print("trying to accept request")
             if error == nil {
                 if let objects = objects as? [PFObject] {
                     for object in objects {
-                        object.setObject("accepted", forKey: parse_friendRequest_state)
+                        print("found object")
+                        print("\(object)")
+                        object.setObject("accepted", forKey: "state")
                         object.saveInBackground()
                     }
                 }
@@ -89,11 +91,13 @@ class FriendManager {
                 print("error in getting pending requests")
             }
         }
+        self.delegate?.friendRequestAccepted()
     }
     
     func acceptRequest(request: PFObject) {
         request.setObject("accepted", forKey: parse_friendRequest_state)
         request.saveInBackground()
+        self.delegate?.friendRequestAccepted()
     }
     
     //what do I need to load:
@@ -303,34 +307,37 @@ class FriendManager {
     }
     
     func getFriends() {
-        let query = PFRole.query()!
-        query.whereKey("name", equalTo: "friendsOf_" + PFUser.currentUser()!.objectId!)
-        query.orderByAscending("updatedAt")
-        query.getFirstObjectInBackgroundWithBlock {
-            (role: AnyObject?, error: NSError?) -> Void in
-            if let role = role as? PFRole {
-                let userRelation = role.relationForKey("users")
-                let relationQuery = userRelation.query()!
-                relationQuery.findObjectsInBackgroundWithBlock {
-                    (friends: [AnyObject]?, error: NSError?) -> Void in
-                    if error == nil {
-                        if let friends = friends as? [PFUser] {
-                            self.friends = friends
-                            FacebookManager.downloadProfilePictures(friends)
-                            _locationUpdater.getFriendLocationsFromServer()
-                            self.addUsersToMap(friends, type: UserType.Friends)
-                            self.delegate?.friendListFound(friends)
+        if let currentUser = PFUser.currentUser()?.objectId {
+            let query = PFRole.query()!
+            query.whereKey("name", equalTo: "friendsOf_" + currentUser)
+            query.orderByAscending("updatedAt")
+            query.getFirstObjectInBackgroundWithBlock {
+                (role: AnyObject?, error: NSError?) -> Void in
+                if let role = role as? PFRole {
+                    let userRelation = role.relationForKey("users")
+                    let relationQuery = userRelation.query()!
+                    relationQuery.findObjectsInBackgroundWithBlock {
+                        (friends: [AnyObject]?, error: NSError?) -> Void in
+                        if error == nil {
+                            if let friends = friends as? [PFUser] {
+                                self.friends = friends
+                                FacebookManager.downloadProfilePictures(friends)
+                                _locationUpdater.getFriendLocationsFromServer()
+                                self.addUsersToMap(friends, type: UserType.Friends)
+                                self.delegate?.friendListFound(friends)
+                            }
+                        } else {
+                            print("error searching")
+                            
                         }
-                    } else {
-                        print("error searching")
-                        
                     }
+                    
                 }
+                else {
+                    print("Couldn't find role")
+                }
+            }
 
-            }
-            else {
-                print("Couldn't find role")
-            }
         }
     }
     

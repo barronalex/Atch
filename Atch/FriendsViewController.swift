@@ -41,25 +41,12 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             }
             table.reloadData()
         }
-        if _friendManager.friends.count > 0 {
-            
-            //split friends into online and offline
-            separateOfflineFriends()
-            if onlineFriends.count > 0 {
-                sectionTitles[1] = "Online Friends"
-            }
-            if offlineFriends.count > 0 {
-                sectionTitles[2] = "Offline Friends"
-            }
-            
-        }
         
         _friendManager.delegate = self
         setUpTable()
     }
     
     override func viewDidAppear(animated: Bool) {
-        table.reloadData()
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -78,6 +65,14 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
                     offlineFriends.append(friend)
                 }
             }
+        }
+        if onlineFriends.count > 0 {
+            if !(self is AddFriendsViewController) {
+                sectionTitles[1] = "Online Friends"
+            }
+        }
+        if offlineFriends.count > 0 {
+            sectionTitles[2] = "Offline Friends"
         }
     }
     
@@ -115,7 +110,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             if _friendManager.userMap[user.objectId!]?.group != nil {
                 _friendManager.userMap[user.objectId!]?.group?.image = ImageProcessor.createImageFromGroup(_friendManager.userMap[user.objectId!]!.group!)
             }
-            
+            separateOfflineFriends()
             table.reloadData()
         }
         
@@ -124,15 +119,13 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     
     
     func setUpTable() {
-        if _friendManager.friends.count == 0 {
-            _friendManager.getFriends()
+        _friendManager.getFriends()
+        separateOfflineFriends()
+        table.reloadData()
+        if !_friendManager.downloadedPics {
+            FacebookManager.downloadProfilePictures(_friendManager.friends)
         }
-        else {
-            table.reloadData()
-            if !_friendManager.downloadedPics {
-                FacebookManager.downloadProfilePictures(_friendManager.friends)
-            }
-        }
+        
     }
     
     func reset() {
@@ -234,12 +227,15 @@ extension FriendsViewController {
         }
     }
     
-    func setUpGroupCell(tableView: UITableView, indexPath: NSIndexPath) -> FriendEntry {
+    func setUpGroupCell(tableView: UITableView, indexPath: NSIndexPath) -> UITableViewCell {
         print("row: \(indexPath.row)")
         let cell = tableView.dequeueReusableCellWithIdentifier("group") as! GroupEntry
         cell.userInteractionEnabled = true
         var sectionArr = self.actualGroups
         let row = indexPath.row
+        if row + 1 > sectionArr.count {
+            return UITableViewCell()
+        }
         let group = sectionArr[row]
         var groupName = ""
         for user in group.toUsers {
@@ -267,7 +263,7 @@ extension FriendsViewController {
         return cell
     }
     
-    func setUpFriendCell(tableView: UITableView, indexPath: NSIndexPath, online: Bool) -> FriendEntry {
+    func setUpFriendCell(tableView: UITableView, indexPath: NSIndexPath, online: Bool) -> UITableViewCell {
         print("row: \(indexPath.row)")
         var cell = tableView.dequeueReusableCellWithIdentifier("potentialFriend") as! FriendEntry
         cell.userInteractionEnabled = true
@@ -279,10 +275,16 @@ extension FriendsViewController {
             sectionArr = offlineFriends
         }
         let row = indexPath.row
+        if row + 1 > sectionArr.count {
+            return UITableViewCell()
+        }
         let user = sectionArr[row]
         if let username = user.objectForKey(parse_user_username) as? String {
             print("table doin: \(username)")
             cell.username.text = username
+            if let checkinCount = user.objectForKey("checkinCount") as? Int {
+                cell.username.text = username + "   \(checkinCount)"
+            }
         }
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
             cell.name.text = fullname
@@ -358,12 +360,13 @@ extension FriendsViewController {
         let user = _friendManager.friends[row]
         let delete = UITableViewRowAction(style: .Normal, title: "delete") { action, index in
             print("delete friend")
-            PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!])
+            PFCloud.callFunctionInBackground("deleteFriend", withParameters: ["friendId":user.objectId!], block: {
+                Void in
+                _friendManager.getFriends()
+                _friendManager.userMap.removeValueForKey(user.objectId!)
+            })
+            
             self.table.editing = false
-            _friendManager.friends.removeAtIndex(row)
-            self.table.reloadData()
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as! FriendEntry
-            cell.acceptButton.setTitle("deleted", forState: .Normal)
         }
         delete.backgroundColor = UIColor.redColor()
         
@@ -385,45 +388,57 @@ extension FriendsViewController {
     
     func friendDataUpdated() {
         separateOfflineFriends()
-        table.reloadData()
+        dispatch_async(dispatch_get_main_queue(), {
+            self.table.reloadData()
+        })
     }
     
     func friendProfilePicturesReceived(notification: NSNotification) {
         print("triggered in Friends")
-        table.reloadData()
-        
+        dispatch_async(dispatch_get_main_queue(), {
+            self.separateOfflineFriends()
+            self.table.reloadData()
+        })
     }
     
     func friendListFound(friends: [PFUser]) {
-        print("friends found")
-        sectionTitles[1] = "Friends"
-        sectionMap[1] = friends
         separateOfflineFriends()
-        table.reloadData()
+        dispatch_async(dispatch_get_main_queue(), {
+            self.table.reloadData()
+        })
     }
     
     func facebookFriendsFound(facebookFriends: [PFUser]) {
         print("facebook friends acquired")
-        if facebookFriends.count > 0 {
-            sectionTitles[1] = "Facebook Friends"
-            sectionMap[1] = facebookFriends
-            
-            table.reloadData()
-        }
+        dispatch_async(dispatch_get_main_queue(), {
+            if facebookFriends.count > 0 {
+                self.sectionTitles[1] = "Facebook Friends"
+                self.sectionMap[1] = facebookFriends
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.table.reloadData()
+                })
+            }
+        })
     }
     
     func pendingToRequestsFound(requests: [PFObject], users: [PFUser]) {
         //present requests
-        for var i = 0; i < users.count; i++ {
-            userToRequestMap[users[i].objectId!] = requests[i]
-        }
-        print("requests found")
-        if users.count > 0 {
-            sectionTitles[0] = "Pending Requests"
-            sectionMap[0] = users
-            
-            table.reloadData()
-        }
+        dispatch_async(dispatch_get_main_queue(), {
+            for var i = 0; i < users.count; i++ {
+                self.userToRequestMap[users[i].objectId!] = requests[i]
+            }
+            print("requests found")
+            if users.count > 0 {
+                self.sectionTitles[0] = "Pending Requests"
+                self.sectionMap[0] = users
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.table.reloadData()
+                })
+            }
+
+        })
     }
     
     func pendingFromRequestsFound(requests: [PFObject], users: [PFUser]) {
@@ -432,7 +447,10 @@ extension FriendsViewController {
             userToRequestMap[users[i].objectId!] = requests[i]
         }
         print("from requests found")
-        table.reloadData()
+        dispatch_async(dispatch_get_main_queue(), {
+            self.table.reloadData()
+        })
+        
     }
     
     func groupsReceived() {
@@ -444,7 +462,9 @@ extension FriendsViewController {
         else {
             sectionTitles[0] = ""
         }
-        table.reloadData()
+        dispatch_async(dispatch_get_main_queue(), {
+            self.table.reloadData()
+        })
     }
     
     func findActualGroups() {
@@ -463,7 +483,7 @@ extension FriendsViewController {
     }
     
     func friendRequestAccepted() {
-        
+        _friendManager.getFriends()
     }
 
 }

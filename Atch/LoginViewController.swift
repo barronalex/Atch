@@ -72,6 +72,12 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         login.setTitle("LOG IN", forState: .Normal)
         login.enabled = true
         signup.enabled = true
+        let alert = UIAlertController(title: "Facebook Login Failed", message: reason, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: {
+            Void in
+            alert.removeFromParentViewController()
+        }))
+        presentViewController(alert, animated: true, completion: nil)
     }
     
     func parseLoginSucceeded() {
@@ -87,6 +93,12 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         login.enabled = true
         signup.enabled = true
         print("parse login failed")
+        let alert = UIAlertController(title: "Atch Login Failed", message: "", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: {
+            Void in
+            alert.removeFromParentViewController()
+        }))
+        presentViewController(alert, animated: true, completion: nil)
     }
     
     func moveKeyboardUpBy(delta: CGFloat, animationTime: NSNumber) {
@@ -97,6 +109,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
             self.view.layoutIfNeeded()
             
             }, completion: nil)
+        
     }
     
     func keyboardWillShow(notification: NSNotification) {
@@ -123,12 +136,14 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
     func hideUsernameInput() {
         containerView.userInteractionEnabled = false
         containerView.hidden = true
+        self.editing = false
     }
     
     func showUsernameInput() {
         self.view.bringSubviewToFront(containerView)
         containerView.hidden = false
         containerView.userInteractionEnabled = true
+        
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -144,7 +159,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         hideUsernameInput()
         let mapInsets = UIEdgeInsetsMake(0.0, 0.0, self.view.frame.height - 170, 0.0)
         self.backgroundMapView.padding = mapInsets
-        self.backgroundMapView.camera = stanfordCam
+        self.backgroundMapView.camera = stanfordCamLogin
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
     }

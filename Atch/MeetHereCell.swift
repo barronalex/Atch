@@ -154,14 +154,14 @@ class MeetHereCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource 
             let cell = responseTable.dequeueReusableCellWithIdentifier("Response")!
             cell.backgroundColor = UIColor.blackColor()
             cell.textLabel?.textColor = UIColor.whiteColor()
-            cell.textLabel?.text = "ATCH"
+            cell.textLabel?.text = "I'm ATCH"
             return cell
         }
         else {
             let cell = responseTable.dequeueReusableCellWithIdentifier("Response")!
             cell.backgroundColor = UIColor.blackColor()
             cell.textLabel?.textColor = UIColor.whiteColor()
-            cell.textLabel?.text = "busy"
+            cell.textLabel?.text = "I'm busy"
             return cell
         }
     }

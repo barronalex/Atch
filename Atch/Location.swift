@@ -13,3 +13,4 @@ var _locationUpdater = LocationUpdater()
 var _mapView: GMSMapView?
 
 let stanfordCam = GMSCameraPosition(target: CLLocationCoordinate2D(latitude: 37.43, longitude: -122.17), zoom: Float(14), bearing: 0, viewingAngle: 0)
+let stanfordCamLogin = GMSCameraPosition(target: CLLocationCoordinate2D(latitude: 37.447, longitude: -122.17), zoom: Float(14), bearing: 0, viewingAngle: 0)

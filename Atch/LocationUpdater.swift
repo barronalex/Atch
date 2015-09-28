@@ -103,17 +103,20 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     }
     
     func getFriendLocationsFromServer() {
-        let query = PFQuery(className: "FriendData")
-        query.whereKey(parse_frienddata_user, notEqualTo: PFUser.currentUser()!)
-        
-        //var date = NSDate(timeIntervalSinceNow: 0)
-       // query.whereKey("updatedAt", greaterThan: date - NSTimeInterval.
-        query.findObjectsInBackgroundWithBlock {
-            (friends: [AnyObject]?, error: NSError?) -> Void in
-            if let friends = friends as? [PFObject] {
-                _friendManager.lastFriendData = friends
-                self.delegate?.friendLocationsUpdated(friends)
+        if let currentUser = PFUser.currentUser() {
+            let query = PFQuery(className: "FriendData")
+            query.whereKey(parse_frienddata_user, notEqualTo: currentUser)
+            
+            //var date = NSDate(timeIntervalSinceNow: 0)
+            // query.whereKey("updatedAt", greaterThan: date - NSTimeInterval.
+            query.findObjectsInBackgroundWithBlock {
+                (friends: [AnyObject]?, error: NSError?) -> Void in
+                if let friends = friends as? [PFObject] {
+                    _friendManager.lastFriendData = friends
+                    self.delegate?.friendLocationsUpdated(friends)
+                }
             }
+
         }
     }
 }

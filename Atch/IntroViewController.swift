@@ -81,8 +81,10 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         createColourBanners()
-        logOutTopConstraint.constant = bannerHeight - logOut.frame.height/2
+        self.logOutTopConstraint.constant = self.bannerHeight - self.logOut.frame.height/2
         self.view.setNeedsDisplay()
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "ATCH:"))
+        
     }
     
     func friendLocationsUpdated(friendData: [PFObject]) {
