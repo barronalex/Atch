@@ -254,7 +254,6 @@ extension FriendsViewController {
         cell.acceptButton.addTarget(self, action: Selector("goToChatFromGroup:"), forControlEvents: .TouchUpInside)
 
         if let image = group.image {
-            //let colour = _friendManager.userMap[group.toUsers[0]]?.colour
             cell.profileImage.image = image
         }
         else {
@@ -287,6 +286,7 @@ extension FriendsViewController {
             }
         }
         if let fullname = user.objectForKey(parse_user_fullname) as? String {
+            cell.name.adjustsFontSizeToFitWidth = true
             cell.name.text = fullname
         }
         let fulluser = _friendManager.userMap[user.objectId!]

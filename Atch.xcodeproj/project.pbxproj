@@ -81,6 +81,7 @@
 		D066116B1B868E6400CFE73C /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116A1B868E6400CFE73C /* MessagingViewController.swift */; };
 		D066116D1B878BEE00CFE73C /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116C1B878BEE00CFE73C /* MessageCell.swift */; };
 		D066116F1B879F5E00CFE73C /* IncomingMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116E1B879F5E00CFE73C /* IncomingMessageCell.swift */; };
+		D0AC82FA1BB91E79007D832B /* Perhaps best.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AC82F91BB91E79007D832B /* Perhaps best.png */; settings = {ASSET_TAGS = (); }; };
 		D0AF66B41B8FFC4A00A8E509 /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AF66B31B8FFC4A00A8E509 /* plus.png */; };
 		D0B8E2EC1B90FE2000B74B2E /* lockcircle.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2EB1B90FE2000B74B2E /* lockcircle.png */; };
 		D0B8E2EE1B90FFC000B74B2E /* left_chat_bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */; };
@@ -191,6 +192,7 @@
 		D066116C1B878BEE00CFE73C /* MessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		D066116E1B879F5E00CFE73C /* IncomingMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingMessageCell.swift; sourceTree = "<group>"; };
 		D0A458241B83E53700FE2217 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "parse-library-1.7.5/Bolts.framework"; sourceTree = "<group>"; };
+		D0AC82F91BB91E79007D832B /* Perhaps best.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Perhaps best.png"; sourceTree = "<group>"; };
 		D0AF66B31B8FFC4A00A8E509 /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		D0B8E2EB1B90FE2000B74B2E /* lockcircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lockcircle.png; sourceTree = "<group>"; };
 		D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_chat_bubble.png; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 				D02788661B8F2935007B76D9 /* Navigator.swift */,
 				D02788501B8A2E80007B76D9 /* NotificationKeys.swift */,
 				D0519E5F1B6E0AD500C473E3 /* AppDelegate.swift */,
+				D0AC82F91BB91E79007D832B /* Perhaps best.png */,
 				D0449EB41BB2576500A845D4 /* Images.xcassets */,
 				D02F32341B90DBD7002F9D20 /* UserColourDataModel.xcdatamodeld */,
 				D02F32311B90CC89002F9D20 /* Icons */,
@@ -553,6 +556,7 @@
 				D0449EB51BB2576500A845D4 /* Images.xcassets in Resources */,
 				D02F322E1B90CC7D002F9D20 /* External-100 copy.png in Resources */,
 				D0F9A15E1B91F62E008AC953 /* circle.png in Resources */,
+				D0AC82FA1BB91E79007D832B /* Perhaps best.png in Resources */,
 				D02F32261B906C5B002F9D20 /* Chat-100.png in Resources */,
 				D02F321A1B906195002F9D20 /* circle-xxl.png in Resources */,
 				D02F32221B906A66002F9D20 /* Ok-25.png in Resources */,
