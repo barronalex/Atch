@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
         application.registerUserNotificationSettings(settings)
         application.registerForRemoteNotifications()
+        
         return true
     }
 
@@ -63,6 +64,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         FBSDKAppEvents.activateApp()
+        if !(getVisibleViewController(self.window?.rootViewController) is IntroViewController) &&
+            !(getVisibleViewController(self.window?.rootViewController) is LoginViewController) {
+             _locationUpdater.stopUpdates()
+             _locationUpdater.startUpdates()
+        }
+        
     }
 
     func applicationWillTerminate(application: UIApplication) {
@@ -101,7 +108,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             else {
                 let aps = userInfo["aps"] as! [NSObject : AnyObject]
                 if let text = aps["alert"] as? String {
-                    _notificationBanner.displayNotification(text, type: "friendRequest", toUsers: [String]())
+                    var users = [String]()
+                    if let toUserId = userInfo["frienderParseId"] as? String {
+                        users.append(toUserId)
+                    }
+                    _notificationBanner.displayNotification(text, type: "friendRequest", toUsers: users)
                 }
             }
         }
@@ -112,15 +123,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             else {
                 let aps = userInfo["aps"] as! [NSObject : AnyObject]
                 if let text = aps["alert"] as? String {
-                    _notificationBanner.displayNotification(text, type: "friendAccept", toUsers: [String]())
+                    var users = [String]()
+                    if let toUserId = userInfo["frienderParseId"] as? String {
+                        users.append(toUserId)
+                    }
+                    _notificationBanner.displayNotification(text, type: "friendAccept", toUsers: users)
                 }
             }
         }
         if userInfo["type"] as? String == "login" {
+            
             if application.applicationState == UIApplicationState.Active {
                 let aps = userInfo["aps"] as! [NSObject : AnyObject]
                 if let text = aps["alert"] as? String {
-                    _notificationBanner.displayNotification(text, type: "login", toUsers: [String]())
+                    print("got login notifications")
+                    var users = [String]()
+                    if let toUserId = userInfo["pid"] as? String {
+                        users.append(toUserId)
+                    }
+                    _notificationBanner.displayNotification(text, type: "login", toUsers: users)
                 }
             }
         }

@@ -23,6 +23,8 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     var getTimer: NSTimer?
     var locationTimer: NSTimer?
     
+    let timeInSecondsTillAutoLogout = NSTimeInterval(10800)
+    
     func startUpdates() {
         print("start updates")
         let query = PFQuery(className: "FriendData")
@@ -41,7 +43,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             _mapView?.myLocationEnabled = true
             updating = true
         }
-        NSTimer.scheduledTimerWithTimeInterval(2000, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
+        NSTimer.scheduledTimerWithTimeInterval(timeInSecondsTillAutoLogout, target: self, selector: Selector("stopUpdates"), userInfo: nil, repeats: false)
         sendTimer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("sendLocationToServer"), userInfo: nil, repeats: true)
         getTimer = NSTimer.scheduledTimerWithTimeInterval(40, target: self, selector: Selector("getFriendLocationsFromServer"), userInfo: nil, repeats: true)
     }
@@ -56,7 +58,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         _mapView?.myLocationEnabled = false
         curLocation = nil
         sendLocationToServer()
-        Navigator.goToIntro()
+        //Navigator.goToIntro()
     }
     
     func getLocation() -> CLLocation? {

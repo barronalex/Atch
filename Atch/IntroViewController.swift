@@ -25,8 +25,8 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     @IBOutlet weak var logOut: UIButton!
     
     @IBAction func logout() {
-        PFInstallation.currentInstallation().setObject("", forKey: "userId")
-        PFInstallation.currentInstallation().saveInBackground()
+//        //PFInstallation.currentInstallation().setObject("", forKey: "userId")
+//        PFInstallation.currentInstallation().saveInBackground()
         PFUser.logOutInBackgroundWithBlock() {
             (error) in
             if error == nil {
@@ -41,6 +41,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     }
     
     @IBAction func ATCH(sender: AnyObject) {
+        PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
         if picturesFound && locationsFound {
             self.performSegueWithIdentifier("atchtomap", sender: nil)
         }
@@ -80,6 +81,12 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let installation = PFInstallation.currentInstallation()
+        if let cuser = PFUser.currentUser()?.objectId {
+            installation.setObject(cuser, forKey: parse_installation_userId)
+            installation.saveInBackground()
+        }
+        
         createColourBanners()
         self.logOutTopConstraint.constant = self.bannerHeight - self.logOut.frame.height/2
         self.view.setNeedsDisplay()
@@ -122,6 +129,9 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         _locationUpdater.delegate = self
         _friendManager.getFriends()
+        _friendManager.getPendingRequests(true)
+        _friendManager.getPendingRequests(false)
+        _friendManager.getFacebookFriends()
     }
     
     override func viewDidDisappear(animated: Bool) {

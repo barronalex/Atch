@@ -128,11 +128,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         
     }
     
-    func reset() {
-        print("cancelllllleedd")
-        setUpTable()
-    }
-    
     func goToChat(sender: AnyObject) {
         if let button = sender as? UIButton {
             let row = button.tag
@@ -485,6 +480,8 @@ extension FriendsViewController {
     func friendRequestAccepted() {
         _friendManager.getFriends()
     }
+    
+    func searchFinished(searchResults: [PFUser]) {}
 
 }
     

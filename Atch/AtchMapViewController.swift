@@ -240,7 +240,6 @@ extension AtchMapViewController {
         print("location updated")
         if firstLocation {
             print("first location")
-            PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
             _locationUpdater.sendLocationToServer()
             friendLocationsUpdated(_friendManager.lastFriendData)
             camera = GMSCameraPosition.cameraWithTarget(location, zoom: 14)

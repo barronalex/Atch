@@ -23,9 +23,13 @@ class NotificationBanner: NSObject {
     var notifView = UIView()
     var view: UIView?
     
-    func displayNotification(text: String, type: String, toUsers: [String]) {
+    func displayNotification(var text: String, type: String, toUsers: [String]) {
         self.toUsers = toUsers
         self.type = type
+        if text.characters.count > 30 {
+            text = text.substringToIndex(text.startIndex.advancedBy(29))
+            text = text + "..."
+        }
         let curVC = Navigator.getVisibleViewController(UIApplication.sharedApplication().keyWindow?.rootViewController)
         self.view = curVC.view
         for user in toUsers {
@@ -38,7 +42,7 @@ class NotificationBanner: NSObject {
         let notifText = setUpLabel(self.view!, text: text)
         notifView.addSubview(notifText)
         self.view!.bringSubviewToFront(notifView)
-        UIView.animateWithDuration(0.5, animations: {
+        UIView.animateWithDuration(0.4, animations: {
             self.notifView.frame.origin.y = 0
             notifText.frame.origin.y = (notification_banner_height/2 - notification_text_height/2) + notification_top_margin/2
         })

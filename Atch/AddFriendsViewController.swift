@@ -23,8 +23,8 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
         let tapGesture = UITapGestureRecognizer(target: self, action: "tableViewTapped")
         self.table.addGestureRecognizer(tapGesture)
         _friendManager.delegate = self
-        sectionMap[0] = [PFObject]()
-        sectionMap[1] = [PFObject]()
+        sectionMap[0] = _friendManager.pendingFriendsTo
+        sectionMap[1] = _friendManager.facebookFriends
         setUpTable()
     }
     
@@ -40,13 +40,27 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     }
     
     override func setUpTable() {
-        _friendManager.getPendingRequests(true)
-        _friendManager.getPendingRequests(false)
-        _friendManager.getFacebookFriends()
+        if _friendManager.pendingFriendsFrom.count == 0 {
+            _friendManager.getPendingRequests(true)
+        }
+        if _friendManager.pendingFriendsTo.count == 0 {
+            _friendManager.getPendingRequests(false)
+        }
+        else {
+            sectionTitles[0] = "Pending Requests"
+        }
+        if _friendManager.facebookFriends.count == 0 {
+            _friendManager.getFacebookFriends()
+        }
+        else {
+            sectionTitles[1] = "Facebook Friends"
+        }
         if _friendManager.friends.count == 0 {
             _friendManager.getFriends()
         }
-        
+        sectionMap[0] = _friendManager.pendingFriendsTo
+        sectionMap[1] = _friendManager.facebookFriends
+        table.reloadData()
     }
     
     func acceptButton(sender: AnyObject) {
@@ -271,16 +285,21 @@ extension AddFriendsViewController {
         return sectionMap[section]!.count
     }
     
+    func reset() {
+        print("cancelllllleedd")
+        setUpTable()
+    }
+    
 }
 
 //#MARK: SearchBar methods
-extension FriendsViewController {
+extension AddFriendsViewController {
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
         print("cancelled")
     }
     
-    func searchFinished(searchResults: [PFUser]) {
+    override func searchFinished(searchResults: [PFUser]) {
         print("search finished")
         sectionTitles[0] = ""
         sectionTitles[1] = "Search Results"
@@ -293,7 +312,7 @@ extension FriendsViewController {
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         print("search: \(searchText)")
         if searchText == "" {
-            self.reset()
+            reset()
         }
         else {
             _friendManager.search(searchBar.text!)

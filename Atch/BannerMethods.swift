@@ -162,7 +162,7 @@ extension AtchMapViewController {
     func putBannerDown() {
         self.view.endEditing(true)
 //        dispatch_async(dispatch_get_main_queue(), {
-            UIView.animateWithDuration(NSTimeInterval(0.4), animations: {
+            UIView.animateWithDuration(NSTimeInterval(0.3), animations: {
                 self.topContainerConstraint.constant = self.view.frame.height - 20
                 self.bannerConstraint.constant = -self.bannerView.frame.height
                 _mapView?.padding = self.zeroMapInsets

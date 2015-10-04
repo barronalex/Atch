@@ -82,6 +82,7 @@
 		D066116D1B878BEE00CFE73C /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116C1B878BEE00CFE73C /* MessageCell.swift */; };
 		D066116F1B879F5E00CFE73C /* IncomingMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D066116E1B879F5E00CFE73C /* IncomingMessageCell.swift */; };
 		D0AC82FA1BB91E79007D832B /* Perhaps best.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AC82F91BB91E79007D832B /* Perhaps best.png */; settings = {ASSET_TAGS = (); }; };
+		D0AC82FC1BC08A52007D832B /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AC82FB1BC08A52007D832B /* Reachability.swift */; settings = {ASSET_TAGS = (); }; };
 		D0AF66B41B8FFC4A00A8E509 /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AF66B31B8FFC4A00A8E509 /* plus.png */; };
 		D0B8E2EC1B90FE2000B74B2E /* lockcircle.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2EB1B90FE2000B74B2E /* lockcircle.png */; };
 		D0B8E2EE1B90FFC000B74B2E /* left_chat_bubble.png in Resources */ = {isa = PBXBuildFile; fileRef = D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */; };
@@ -193,6 +194,7 @@
 		D066116E1B879F5E00CFE73C /* IncomingMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingMessageCell.swift; sourceTree = "<group>"; };
 		D0A458241B83E53700FE2217 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = "parse-library-1.7.5/Bolts.framework"; sourceTree = "<group>"; };
 		D0AC82F91BB91E79007D832B /* Perhaps best.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Perhaps best.png"; sourceTree = "<group>"; };
+		D0AC82FB1BC08A52007D832B /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		D0AF66B31B8FFC4A00A8E509 /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		D0B8E2EB1B90FE2000B74B2E /* lockcircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lockcircle.png; sourceTree = "<group>"; };
 		D0B8E2ED1B90FFC000B74B2E /* left_chat_bubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_chat_bubble.png; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 			children = (
 				D06611611B85434100CFE73C /* OperatorOverloads.swift */,
 				D02788681B8F5B66007B76D9 /* LeftToRightSegue.swift */,
+				D0AC82FB1BC08A52007D832B /* Reachability.swift */,
 				D066115F1B84977F00CFE73C /* ImageProcessor.swift */,
 				D02788621B8E1AC3007B76D9 /* ParseKeys.swift */,
 				D02788541B8B26E4007B76D9 /* KeyboardHeight.swift */,
@@ -645,6 +648,7 @@
 				D02E5B421B7DE6A2007F7FDB /* FriendManager.swift in Sources */,
 				D02F321C1B906279002F9D20 /* FriendEntry.swift in Sources */,
 				D02F32381B90DC00002F9D20 /* ColourGenerator.swift in Sources */,
+				D0AC82FC1BC08A52007D832B /* Reachability.swift in Sources */,
 				D02788551B8B26E4007B76D9 /* KeyboardHeight.swift in Sources */,
 				D0519E801B6E6CB900C473E3 /* IntroViewController.swift in Sources */,
 				D02788531B8A5403007B76D9 /* AddFriendsViewController.swift in Sources */,

@@ -162,6 +162,7 @@ class LoginViewController: UIViewController, FacebookManagerDelegate {
         self.backgroundMapView.camera = stanfordCamLogin
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name: UIKeyboardWillHideNotification, object: nil)
+        
     }
     
     override func viewDidAppear(animated: Bool) {

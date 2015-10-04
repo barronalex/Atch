@@ -187,6 +187,7 @@ class FacebookManager {
                         (user, error) in
                         if error != nil {
                             print("error in fbid parse query: \(error)")
+                            self.delegate?.facebookLoginFailed("Must have an account to log in - click sign up")
                         }
                         else {
                             if let _ = user {

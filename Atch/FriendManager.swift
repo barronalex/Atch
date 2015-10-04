@@ -21,6 +21,11 @@ class FriendManager {
     
     var userMap = [String:User]()
     var friends = [PFUser]()
+    var pendingRequestsTo = [PFObject]()
+    var pendingFriendsTo = [PFObject]()
+    var pendingRequestsFrom = [PFObject]()
+    var pendingFriendsFrom = [PFObject]()
+    var facebookFriends = [PFObject]()
     var groups = [Group]()
     var groupMap = [String:Group]()
     var downloadedPics = false
@@ -170,10 +175,14 @@ class FriendManager {
                     
                     if fromUser {
                         self.delegate?.pendingFromRequestsFound(requests, users: pendingFriends)
+                        self.pendingFriendsFrom = pendingFriends
+                        self.pendingRequestsFrom = requests
                         self.addUsersToMap(pendingFriends, type: UserType.PendingFrom)
                     }
                     else {
                         FacebookManager.downloadProfilePictures(pendingFriends)
+                        self.pendingFriendsTo = pendingFriends
+                        self.pendingRequestsTo = requests
                         self.delegate?.pendingToRequestsFound(requests, users: pendingFriends)
                         self.addUsersToMap(pendingFriends, type: UserType.PendingTo)
                     }
@@ -272,6 +281,7 @@ class FriendManager {
                 if let fbFriends = fbFriends as? [PFUser] {
                     FacebookManager.downloadProfilePictures(fbFriends)
                     self.addUsersToMap(fbFriends, type: UserType.FacebookFriends)
+                    self.facebookFriends = fbFriends
                     self.delegate?.facebookFriendsFound(fbFriends)
                 }
             } else {
