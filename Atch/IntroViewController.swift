@@ -41,7 +41,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     }
     
     @IBAction func ATCH(sender: AnyObject) {
-        PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
+        //PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
         if picturesFound && locationsFound {
             self.performSegueWithIdentifier("atchtomap", sender: nil)
         }

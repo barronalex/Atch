@@ -119,13 +119,11 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
     
     
     func setUpTable() {
-        _friendManager.getFriends()
+        if _friendManager.friends.count == 0 {
+           _friendManager.getFriends()
+        }
         separateOfflineFriends()
         table.reloadData()
-        if !_friendManager.downloadedPics {
-            FacebookManager.downloadProfilePictures(_friendManager.friends)
-        }
-        
     }
     
     func goToChat(sender: AnyObject) {

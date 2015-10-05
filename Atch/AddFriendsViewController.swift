@@ -40,6 +40,7 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
     }
     
     override func setUpTable() {
+        
         if _friendManager.pendingFriendsFrom.count == 0 {
             _friendManager.getPendingRequests(true)
         }
@@ -130,14 +131,13 @@ class AddFriendsViewController: FriendsViewController, UISearchBarDelegate {
             let user = _friendManager.userMap[friend.objectId!]!
             user.type = UserType.Friends
             _friendManager.userMap[friend.objectId!] = user
-            
+            _friendManager.getPendingRequests(false)
+            _friendManager.getFriends()
             table.reloadData()
         }
         print("Requested: \(friend.objectId)")
         _friendManager.acceptRequest(friend.objectId!)
     }
-    
-    
 }
 
 //#MARK: Table view methods
