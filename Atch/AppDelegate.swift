@@ -51,6 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         _mapView?.myLocationEnabled = false
         _mapView?.settings.myLocationButton = false
+        
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
@@ -91,6 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         currentInstallation.saveInBackground()
         print("registered for notifications")
     }
+    
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         print("receiving notification")

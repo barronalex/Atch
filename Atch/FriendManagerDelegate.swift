@@ -22,5 +22,7 @@ protocol FriendManagerDelegate {
     
     func facebookFriendsFound(facebookFriends: [PFUser])
     
+    func foundMe(me: PFObject)
+    
     func searchFinished(searchResults: [PFUser])
 }

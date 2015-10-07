@@ -41,7 +41,11 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
     }
     
     @IBAction func ATCH(sender: AnyObject) {
-        //PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil)
+        print("sendloginstuff")
+        PFCloud.callFunctionInBackground("sendLoginNotifications", withParameters: nil) {
+            (response, error) in
+            print("\(error)")
+        }
         if picturesFound && locationsFound {
             self.performSegueWithIdentifier("atchtomap", sender: nil)
         }
@@ -128,6 +132,7 @@ class IntroViewController: UIViewController, LocationUpdaterDelegate {
         }
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendProfilePicturesReceived:"), name: profilePictureNotificationKey, object: nil)
         _locationUpdater.delegate = self
+        _friendManager.getMe()
         _friendManager.getFriends()
         _friendManager.getPendingRequests(true)
         _friendManager.getPendingRequests(false)

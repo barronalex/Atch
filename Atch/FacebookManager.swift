@@ -195,7 +195,7 @@ class FacebookManager {
                                 self.loginUserToParseWithToken()
                             }
                             else {
-                                self.delegate?.goToSignUp()
+                                self.delegate?.facebookLoginFailed("Must have an account to log in - click sign up")
                             }
                         }
                     }

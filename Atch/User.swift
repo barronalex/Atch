@@ -12,7 +12,7 @@ import GoogleMaps
 import CoreLocation
 
 enum UserType: Int {
-    case Friends = 1, PendingTo, PendingFrom, FacebookFriends, None
+    case Friends = 1, PendingTo, PendingFrom, FacebookFriends, None, Me
 }
 
 class User {

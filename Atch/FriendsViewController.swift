@@ -32,7 +32,7 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("friendDataUpdated"), name: friendDataReceivedNotificationKey, object: nil)
         table.delegate = self
         table.dataSource = self
-        
+//        table.setEditing(true, animated: true)
         if _friendManager.groups.count > 0 {
             print("count: \(_friendManager.groups.count)")
             findActualGroups()
@@ -41,7 +41,6 @@ class FriendsViewController: UIViewController, FriendManagerDelegate, UITableVie
             }
             table.reloadData()
         }
-        
         _friendManager.delegate = self
         setUpTable()
     }
@@ -480,6 +479,6 @@ extension FriendsViewController {
     }
     
     func searchFinished(searchResults: [PFUser]) {}
-
+    func foundMe(me: PFObject) {}
 }
     

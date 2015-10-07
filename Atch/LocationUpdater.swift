@@ -38,6 +38,11 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            if #available(iOS 9.0, *) {
+                locationManager.allowsBackgroundLocationUpdates = true
+            } else {
+                // Fallback on earlier versions
+            }
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
             _mapView?.myLocationEnabled = true
@@ -68,6 +73,7 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         curLocation = manager.location
+        print(curLocation)
         if !self.deferringUpdates && CLLocationManager.deferredLocationUpdatesAvailable() {
             print("started deferred updates")
             locationManager.allowDeferredLocationUpdatesUntilTraveled(CLLocationDistanceMax, timeout: 60)
@@ -91,14 +97,12 @@ class LocationUpdater: NSObject, CLLocationManagerDelegate {
             }
             print("sending location to server")
             lastLocation = curLocation
-            if curLocation == nil {
-                friendData!.removeObjectForKey(parse_frienddata_location)
-            }
-            else {
+            if curLocation != nil {
                 friendData!.setObject(PFGeoPoint(location: curLocation), forKey: parse_frienddata_location)
             }
-            
-            
+            else {
+                friendData!.removeObjectForKey(parse_frienddata_location)
+            }
             friendData!.saveInBackground()
             
         }

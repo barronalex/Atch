@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "465110122.538468"
+            timestampString = "465801021.238538"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "155"
-            endingLineNumber = "155"
+            startingLineNumber = "158"
+            endingLineNumber = "158"
             landmarkName = "setUpLocationManager()"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "465607096.171567"
+            timestampString = "465891016.641721"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "311"
-            endingLineNumber = "311"
+            startingLineNumber = "340"
+            endingLineNumber = "340"
             landmarkName = "friendLocationsUpdated(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -138,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "465607096.171567"
+            timestampString = "465891016.641721"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "321"
-            endingLineNumber = "321"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
             landmarkName = "AtchMapViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -202,11 +202,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "465110122.538468"
+            timestampString = "465801021.238538"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
+            startingLineNumber = "205"
+            endingLineNumber = "205"
             landmarkName = "mapView(_:didTapMarker:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -218,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Atch/AtchMapViewController.swift"
-            timestampString = "465607096.171567"
+            timestampString = "465890619.049074"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "279"
-            endingLineNumber = "279"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
             landmarkName = "friendLocationsUpdated(_:)"
             landmarkType = "5">
          </BreakpointContent>

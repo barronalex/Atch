@@ -25,6 +25,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     
     @IBOutlet weak var bannerView: UIView!
     
+    
+    
     @IBOutlet weak var bannerHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var topContainerConstraint: NSLayoutConstraint!
@@ -58,6 +60,8 @@ class AtchMapViewController: UIViewController, LocationUpdaterDelegate, FriendMa
     let bannerAppearAnimationTime = 0.3
     let bannerHeightAtTop: CGFloat = 100
     let bannerHeightAtBottom: CGFloat = 110
+    
+    let timeTillLocationHidden = NSTimeInterval(300)
     
     
     
@@ -142,7 +146,6 @@ extension AtchMapViewController {
             _friendManager.getFriends()
         }
         if !_friendManager.downloadedPics {
-            print("downloading shit")
             FacebookManager.downloadProfilePictures(_friendManager.friends)
         }
     }
@@ -247,6 +250,18 @@ extension AtchMapViewController {
             _mapView!.myLocationEnabled = true
             firstLocation = false
         }
+//        if let cuser = PFUser.currentUser()?.objectId {
+//            if _friendManager.userMap[cuser]?.marker == nil {
+//                let yourGroup = Group(toUsers: [cuser], position: CLLocation(latitude: location.latitude, longitude: location.longitude))
+//                yourGroup.image = ImageProcessor.createImageFromGroup(yourGroup)
+//                print("creating marker")
+//                createNewMarker(yourGroup)
+//            }
+//            else {
+//                _friendManager.userMap[cuser]!.marker!.position = location
+//                _friendManager.userMap[cuser]!.marker!.map = _mapView
+//            }
+//        }
     }
 }
 
@@ -268,6 +283,17 @@ extension AtchMapViewController {
         _friendManager.downloadedPics = true
     }
     
+    func locationOutOfDate(data: PFObject) -> Bool {
+        let date: NSDate = data.updatedAt!
+        print("This is a date: \(date)")
+        print("Since Now: \(date.timeIntervalSinceNow)")
+        if date.timeIntervalSinceNow < -timeTillLocationHidden {
+            print("offline")
+            return true
+        }
+        return false
+    }
+    
     func friendLocationsUpdated(friendData: [PFObject]) {
         //display locations
         print("friends location updated")
@@ -281,7 +307,10 @@ extension AtchMapViewController {
         print("Num friend data: \(friendData.count)")
         for data in friendData {
             if let user = data.objectForKey(parse_frienddata_user) as? PFObject {
-                if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
+                if locationOutOfDate(data) {
+                    _friendManager.userMap[user.objectId!]?.online = false
+                }
+                else if let location = data.objectForKey(parse_frienddata_location) as? PFGeoPoint {
                     print("location: \(location)")
                     let clLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
                     if _friendManager.userMap[user.objectId!] != nil {
@@ -323,5 +352,6 @@ extension AtchMapViewController {
     func pendingToRequestsFound(requests: [PFObject], users: [PFUser]) { }
     func facebookFriendsFound(facebookFriends: [PFUser]) { }
     func searchFinished(searchResults: [PFUser]) { }
+    func foundMe(me: PFObject) { }
     
 }

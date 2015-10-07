@@ -7,12 +7,14 @@
 //
 
 import Foundation
+import Parse
 
 //#MARK: Banner Methods
 extension AtchMapViewController {
     
     
     @IBAction func handlePan(recognizer:UIPanGestureRecognizer) {
+        if tappedUserIds == [PFUser.currentUser()!.objectId!] { return }
         if recognizer.state == UIGestureRecognizerState.Ended {
             bannerTapped()
             return
@@ -46,7 +48,7 @@ extension AtchMapViewController {
     
     func bannerTapped() {
         print("banner tapped")
-        
+        if tappedUserIds == [PFUser.currentUser()!.objectId!] { return }
         if !self.bannerAtTop {
             UIView.animateWithDuration(NSTimeInterval(0.3), animations: {
                 _mapView?.padding = self.bannerMapInsets
@@ -132,8 +134,11 @@ extension AtchMapViewController {
         })
         
         self.bannerUp = true
-        let toUsers = tappedUserIds
-        containerVC?.goToMessages(toUsers)
+        if tappedUserIds != [PFUser.currentUser()!.objectId!] {
+            let toUsers = tappedUserIds
+            containerVC?.goToMessages(toUsers)
+        }
+        
         
         print("friend map count: \(_friendManager.friends.count)")
         print("tapped id: \(tappedUserIds)")

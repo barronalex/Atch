@@ -316,6 +316,26 @@ class FriendManager {
         }
     }
     
+    func getMe() {
+        let query = PFUser.query()!
+        query.whereKey("objectId", equalTo: PFUser.currentUser()!.objectId!)
+        query.getFirstObjectInBackgroundWithBlock {
+            (user, error) -> Void in
+            if error != nil {
+                print("\(error)")
+                return
+            }
+            else {
+                if let user = user {
+                    let newU = User(type: UserType.Me, parseObject: user)
+                    self.addColourToUser(newU)
+                    _friendManager.userMap[PFUser.currentUser()!.objectId!] = newU
+                    FacebookManager.downloadProfilePictures([user])
+                }
+            }
+        }
+    }
+    
     func getFriends() {
         if let currentUser = PFUser.currentUser()?.objectId {
             let query = PFRole.query()!
